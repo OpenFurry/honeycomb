@@ -1,9 +1,43 @@
 Contributing
 ------------
 
+## Process
+
+1. Fork the code to your own repository and clone it to your local machine.
+2. Check out a feature branch:
+
+   `git checkout -b my_feature`
+3. Work work work...
+4. Commit and push your feature branch
+5. Create a pull request against OpenFurry/honeycomb, describing what you've
+   done and, if needed, providing QA instructions.  CI will run automatically on
+   PRs and any future commits to them.
+6. If CI passes and you get one "approve" review and "QA OK", someone will land
+   your branch for you (ping @makyo if need be).
+7. If not, address the comments and commit your changes, then ping for a
+   re-review.
+
 ## Style
 
-* flake8
+Python:
+
+* flake8 (PRs will be linted, check yourself with `make lint`)
+
+Templates:
+
+* 4 space indent
+* Indent inside Django block tags
+* Indent inside all elements (Including `<p>` and `<li>`, which vim will not do
+  by default) unless they are on one line.
+* No line-length limit
+
+Markdown:
+
+* 4 space indent
+* 80 character line-length limit
+* Continued lines in lists indented so that the first character is vertically in
+  line with the first character (not list item signifier) on previous line.  See
+  the source of this doc for examples.
 
 ## Caveats
 
