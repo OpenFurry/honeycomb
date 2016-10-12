@@ -67,6 +67,8 @@ subculture.
     * The user should be able to change the order of submissions in a folder
 * Submission viewing
     * The user should be able to view a submission and associated cover image
+    * The user should have a pleasant viewing experience on desktop, mobile, and
+      print, including distraction-free and inverted modes when selected
     * The user should be able to rate a submission (public, used to calculate average
       rating)
     * The user should be able to favorite a submission (private)
