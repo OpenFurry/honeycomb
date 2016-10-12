@@ -38,6 +38,7 @@ subculture.
     * Users may view a list of notifications (comments, faves, promotions,
       moderator highlights, follows, messages, maybe: enjoyed counter, ratings)
     * Users may delete notifications
+    * Users may visit user pages at `~(username)`
 * Posting submissions
     * The user should be able to post a submission as plain text
     * The user should be able to post a submission as markdown
@@ -76,6 +77,7 @@ subculture.
       queue.  Once a submission has been promoted, it remains promoted for a week,
       then is depromoted and prevented from being promoted again
     * Content moderators may select submissions to highlight
+    * Users should be able to visit a submission at `~(authorname)/(id)(-(slug))?`
 * Monetization, ads, and pay-to-promote
     * The user may pay to have their submission promoted, with the same caveat that a
       submission, once promoted, may not be promoted again
