@@ -1,11 +1,12 @@
+from django.conf import settings
 from django.conf.urls import include, url
+from django.conf.urls.static import static
 from django.contrib import admin
 
-from .views import front
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url('^', include('django.contrib.auth.urls')),
     url('^', include('usermgmt.urls')),
-    url('^$', front, name='front'),
-]
+    url('^', include('app.urls')),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
