@@ -1,10 +1,8 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
 from django.views.generic import FormView
 
-from usermgmt import forms
 
 class Register(FormView):
     template_name = 'registration/new.html'

@@ -1,5 +1,6 @@
 from django import forms
 
+
 class OldRegisterForm(forms.Form):
     username = forms.CharField(
         label='Username',
