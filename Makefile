@@ -2,6 +2,15 @@
 run: venv/bin/django-admin
 	venv/bin/python manage.py runserver 0.0.0.0:8000
 
+.PHONY: migrate
+migrate: venv/bin/django-admin
+	venv/bin/python manage.py migrate
+
+.PHONY: reestdb
+resetdb:
+	rm db.sqlite3
+	$(MAKE) migrate
+
 .PHONY:
 test: venv/bin/django-admin
 	venv/bin/python manage.py test
