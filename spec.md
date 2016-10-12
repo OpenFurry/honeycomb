@@ -8,8 +8,8 @@ word, authors, and readers.  The goal is to create a site that provides the best
 experience for uploading or writing works, as well as the best experience for
 those who will read the works.  While there may be the ability to upload images
 and media, the primary focus should be on stories, articles, novels, and papers.
-honecomb.cafe, the first implementation, should cater primarily to the furry
-subculture.
+[honeycomb.cafe](http://honeycomb.cafe), the first implementation, should cater
+primarily to the furry subculture.
 
 ## Specification
 
