@@ -3,18 +3,76 @@
 
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <title>{# TODO #}HONEYCOMB {{ title }}</title>
+
         <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}" />
         <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap-theme.min.css' %}" />
-        <script src="{% static 'app/jquery.min.js' %}"></script>
-        <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'app/base.css' %}" />
     </head>
     <body>
-        <header>
-            <h1>{# TODO #}HONEYCOMB {{ title }}</h1>
-        </header>
-        <section class="main">
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{% url 'front' %}">Project name</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">Home</a></liV>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% if user.is_authenticated %}{{ user.username }}{% else %}Account{% endif %} <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                {% if user.is_authenticated %}
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li class="dropdown-header">Nav header</li>
+                                <li><a href="#">Separated link</a></li>
+                                <li><a href="#">One more sepalated link</a></li>
+                                {% else %}
+                                    <li>
+                                        <form method="post" action="{% url 'login' %}" class="dropdown-login">
+                                            {% csrf_token %}
+                                            <label for="dropdown-username">Username:</label>
+                                            <input id="dropdown-password" type="text" name="username" placeholder="Username" />
+                                            <label for="dropdown-password">Password:</label>
+                                            <input id="dropdown-password" type="password" name="password" placeholder="Password"/>
+                                            <input type="submit" />
+                                        </form>
+                                    </li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="{% url 'register' %}">Register</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <section class="main container">
+            <header>
+                <h1>{{ title }}</h1>
+            </header>
             {% block content %}{% endblock %}
+            <footer>
+                <p>{# TODO #}Powered by <a href="https://github.com/OpenFurry/honeycomb" target="_blank">Honeycomb</a>, an <a href="http://openfurry.org" target="_blank">OpenFurry</a> project.  &copy; OpenFurry, 2016.  Source released under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.  All content is &copy; the creators, all rights reserved unless otherwise specified.</p>
+            </footer>
         </section>
+        <script src="{% static 'app/jquery.min.js' %}"></script>
+        <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
     </body>
 </html>

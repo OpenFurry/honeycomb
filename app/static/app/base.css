@@ -1,0 +1,17 @@
+.navbar-static-top {
+    margin-bottom: 19px;
+}
+.dropdown-login {
+    padding: 0 1em;
+}
+.main {
+    position: relative;
+    margin-bottom: -100px;
+    padding-bottom: 2em;
+}
+footer {
+    border-top: 1px dotted #888;
+    height: 100px;
+    position: absolute;
+    bottom: -100px;
+}
