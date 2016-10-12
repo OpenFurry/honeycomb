@@ -113,3 +113,15 @@ primarily to the furry subculture.
       any time
     * The user, as an author or social moderator, should be able to delete
       comments
+* Publisher pages
+    * The user should be able to view a publisher page containing links, logos, and info 
+      about the the publisher, as well as a list of users who are published by that
+      publisher
+    * Content moderators should be able to modify a publisher page and add users to the list
+      of published authors
+    * The user should be able to claim responsibility for a publisher page with proof of
+      ownership or employment
+    * The user should be able to request to be added to a publisher page as a published
+      author, wherein the content moderators and page owner will be able to confirm or deny
+      their membership
+    * The user should be able to see on a user's profile who they have been published by
