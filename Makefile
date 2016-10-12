@@ -1,6 +1,10 @@
 .PHONY: run
-run:
+run: venv/bin/django-admin
 	venv/bin/python manage.py runserver 0.0.0.0:8000
+
+.PHONY:
+test: venv/bin/django-admin
+	venv/bin/python manage.py test
 
 .PHONY: clean
 clean:
