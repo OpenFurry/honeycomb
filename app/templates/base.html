@@ -7,7 +7,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{# TODO #}HONEYCOMB {{ title }}</title>
+        <title>{# TODO #}&#11041; Honeycomb - {{ title }}</title>
 
         <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}" />
         <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap-theme.min.css' %}" />
@@ -15,7 +15,7 @@
     </head>
     <body>
         <nav class="navbar navbar-default navbar-static-top">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>
@@ -23,35 +23,49 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="{% url 'front' %}">Project name</a>
+                    <a class="navbar-brand" href="{% url 'front' %}">{# TODO #} &#11041; HONEYCOMB</a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li class="active"><a href="#">Home</a></liV>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#about">Recent</a></li>
+                        <li><a href="#contact">Worth a Read</a></li>
                     </ul>
+                    <form class="navbar-form navbar-left">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search">
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% if user.is_authenticated %}{{ user.username }}{% else %}Account{% endif %} <span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 {% if user.is_authenticated %}
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
+                                <li><a href="#">Read</a></li>
+                                <li><a href="#">Write</a></li>
+                                <li><a href="#">Notifications</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li class="dropdown-header">Nav header</li>
-                                <li><a href="#">Separated link</a></li>
-                                <li><a href="#">One more sepalated link</a></li>
+                                <li class="dropdown-header">User management</li>
+                                <li><a href="#">Profile</a></li>
+                                <li><a href="{% url 'logout' %}">Log out</a></li>
                                 {% else %}
                                     <li>
                                         <form method="post" action="{% url 'login' %}" class="dropdown-login">
                                             {% csrf_token %}
-                                            <label for="dropdown-username">Username:</label>
-                                            <input id="dropdown-password" type="text" name="username" placeholder="Username" />
-                                            <label for="dropdown-password">Password:</label>
-                                            <input id="dropdown-password" type="password" name="password" placeholder="Password"/>
-                                            <input type="submit" />
+                                            <div class="form-group">
+                                                <label for="dropdown-username">Username:</label>
+                                                <input class="form-control" id="dropdown-password" type="text" name="username" placeholder="Username" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="dropdown-password">Password:</label>
+                                                <input class="form-control" id="dropdown-password" type="password" name="password" placeholder="Password"/>
+                                            </div>
+                                            <input type="submit" value="Log in" />
                                         </form>
                                     </li>
                                     <li role="separator" class="divider"></li>
@@ -63,13 +77,19 @@
                 </div><!--/.nav-collapse -->
             </div>
         </nav>
-        <section class="main container">
-            <header>
-                <h1>{{ title }}</h1>
-            </header>
-            {% block content %}{% endblock %}
-            <footer>
-                <p>{# TODO #}Powered by <a href="https://github.com/OpenFurry/honeycomb" target="_blank">Honeycomb</a>, an <a href="http://openfurry.org" target="_blank">OpenFurry</a> project.  &copy; OpenFurry, 2016.  Source released under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.  All content is &copy; the creators, all rights reserved unless otherwise specified.</p>
+        <section class="main container-fluid">
+            {% if title %}
+                <header class="page-header">
+                    <h1>{{ title }}</h1> {% if subtitle %}{{ subtitle }}{% endif %}
+                </header>
+            {% endif %}
+            <section class="content">
+                {% block content %}{% endblock %}
+            </section>
+            <footer class="row">
+                <div class="col-md-12">
+                    <p>{# TODO #}Powered by <a href="https://github.com/OpenFurry/honeycomb" target="_blank">&#11041; Honeycomb</a>, an <a href="http://openfurry.org" target="_blank">OpenFurry</a> project.  &copy; OpenFurry, 2016.  Source released under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.  All content is &copy; the creators, all rights reserved unless otherwise specified.</p>
+                </div>
             </footer>
         </section>
         <script src="{% static 'app/jquery.min.js' %}"></script>

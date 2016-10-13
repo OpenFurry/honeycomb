@@ -1,17 +1,37 @@
+@import url('https://fonts.googleapis.com/css?family=EB+Garamond|Cabin');
+
+body {
+    font-family: "Cabin",sans-serif;
+}
+
 .navbar-static-top {
     margin-bottom: 19px;
 }
+
 .dropdown-login {
     padding: 0 1em;
 }
+
 .main {
     position: relative;
     margin-bottom: -100px;
     padding-bottom: 2em;
 }
+
+.content {
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+.text-block {
+    font-size: 14pt;
+    font-family: "EB Garamond", serif;
+}
+
 footer {
     border-top: 1px dotted #888;
     height: 100px;
+    width: 100%;
     position: absolute;
     bottom: -100px;
 }

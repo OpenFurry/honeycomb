@@ -1,0 +1,16 @@
+{% load form_extras %}
+{% for hidden in form.hidden_fields %}
+    {{ hidden }}
+{% endfor %}
+{% for field in form.visible_fields %}
+    <div class="form-group">
+        {% if not form.hidden %}
+            {{ field.errors }}
+            {{ field.label_tag }}
+        {% endif %}
+        {{ field|append_form_control }}
+        {% if field.help_text %}
+        <p class="help-block">{{ field.help_text|safe }}</p>
+        {% endif %}
+    </div>
+{% endfor %}

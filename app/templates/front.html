@@ -1,44 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-Welcome{% if user.is_authenticated %}, {{ user.username }}{% endif %}!
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
-<p>?</p>
+<div class="row">
+    <div class="jumbotron col-md-12">
+        <h1>Welcome{% if user.is_authenticated %}, {{ user.username }}{% endif %}!</h1>
+        <p>&#11041; Honeycomb is a site designed specifically for the written word, aiming to provide the best experience for both authors and readers.</p>
+    </div>
+</div>
+<div>
+    <div class="col-md-6">{% lorem %}</div>
+
+    <div class="text-block col-md-6">{% lorem %}</div>
+</div>
 {% endblock %}
