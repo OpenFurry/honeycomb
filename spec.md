@@ -113,6 +113,8 @@ primarily to the furry subculture.
       any time
     * The user, as an author or social moderator, should be able to delete
       comments
+    * The user should be able to share a submission, another user, or a publisher on
+      various forms of social media
 * Publisher pages
     * The user should be able to view a publisher page containing links, logos, and info 
       about the the publisher, as well as a list of users who are published by that
