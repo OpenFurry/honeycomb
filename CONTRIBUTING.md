@@ -53,10 +53,10 @@ I.e: set `.git/hooks/pre-commit` to:
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
-	against=HEAD
+        against=HEAD
 else
-	# Initial commit: diff against an empty tree object
-	against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+        # Initial commit: diff against an empty tree object
+        against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
 # Redirect output to stderr.
@@ -65,7 +65,7 @@ exec 1>&2
 if [ "$UPDATEDB" != "true" ] &&
     [ "$(git status -s db.sqlite3)" != "" ]
 then
-	cat <<\EOF
+        cat <<\EOF
 Error: Attempting to commit the dev database without the UPDATEDB flag.
 
 If you have made changes to the development database schema that need to
@@ -74,7 +74,15 @@ the UPDATEDB flag set
 
   make resetdb
   UPDATEDB=true git config hooks.allownonascii true
+  
+If you don't need to commit your changes, consider unstaging the DB with:
+
+  git reset db.sqlite3
+
+and possibly reverting it:
+
+  git checkout -- db.sqlite3
 EOF
-	exit 1
+        exit 1
 fi
 ```
