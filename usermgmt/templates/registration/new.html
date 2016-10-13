@@ -1,16 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if form.errors %}
-    {% for field in form.fields %}
-        {% if field.errors %}
-            <div class="alert alert-danger">{{ field.label }}: {{ field.errors|striptags }}</div>
+<div class="row">
+    <div class="col-md-6 col-md-offset-3 well">
+        {% if form.errors %}
+            {% for field in form.fields %}
+                {% if field.errors %}
+                    <div class="alert alert-danger">{{ field.label }}: {{ field.errors|striptags }}</div>
+                {% endif %}
+            {% endfor %}
         {% endif %}
-    {% endfor %}
-{% endif %}
-<form method="post" action="">
-    {% csrf_token %}
-    {{ form.as_ul }}
-    <input type="submit" value="Register" />
-</form>
+        <form method="post" action="">
+            {% csrf_token %}
+            {% include "registration/form-snippet.html" with form=form %}
+            <input type="submit" value="Register" />
+        </form>
+    </div>
+</div>
 {% endblock %}
