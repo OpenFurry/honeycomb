@@ -1,2 +1,2 @@
 [flake8]
-exclude = .git,venv,manage.py
+exclude = .git,venv,manage.py,*/migrations
