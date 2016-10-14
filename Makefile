@@ -19,6 +19,14 @@ resetdb:
 
 .PHONY: cleanmigrations
 cleanmigrations: venv/bin/django-admin
+	@echo "XXX HOLD UP - PRE-ALPHA STUFF ONLY XXX"
+	@echo
+	@echo "In case @makyo does not delete this before first alpha, do not"
+	@echo "run this target.  Migrations are hecka important for dev after"
+	@echo "that point!"
+	@echo
+	@echo "Psst, @makyo, don't forget to delete this target!"
+	@sleep 5
 	for i in $(APPLICATIONS); do \
 		rm $$i/migrations/*.py; \
 		touch $$i/migrations/__init__.py; \
