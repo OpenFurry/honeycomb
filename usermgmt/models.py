@@ -18,6 +18,7 @@ class Profile(models.Model):
     favorited_submissions = models.ManyToManyField(Submission)
 
     # Profile information
+    display_name = models.CharField(max_length=100)
     profile_raw = models.TextField(blank=True)
     profile_rendered = models.TextField(blank=True)
 

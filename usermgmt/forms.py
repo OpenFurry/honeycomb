@@ -1,39 +1,27 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm, UsernameField
+from django.contrib.auth.models import User
+
+from .models import Profile
 
 
-class OldRegisterForm(forms.Form):
-    username = forms.CharField(
-        label='Username',
-        required=True,
-        help_text="""This will be your username on this system. It can be
-        anything you'd like as long as it's not the same as anyone else's.""",
-        widget=forms.TextInput(attrs={'placeholder': 'foxyfluff69'}))
+class RegisterForm(UserCreationForm):
     email = forms.EmailField(
         label='Email address',
         required=True,
         help_text="""This email will be used as the primary means of
         contacting you, and will not be shared.""",
         widget=forms.EmailInput(attrs={'placeholder': 'user@example.com'}))
-    name = forms.CharField(
-        label='Display name',
-        required=False,
-        help_text="""This is the name that will show up on your profile and
-        all of your submissions.  It can be your real name or fan name.""",
-        widget=forms.TextInput(attrs={'placeholder': 'V. Vulpes'}))
-    password1 = forms.CharField(
-        label='Password',
-        required=True,
-        help_text="""Please enter a strong password; this will be used when
-        logging in.""",
-        widget=forms.PasswordInput())
-    password2 = forms.CharField(
-        label='Confirm password',
-        required=True,
-        help_text="""Please retype your password to confirm.""",
-        widget=forms.PasswordInput())
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+        field_classes = {
+            'username': UsernameField,
+            'email': forms.EmailField,
+        }
 
-    def clean(self):
-        pass
 
-    def save(self):
-        pass
+class UpdateProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('display_name', 'profile_raw')

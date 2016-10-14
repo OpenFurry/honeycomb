@@ -23,9 +23,17 @@ body {
     padding: 0 5%;
 }
 
+.profile-tabs {
+    padding-bottom: 1em;
+}
+
 .text-block {
-    font-size: 14pt;
+    font-size: 12pt;
     font-family: "EB Garamond", serif;
+}
+
+textarea {
+    font-family: monospace;
 }
 
 footer {
