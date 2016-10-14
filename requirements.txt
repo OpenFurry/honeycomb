@@ -1,7 +1,9 @@
 configparser==3.5.0
 Django==1.10.2
+django-taggit==0.21.3
 enum34==1.1.6
 flake8==3.0.4
 mccabe==0.5.2
+Pillow==3.4.1
 pycodestyle==2.0.0
 pyflakes==1.2.3
