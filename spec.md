@@ -115,6 +115,8 @@ primarily to the furry subculture.
       comments
     * The user should be able to share a submission, another user, or a publisher on
       various forms of social media
+    * The user should be able to link to another user using a syntax; linking thus
+      should notify the other user
 * Publisher pages
     * The user should be able to view a publisher page containing links, logos, and info 
       about the the publisher, as well as a list of users who are published by that
