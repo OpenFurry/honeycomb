@@ -1,17 +1,11 @@
-import markdown
-
 from django.contrib.auth import (
     authenticate,
     login,
 )
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import (
-    get_object_or_404,
-    redirect,
     render,
 )
 from django.views.generic import FormView
@@ -53,23 +47,21 @@ def update_profile(request):
     if request.method == 'POST':
         form = UpdateProfileForm(request.POST, instance=request.user.profile)
         form.save()
-        request.user.profile.profile_rendered = markdown.markdown(
-            request.user.profile.profile_raw,
-            extensions=['markdown.extensions.extra'])
-        request.user.profile.save()
     form = UpdateProfileForm(instance=request.user.profile)
-    return render(request, 
+    return render(request,
                   'update_profile.html',
                   {'title': 'Update profile', 'form': form})
 
 
 def view_profile(request, username):
     user = User.objects.get(username=username)
-    display_name = user.profile.display_name if user.profile.display_name \
-        else user.username
-    watched = user in request.user.profile.watched_users.all()
-    blocked = user in request.user.profile.blocked_users.all()
+    watched = blocked = blocked_by = False
+    if request.user.is_authenticated:
+        watched = user in request.user.profile.watched_users.all()
+        blocked = user in request.user.profile.blocked_users.all()
+        blocked_by = request.user in user.profile.blocked_users.all()
     subtitle = ''
+    display_name = user.profile.get_display_name()
     if watched:
         display_name = '&#x2606; {}'.format(display_name)
         subtitle = "following"
@@ -79,11 +71,10 @@ def view_profile(request, username):
     return render(request,
                   'view_profile.html',
                   {
-                      'title': display_name, 
+                      'title': display_name,
                       'subtitle': subtitle,
                       'user_profile': user,
                       'watched': watched,
                       'blocked': blocked,
+                      'blocked_by': blocked_by,
                   })
-
-

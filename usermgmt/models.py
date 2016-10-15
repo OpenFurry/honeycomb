@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import markdown
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -25,6 +26,15 @@ class Profile(models.Model):
     # Key/value pairs of simple profile information
     # (favorite genre, editor, etc)
     attributes = models.TextField(blank=True)
+
+    def get_display_name(self):
+        return self.display_name if self.display_name else self.user.username
+
+    def save(self, *args, **kwargs):
+        self.profile_rendered = markdown.markdown(
+            self.profile_raw,
+            extension=['markdown.extensions.extra'])
+        super(Profile, self).save(*args, **kwargs)
 
 
 class Notification(models.Model):

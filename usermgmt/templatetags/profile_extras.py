@@ -16,11 +16,12 @@ def render_attributes(value, autoescape=True):
     if autoescape:
         esc = conditional_escape
     else:
-        esc = lambda x: x
+        esc = lambda x: x  # noqa: E731
     to_return = '<dl>'
     for attribute in value.split('\n'):
         k, v = attribute.split('=', 1)
         to_return += '<dt>{}</dt>'.format(utils.ATTRIBUTES[k]['dt'])
-        to_return += '<dd>{}</dd>'.format(utils.ATTRIBUTES[k]['dd'].format(value=v))
+        to_return += '<dd>{}</dd>'.format(
+            utils.ATTRIBUTES[k]['dd'].format(value=esc(v)))
     to_return += '</dl>'
     return mark_safe(to_return)

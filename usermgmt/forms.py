@@ -12,6 +12,7 @@ class RegisterForm(UserCreationForm):
         help_text="""This email will be used as the primary means of
         contacting you, and will not be shared.""",
         widget=forms.EmailInput(attrs={'placeholder': 'user@example.com'}))
+
     class Meta:
         model = User
         fields = ('username', 'email')

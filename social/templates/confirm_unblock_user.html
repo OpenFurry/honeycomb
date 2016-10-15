@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="alert alert-info">
+    <p>You are about to unblock {{ blocked_user.profile.get_display_name }} (~{{ blocked_user.username }}).  Are you sure that you want to do this?</p>
+    <form method="post">
+        {% csrf_token %}
+        <input type="submit" value="I'm sure" />
+        <a href="{% url 'view_profile' blocked_user.username %}">No, take me back</a>
+    </form>
+</div>
+{% endblock %}
