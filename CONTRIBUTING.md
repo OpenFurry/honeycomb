@@ -37,12 +37,12 @@ Contributing
 
 Python:
 
-* flake8 (PRs will be linted, check yourself with `make lint`)
+* flake8 (PRs will be linted, running `make test` will also lint)
 
 Templates:
 
 * 4 space indent
-* Indent inside Django block tags
+* Indent inside Django block tags except root-level `block` tags
 * Indent inside all elements (Including `<p>` and `<li>`, which vim will not do
   by default) unless they are on one line.
 * No line-length limit
