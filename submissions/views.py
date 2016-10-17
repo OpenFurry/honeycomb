@@ -10,7 +10,6 @@ from django.core.urlresolvers import reverse
 from django.db.models import (
     Q,
 )
-from django.http import HttpResponseForbidden
 from django.shortcuts import (
     get_object_or_404,
     redirect,
@@ -26,19 +25,24 @@ def list_user_submissions(request, username=None, page=None):
     author = get_object_or_404(User, username=username)
     if reader.is_authenticated and reader in \
             author.profile.blocked_users.all():
-        return HttpResponseForbidden()
+        return render(request, 'permission_denied.html', {
+            'title': 'Permission denied',
+        }, status=403)
     queries = [Q(owner=author)]
     if reader != author:
         queries.append(Q(hidden=False))
-        if not (reader.is_authenticated or
-                reader.profile.can_see_adult_submissions):
+        if (not reader.is_authenticated or
+                not reader.profile.can_see_adult_submissions):
             queries.append(Q(adult_rating=False))
         group_queries = []
         for group in author.groups.all():
             group_queries.append(Q(user_group__contains=group))
-        queries.append(
-            Q(restricted_to_groups=False) |
-            (Q(restricted_to_groups=True), group_queries))
+        if len(group_queries) > 0:
+            queries.append(
+                Q(restricted_to_groups=False) |
+                (Q(restricted_to_groups=True), group_queries))
+        else:
+            queries.append(Q(restricted_to_groups=False))
     result = Submission.objects.filter(*queries)
     paginator = Paginator(result, reader.profile.results_per_page if
                           reader.is_authenticated else 25)
@@ -73,36 +77,35 @@ def view_submission(request, username=None, submission_id=None,
                 'submission_slug': submission.slug,
             }))
     # Check permissions
+    reader = request.user
+    author = submission.owner
     can_view = True
-    logged_in = request.user.is_authenticated
-    if submission.adult_rating and (
-            not logged_in or not
-            request.user.profile.can_see_adult_submissions):
+    logged_in = reader.is_authenticated
+    if (logged_in and reader in author.profile.blocked_users.all()):
         can_view = False
-    if can_view and submission.hidden and (
-            not logged_in or
-            (request.user.username != submission.owner.username)):
-        can_view = False
-    if can_view and (
-            logged_in and request.user in
-            submission.owner.profile.blocked_users.all()):
-        can_view = False
-    if can_view and (not logged_in and submission.restricted_to_groups):
-        can_view = False
-    if can_view and (logged_in and submission.restricted_to_groups):
-        group_allowed = False
-        submission_group_ids = map(lambda x: x.id,
-                                   submission.allowed_groups.all())
-        user_group_ids = map(lambda x: x.id, request.user.group_set.all())
-        for user_group in user_group_ids:
-            if user_group in submission_group_ids:
-                group_allowed = True
-                break
-        can_view = can_view and group_allowed
+    if can_view and reader != author:
+        if submission.adult_rating and (
+                not logged_in or not
+                reader.profile.can_see_adult_submissions):
+            can_view = False
+        if can_view and submission.hidden:
+            can_view = False
+        if can_view and (not logged_in and submission.restricted_to_groups):
+            can_view = False
+        if can_view and (logged_in and submission.restricted_to_groups):
+            group_allowed = False
+            submission_group_ids = map(lambda x: x.id,
+                                       submission.allowed_groups.all())
+            user_group_ids = map(lambda x: x.id, request.user.group_set.all())
+            for user_group in user_group_ids:
+                if user_group in submission_group_ids:
+                    group_allowed = True
+                    break
+            can_view = can_view and group_allowed
     if not can_view:
-        return render(request, 'submission_permission_denied.html', {
+        return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
-        })
+        }, status=403)
     submission.views += 1
     submission.save()
     return render(request, 'view_submission.html', {
@@ -118,7 +121,10 @@ def edit_submission(request, username=None, submission_id=None,
                     submission_slug=None):
     submission = get_object_or_404(Submission, id=submission_id)
     if submission.owner.username != request.user.username:
-        return HttpResponseForbidden()
+        messages.error(request, 'You can only edit your own submissions')
+        return render(request, 'permission_denied.html', {
+            'title': 'Permission denied',
+        }, status=403)
     if request.method == 'POST':
         form = SubmissionForm(request.POST, instance=submission)
         submission = form.save()
@@ -142,12 +148,18 @@ def delete_submission(request, username=None, submission_id=None,
                       submission_slug=None):
     submission = get_object_or_404(Submission, id=submission_id)
     if submission.owner.username != request.user.username:
-        return HttpResponseForbidden()
+        messages.error(request, 'You can only delete your own submissions')
+        return render(request, 'permission_denied.html', {
+            'title': 'Permission denied',
+        }, status=403)
     if request.method == 'POST':
         submission.delete()
         messages.success(request, 'Submission deleted.')
         return redirect(reverse('usermgmt:view_profile',
                         args=(request.user.username,)))
+    return render(request, 'confirm_delete_submission.html', {
+        'submission': submission,
+    })
 
 
 @login_required

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'publishers',
     'promotion',
     'taggit',
+    'django_nose',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -151,3 +152,4 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

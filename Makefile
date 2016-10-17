@@ -32,10 +32,14 @@ cleanmigrations: venv/bin/django-admin
 		rm $$i/migrations/*.py; \
 		touch $$i/migrations/__init__.py; \
 	done
-	
+
 .PHONY: test
 test:
 	tox
+
+.PHONY: testone
+testone:
+	tox -e 3.5
 
 .PHONY: test-travis
 test-travis:
@@ -43,7 +47,7 @@ test-travis:
 	coverage run \
 		--source='$(APPLICATIONS_COMMA)' \
 		--omit='*migrations*,*urls.py,*apps.py,*admin.py,*__init__.py,*test.py' \
-		manage.py test
+		manage.py test --verbosity=2
 	coverage report -m --skip-covered
 
 .PHONY: clean
@@ -51,13 +55,9 @@ clean:
 	rm -rf venv
 	find . -name *.py[co] -exec rm {} \;
 
-.PHONY: clean-badge
-clean-badge:
-	rm coverage-badge.svg
-
 .PHONY: deps
 deps: venv
-	venv/bin/pip install -r requirements.
+	venv/bin/pip install -r requirements.txt
 
 venv:
 	virtualenv venv

@@ -15,7 +15,7 @@ submission_patterns = [
 urlpatterns = [
     url('^submit/$', views.submit, name='submit'),
     url('^(?P<submission_id>\d+)/$', views.view_submission,
-        name='view_submission_short'),
+        name='view_submission'),
     url(settings.SUBMISSION_BASE, include(submission_patterns)),
     url('^~(?P<username>[^/]+)/submissions/$',
         views.list_user_submissions, name='list_user_submissions'),
