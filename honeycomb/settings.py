@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'app',
+    'core',
     'usermgmt',
     'submissions',
     'social',
@@ -141,6 +141,8 @@ STATIC_ROOT = './static'
 
 
 # Additional configuration for Honeycomb
+SUBMISSION_BASE = ('^~(?P<username>[^/]+)/(?P<submission_id>\d+)-'
+                   '(?P<submission_slug>[-\w]+)/')
 LOGOUT_REDIRECT_URL = "/login/"
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',

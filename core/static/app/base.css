@@ -2,6 +2,7 @@
 
 body {
     font-family: "Cabin",sans-serif;
+    /* background: url('lightpaperfibers.png'); */
 }
 
 .navbar-static-top {
@@ -23,13 +24,17 @@ body {
     padding: 0 5%;
 }
 
+.text-block {
+    font-size: 13pt;
+    font-family: "EB Garamond", serif;
+}
+
 .profile-tabs {
     padding-bottom: 1em;
 }
 
-.text-block {
-    font-size: 12pt;
-    font-family: "EB Garamond", serif;
+.striped-results:nth-child(odd) .result-row {
+    background-color: #f6f6f6;
 }
 
 textarea {

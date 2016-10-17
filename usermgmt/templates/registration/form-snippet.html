@@ -4,10 +4,8 @@
 {% endfor %}
 {% for field in form.visible_fields %}
     <div class="form-group">
-        {% if not form.hidden %}
-            {{ field.errors }}
-            {{ field.label_tag }}
-        {% endif %}
+        {{ field.errors }}
+        {{ field.label_tag }}
         {{ field|append_form_control }}
         {% if field.help_text %}
         <p class="help-block">{{ field.help_text|safe }}</p>

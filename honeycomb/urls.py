@@ -9,5 +9,6 @@ urlpatterns = [
     url('^', include('django.contrib.auth.urls')),
     url('^', include('usermgmt.urls')),
     url('^', include('social.urls')),
-    url('^', include('app.urls')),
+    url('^', include('core.urls')),
+    url('^', include('submissions.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
