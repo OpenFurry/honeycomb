@@ -32,13 +32,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'app',
+    'core',
     'usermgmt',
     'submissions',
     'social',
     'publishers',
     'promotion',
     'taggit',
+    'django_nose',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -141,6 +142,8 @@ STATIC_ROOT = './static'
 
 
 # Additional configuration for Honeycomb
+SUBMISSION_BASE = ('^~(?P<username>[^/]+)/(?P<submission_id>\d+)-'
+                   '(?P<submission_slug>[-\w]+)/')
 LOGOUT_REDIRECT_URL = "/login/"
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',
@@ -149,3 +152,4 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

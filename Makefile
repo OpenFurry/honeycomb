@@ -1,8 +1,9 @@
-APPLICATIONS := admin app promotion publishers social submissions usermgmt
+APPLICATIONS := admin core promotion publishers social submissions usermgmt
+APPLICATIONS_COMMA := $(shell echo $(APPLICATIONS) | tr ' ' ',')
 
 .PHONY: run
-run: venv/bin/django-admin
-	venv/bin/python manage.py runserver 0.0.0.0:8000
+run:
+	tox -e devenv
 
 .PHONY: migrate
 migrate: makemigrations
@@ -32,16 +33,22 @@ cleanmigrations: venv/bin/django-admin
 		touch $$i/migrations/__init__.py; \
 	done
 
-.PHONY: check
-check: lint test
+.PHONY: test
+test:
+	tox
 
-.PHONY:
-test: venv/bin/django-admin
-	venv/bin/python manage.py test
-	
-.PHONY: lint
-lint: venv/bin/flake8
-	venv/bin/flake8
+.PHONY: testone
+testone:
+	tox -e 3.5
+
+.PHONY: test-travis
+test-travis:
+	flake8
+	coverage run \
+		--source='$(APPLICATIONS_COMMA)' \
+		--omit='*migrations*,*urls.py,*apps.py,*admin.py,*__init__.py,*test.py' \
+		manage.py test --verbosity=2
+	coverage report -m --skip-covered
 
 .PHONY: clean
 clean:
@@ -54,4 +61,3 @@ deps: venv
 
 venv:
 	virtualenv venv
-

@@ -21,7 +21,7 @@ def watch_user(request, username):
         request.user.profile.save()
         messages.success(request,
                          "You are now watching {}!".format(user.username))
-    return redirect(reverse('view_profile', args=(user.username,)))
+    return redirect(reverse('usermgmt:view_profile', args=(user.username,)))
 
 
 @login_required
@@ -37,7 +37,7 @@ def unwatch_user(request, username):
         messages.success(request,
                          "You are no longer watching {}.".format(
                              user.username))
-    return redirect(reverse('view_profile', args=(user.username,)))
+    return redirect(reverse('usermgmt:view_profile', args=(user.username,)))
 
 
 @login_required
@@ -54,7 +54,7 @@ def block_user(request, username):
             request,
             ("You are now blocking {} from viewing your profile and "
              "submissions!").format(user.username))
-    return redirect(reverse('view_profile', args=(user.username,)))
+    return redirect(reverse('usermgmt:view_profile', args=(user.username,)))
 
 
 @login_required
@@ -75,9 +75,33 @@ def unblock_user(request, username):
         else:
             return render(request, 'confirm_unblock_user.html',
                           {'blocked_user': user})
-    return redirect(reverse('view_profile', args=(user.username,)))
+    return redirect(reverse('usermgmt:view_profile', args=(user.username,)))
 
 
 @login_required
 def message_user(request, username):
+    pass
+
+
+@login_required
+def favorite_submission(request, username=None, submission_id=None,
+                        submission_slug=None):
+    pass
+
+
+@login_required
+def unfavorite_submission(request, username=None, submission_id=None,
+                          submission_slug=None):
+    pass
+
+
+@login_required
+def rate_submission(request, username=None, submission_id=None,
+                    submission_slug=None):
+    pass
+
+
+@login_required
+def enjoy_submission(request, username=None, submission_id=None,
+                     submission_slug=None):
     pass

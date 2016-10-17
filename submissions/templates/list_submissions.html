@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row profile-tabs">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs">
+            <li role="presentation"><a href="{% url 'usermgmt:view_profile' author.username %}">Profile</a></li>
+            <li role="presentation" class="active"><a href="{% url 'submissions:list_user_submissions' username=author.username %}">Submissions</a></li>
+            <li role="presentation"><a href="#">Favorites</a></li>
+            {% if user.is_authenticated and user != author %}
+                <li role="presentation" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        Social <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% if watched %}
+                            <li><a href="{% url 'social:unwatch_user' author.username%}">Unfollow user</a></li>
+                        {% else %}
+                            {% if not blocked %}
+                            <li><a href="{% url 'social:watch_user' author.username %}">Follow user</a></li>
+                            {% endif %}
+                        {% endif %}
+                        {% if blocked %}
+                            <li><a href="{% url 'social:unblock_user' author.username %}">Unblock user</a></li>
+                        {% else %}
+                            <li><a href="{% url 'social:block_user' author.username %}">Block user</a></li>
+                            <li><a href="{% url 'social:message_user' author.username %}">Message user</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% for submission in submissions %}
+    <div class="striped-results">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 result-row">
+                {% include 'submission-list-snippet.html' with submission=submission author=author %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+<div class="row">
+    <div class="col-md-12 text-center">
+        <nav aria-label="Submission pages">
+            <ul class="pagination">
+                {% if submissions.has_previous %}
+                    <li>
+                        <a href="{% url 'submissions:list_user_submissions' username=author.username page=submissions.previous_page_number %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="disabled"><span aria-hidden="true">&laquo;</span></li>
+                {% endif %}
+                {% for page in submissions.paginator.page_range %}
+                    {% if submissions.number == page %}
+                        <li class="active"><a href="{% url 'submissions:list_user_submissions' username=author.username page=page %}">{{ page }} <span class="sr-only">(current)</span></a></li>
+                    {% else %}
+                        <li><a href="{% url 'submissions:list_user_submissions' username=author.username page=page %}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if submissions.has_next %}
+                    <li>
+                        <a href="{% url 'submissions:list_user_submissions' username=author.username page=submissions.next_page_number %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="disabled"><span aria-hidden="true">&raquo;</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

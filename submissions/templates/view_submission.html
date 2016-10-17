@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a data-toggle="collapse" data-target="#collapse-submission-info" aria-expanded="false" aria-controls="collapseInfo">
+                    Submission information <span class="caret"></span>
+                </a>
+            </div>
+            <div class="panel-body collapse" id="collapse-submission-info">
+                {% if submission.description_rendered %}
+                    {{ submission.description_rendered|safe }}
+                {% else %}
+                    <em>No description provided</em>
+                {% endif %}
+            </div>
+            <div class="panel-footer">
+                Views: {{ submission.views }} -
+                Rating: {% with rating=submission.get_average_rating %}
+                    {{ rating.average|floatformat }} ({{ rating.count }} ratings)
+                {% endwith %} -
+                Favorites: TODO -
+                Enjoys: TODO
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2 text-block">
+        {{ submission.content_rendered|safe }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Actions
+            </div>
+            <div class="panel-body">
+                Rate: TOOD - Favorite: TODO - Enjoy: TODO
+            </div>
+        </div>
+    </div>
+</div>
+{% if not submission.can_comment %}
+    <div class="alert alert-info">Comments disabled for this submission</div>
+{% endif %}
+Comments: TODO
+{% if submission.can_comment %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Comment
+        </div>
+        <div class="panel-body">
+            Comment form: TODO
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

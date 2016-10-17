@@ -6,7 +6,7 @@
     <form method="post">
         {% csrf_token %}
         <input type="submit" value="I'm sure" />
-        <a href="{% url 'view_profile' blocked_user.username %}">No, take me back</a>
+        <a href="{% url 'usermgmt:view_profile' blocked_user.username %}">No, take me back</a>
     </form>
 </div>
 {% endblock %}

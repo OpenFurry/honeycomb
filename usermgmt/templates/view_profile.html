@@ -8,8 +8,8 @@
         <div class="row profile-tabs">
             <div class="col-md-12">
                 <ul class="nav nav-tabs">
-                    <li role="presentation" class="active"><a href="{% url 'view_profile' user_profile.username %}">Profile</a></li>
-                    <li role="presentation"><a href="#">Submissions</a></li>
+                    <li role="presentation" class="active"><a href="{% url 'usermgmt:view_profile' user_profile.username %}">Profile</a></li>
+                    <li role="presentation"><a href="{% url 'submissions:list_user_submissions' username=user_profile.username %}">Submissions</a></li>
                     <li role="presentation"><a href="#">Favorites</a></li>
                     {% if user.is_authenticated and user != user_profile %}
                         <li role="presentation" class="dropdown">
@@ -18,17 +18,17 @@
                             </a>
                             <ul class="dropdown-menu">
                                 {% if watched %}
-                                    <li><a href="{% url 'unwatch_user' user_profile.username%}">Unfollow user</a></li>
+                                    <li><a href="{% url 'social:unwatch_user' user_profile.username%}">Unfollow user</a></li>
                                 {% else %}
                                     {% if not blocked %}
-                                    <li><a href="{% url 'watch_user' user_profile.username %}">Follow user</a></li>
+                                    <li><a href="{% url 'social:watch_user' user_profile.username %}">Follow user</a></li>
                                     {% endif %}
                                 {% endif %}
                                 {% if blocked %}
-                                    <li><a href="{% url 'unblock_user' user_profile.username %}">Unblock user</a></li>
+                                    <li><a href="{% url 'social:unblock_user' user_profile.username %}">Unblock user</a></li>
                                 {% else %}
-                                    <li><a href="{% url 'block_user' user_profile.username %}">Block user</a></li>
-                                    <li><a href="{% url 'message_user' user_profile.username %}">Message user</a></li>
+                                    <li><a href="{% url 'social:block_user' user_profile.username %}">Block user</a></li>
+                                    <li><a href="{% url 'social:message_user' user_profile.username %}">Message user</a></li>
                                 {% endif %}
                             </ul>
                         </li>
@@ -42,7 +42,7 @@
                 <div class="panel-heading">
                     Profile
                 </div>
-                <div class="panel-body text-block">
+                <div class="panel-body">
                     {{ user_profile.profile.profile_rendered|safe }}
                 </div>
                 <div class="panel-footer">

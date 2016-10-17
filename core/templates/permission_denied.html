@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="alert alert-warning">
+    <p>Unfortunately, permission was denied for viewing this page!  This can happen for several reasons:</p>
+    <ul>
+        <li>This submission is rated adult and {% if user.is_authenticated %}your settings do not allow you to see adult content{% else %}you must be logged in to see adult content{% endif %}</li>
+        <li>The author marked the submission as hidden</li>
+        <li>You are blocked from seeing submissions by this author or their profile</li>
+        <li>The author restricted access to selected other users</li>
+    </ul>
+</div>
+{% endblock %}

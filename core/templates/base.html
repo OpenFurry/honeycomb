@@ -23,7 +23,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="{% url 'front' %}">{# TODO #} &#11041; HONEYCOMB</a>
+                    <a class="navbar-brand" href="{% url 'core:front' %}">{# TODO #} &#11041; HONEYCOMB</a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
@@ -44,7 +44,7 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li>
                             {% if user.is_authenticated %}
-                                <a href="{% url 'view_profile' user.username %}">~{{ user.username }}</a>
+                                <a href="{% url 'usermgmt:view_profile' user.username %}">~{{ user.username }}</a>
                             {% endif %}
                         </li>
                         <li class="dropdown">
@@ -52,11 +52,11 @@
                             <ul class="dropdown-menu">
                                 {% if user.is_authenticated %}
                                 <li><a href="#">Read</a></li>
-                                <li><a href="#">Write</a></li>
+                                <li><a href="{% url 'submissions:submit' %}">Write</a></li>
                                 <li><a href="#">Notifications</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li class="dropdown-header">User management</li>
-                                <li><a href="{% url 'update_profile' %}">Profile</a></li>
+                                <li><a href="{% url 'usermgmt:update_profile' %}">Profile</a></li>
                                 <li><a href="{% url 'logout' %}">Log out</a></li>
                                 {% else %}
                                     <li>
@@ -75,7 +75,7 @@
                                         </form>
                                     </li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="{% url 'register' %}">Register</a></li>
+                                    <li><a href="{% url 'usermgmt:register' %}">Register</a></li>
                                 {% endif %}
                             </ul>
                         </li>
@@ -94,7 +94,7 @@
                     {% for message in messages %}
                         <div class="alert alert-dismissable alert-{{ message.tags }}" role="alert">
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            {{ message }}
+                            {{ message|safe }}
                         </div>
                     {% endfor %}
                 </section>

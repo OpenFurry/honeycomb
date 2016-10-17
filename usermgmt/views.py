@@ -4,6 +4,7 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import (
     render,
@@ -34,7 +35,7 @@ class Register(FormView):
 
     def get_success_url(self):
         return self.request.POST.get(
-            'next', self.request.GET.get('next', reverse('front')))
+            'next', self.request.GET.get('next', reverse('core:front')))
 
     def get_context_data(self, **kwargs):
         context = super(Register, self).get_context_data(**kwargs)
@@ -47,6 +48,10 @@ def update_profile(request):
     if request.method == 'POST':
         form = UpdateProfileForm(request.POST, instance=request.user.profile)
         form.save()
+        messages.success(request, 'Profile updated! View it '
+                         '<a href="{}">here</a>!'.format(
+                             reverse('usermgmt:view_profile',
+                                     args=(request.user.username,))))
     form = UpdateProfileForm(instance=request.user.profile)
     return render(request,
                   'update_profile.html',

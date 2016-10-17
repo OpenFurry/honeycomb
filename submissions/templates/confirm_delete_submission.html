@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="alert alert-info">
+    <p>You are about to delete your submission {{ submission.title }}.  Are you sure that you want to do this?</p>
+    <form method="post">
+        {% csrf_token %}
+        <input type="submit" value="I'm sure" />
+        <a href="{% url 'submissions:view_submission' username=user.username submission_id=submission.id submission_slug=submission.slug %}">No, take me back</a>
+    </form>
+</div>
+{% endblock %}
