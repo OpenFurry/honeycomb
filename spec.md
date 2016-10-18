@@ -117,6 +117,11 @@ primarily to the furry subculture.
       various forms of social media
     * The user should be able to link to another user using a syntax; linking thus
       should notify the other user
+    * The user should be able to link a twitter account to their profile
+    * The user should be able to have new submissions auto-tweeted via linked twitter
+      account
+    * The site should have its own twitter account that auto-tweets newly-promoted
+      or highlighted works
 * Publisher pages
     * The user should be able to view a publisher page containing links, logos, and info 
       about the the publisher, as well as a list of users who are published by that
