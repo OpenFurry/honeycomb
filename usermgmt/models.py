@@ -20,7 +20,8 @@ class Profile(models.Model):
     # Some social aspects managed through relations
     blocked_users = models.ManyToManyField(User, related_name='blocked_by')
     watched_users = models.ManyToManyField(User, related_name='watched_by')
-    favorited_submissions = models.ManyToManyField(Submission)
+    favorited_submissions = models.ManyToManyField(Submission,
+                                                   related_name='favorited_by')
     user_groups = models.ManyToManyField(Group)
 
     # Profile information

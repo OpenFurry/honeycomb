@@ -16,13 +16,13 @@
                     <em>No description provided</em>
                 {% endif %}
             </div>
-            <div class="panel-footer">
+            <div class="panel-footer text-center">
                 Views: {{ submission.views }} -
                 Rating: {% with rating=submission.get_average_rating %}
-                    {{ rating.average|floatformat }} ({{ rating.count }} ratings)
+                    <span data-toggle="tooltip" data-placement="bottom" title="{{ rating.average|floatformat }} average out of {{ rating.count }} ratings">{{ rating.stars|safe }}</span>
                 {% endwith %} -
-                Favorites: TODO -
-                Enjoys: TODO
+                Favorites: {{ submission.favorited_by.count }} -
+                {% if submission.can_enjoy %}Submission enjoyed {{ submission.enjoy_votes }} times{% endif %}
             </div>
         </div>
     </div>
@@ -32,18 +32,50 @@
         {{ submission.content_rendered|safe }}
     </div>
 </div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Actions
-            </div>
-            <div class="panel-body">
-                Rate: TOOD - Favorite: TODO - Enjoy: TODO
+{% if user.is_authenticated and user != submission.owner %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Actions
+                </div>
+                <div class="panel-body text-center">
+                    <form action="rate/" method="post" class="inline">
+                        {% csrf_token %}
+                        <button class="link-button" name="rating" value="1">&#x2606;</button>
+                        <button class="link-button" name="rating"  value="2">&#x2606;</button>
+                        <button class="link-button" name="rating"  value="3">&#x2606;</button>
+                        <button class="link-button" name="rating"  value="4">&#x2606;</button>
+                        <button class="link-button" name="rating"  value="5">&#x2606;</button>
+                    </form> -
+                    {% if submission in user.profile.favorited_submissions.all %}
+                        <a><form action="unfavorite/" method="post" class="inline">
+                            {% csrf_token %}
+                            <button class="link-button">
+                                Unfavorite
+                            </button>
+                        </form></a>
+                    {% else %}
+                        <a><form action="favorite/" method="post" class="inline">
+                            {% csrf_token %}
+                            <button class="link-button">
+                                Favorite
+                            </button>
+                        </form></a>
+                    {% endif %} -
+                    {% if submission.can_enjoy %}
+                        <a><form action="enjoy/" method="post" class="inline">
+                            {% csrf_token %}
+                            <button class="link-button">
+                                I just read and enjoyed this submission!
+                            </button>
+                        </form></a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-</div>
+{% endif %}
 {% if not submission.can_comment %}
     <div class="alert alert-info">Comments disabled for this submission</div>
 {% endif %}

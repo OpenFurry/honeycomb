@@ -52,7 +52,7 @@ test-travis:
 
 .PHONY: clean
 clean:
-	rm -rf venv
+	rm -rf venv .tox
 	find . -name *.py[co] -exec rm {} \;
 
 .PHONY: deps

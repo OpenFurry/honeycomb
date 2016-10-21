@@ -18,17 +18,42 @@
                             </a>
                             <ul class="dropdown-menu">
                                 {% if watched %}
-                                    <li><a href="{% url 'social:unwatch_user' user_profile.username%}">Unfollow user</a></li>
+                                    <li><a><form action="{% url 'social:unwatch_user' user_profile.username%}" method="post">
+                                        {% csrf_token %}
+                                        <button class="link-button">
+                                            Unfollow user
+                                        </button>
+                                    </form></a></li>
                                 {% else %}
                                     {% if not blocked %}
-                                    <li><a href="{% url 'social:watch_user' user_profile.username %}">Follow user</a></li>
+                                        <li><a><form action="{% url 'social:watch_user' user_profile.username %}" method="post">
+                                            {% csrf_token %}
+                                            <button class="link-button">
+                                                Follow user
+                                            </button>
+                                        </form></a></li>
                                     {% endif %}
                                 {% endif %}
                                 {% if blocked %}
-                                    <li><a href="{% url 'social:unblock_user' user_profile.username %}">Unblock user</a></li>
+                                    <li><a><form action="{% url 'social:unblock_user' user_profile.username %}" method="post">
+                                        {% csrf_token %}
+                                        <button class="link-button">
+                                            Unblock user
+                                        </button>
+                                    </form></a></li>
                                 {% else %}
-                                    <li><a href="{% url 'social:block_user' user_profile.username %}">Block user</a></li>
-                                    <li><a href="{% url 'social:message_user' user_profile.username %}">Message user</a></li>
+                                    <li><a><form action="{% url 'social:block_user' user_profile.username %}" method="post">
+                                        {% csrf_token %}
+                                        <button class="link-button">
+                                            Block user
+                                        </button>
+                                    </form></a></li>
+                                    <li><a><form action="{% url 'social:message_user' user_profile.username %}" method="post">
+                                        {% csrf_token %}
+                                        <button class="link-button">
+                                            Message user
+                                        </button>
+                                    </form></a></li>
                                 {% endif %}
                             </ul>
                         </li>

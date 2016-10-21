@@ -27,10 +27,26 @@ body {
 .text-block {
     font-size: 13pt;
     font-family: "EB Garamond", serif;
+    background-color: #f8f8f8;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    padding: 1em;
 }
 
 .profile-tabs {
     padding-bottom: 1em;
+}
+
+.link-button {
+     background:none!important;
+     border:none;
+     padding:0!important;
+     font: inherit;
+     cursor: pointer;
+}
+
+.inline {
+    display: inline;
 }
 
 .striped-results:nth-child(odd) .result-row {
