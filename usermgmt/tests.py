@@ -117,27 +117,27 @@ class ViewProfileTests(TestCase):
         self.client.login(username='foo', password='a good password')
         response = self.client.get(reverse('usermgmt:view_profile',
                                            args=('bar',)))
-        self.assertContains(response, '>Block user<')
+        self.assertContains(response, 'Block user')
 
     def test_page_has_unblock_if_blocked(self):
         self.foo.profile.blocked_users.add(self.bar)
         self.client.login(username='foo', password='a good password')
         response = self.client.get(reverse('usermgmt:view_profile',
                                            args=('bar',)))
-        self.assertContains(response, '>Unblock user<')
+        self.assertContains(response, 'Unblock user')
 
     def test_page_has_watch_if_unwatched(self):
         self.client.login(username='foo', password='a good password')
         response = self.client.get(reverse('usermgmt:view_profile',
                                            args=('bar',)))
-        self.assertContains(response, '>Follow user<')
+        self.assertContains(response, 'Follow user')
 
     def test_page_has_unwatch_if_watched(self):
         self.foo.profile.watched_users.add(self.bar)
         self.client.login(username='foo', password='a good password')
         response = self.client.get(reverse('usermgmt:view_profile',
                                            args=('bar',)))
-        self.assertContains(response, '>Unfollow user<')
+        self.assertContains(response, 'Unfollow user')
 
     def test_page_shows_when_blocked(self):
         self.foo.profile.blocked_users.add(self.bar)

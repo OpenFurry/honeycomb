@@ -49,6 +49,7 @@ class Submission(models.Model):
     ctime = models.DateTimeField(auto_now_add=True)
     mtime = models.DateTimeField(auto_now=True)
     views = models.PositiveIntegerField(default=0)
+    enjoy_votes = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -66,9 +67,14 @@ class Submission(models.Model):
             total += rating.rating
             count += 1
         if count > 0:
-            return {'average': float(total) / float(count), 'count': count}
+            return {
+                'stars': '&#x2605;' * int(total / count) +
+                         '&#x2606;' * (5 - int(total / count)),
+                'average': float(total) / float(count),
+                'count': count
+            }
         else:
-            return {'average': 0, 'count': 0}
+            return {'stars': '', 'average': 0, 'count': 0}
 
 
 class Folder(models.Model):

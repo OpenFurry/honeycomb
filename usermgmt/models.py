@@ -20,7 +20,8 @@ class Profile(models.Model):
     # Some social aspects managed through relations
     blocked_users = models.ManyToManyField(User, related_name='blocked_by')
     watched_users = models.ManyToManyField(User, related_name='watched_by')
-    favorited_submissions = models.ManyToManyField(Submission)
+    favorited_submissions = models.ManyToManyField(Submission,
+                                                   related_name='favorited_by')
     user_groups = models.ManyToManyField(Group)
 
     # Profile information
@@ -78,6 +79,7 @@ class Notification(models.Model):
     notification_type = models.CharField(max_length=1)
 
     # The related submission (if applicable)
-    subject_content_type = models.ForeignKey(ContentType)
-    subject_id = models.PositiveIntegerField()
+    subject_content_type = models.ForeignKey(ContentType, blank=True,
+                                             null=True)
+    subject_id = models.PositiveIntegerField(blank=True, null=True)
     subject = GenericForeignKey('subject_content_type', 'subject_id')

@@ -7,9 +7,15 @@ from django.shortcuts import (
     redirect,
     render,
 )
+from django.views.decorators.http import require_POST
+
+from .models import Rating
+from submissions.models import Submission
+from usermgmt.models import Notification
 
 
 @login_required
+@require_POST
 def watch_user(request, username):
     user = get_object_or_404(User, username=username)
     if user.username == request.user.username:
@@ -21,10 +27,16 @@ def watch_user(request, username):
         request.user.profile.save()
         messages.success(request,
                          "You are now watching {}!".format(user.username))
+        notification = Notification(
+            target=user,
+            source=request.user,
+            notification_type=Notification.WATCH)
+        notification.save()
     return redirect(reverse('usermgmt:view_profile', args=(user.username,)))
 
 
 @login_required
+@require_POST
 def unwatch_user(request, username):
     user = get_object_or_404(User, username=username)
     if user.username == request.user.username:
@@ -41,6 +53,7 @@ def unwatch_user(request, username):
 
 
 @login_required
+@require_POST
 def block_user(request, username):
     user = get_object_or_404(User, username=username)
     if user.username == request.user.username:
@@ -84,24 +97,198 @@ def message_user(request, username):
 
 
 @login_required
+@require_POST
 def favorite_submission(request, username=None, submission_id=None,
                         submission_slug=None):
-    pass
+    submission = get_object_or_404(Submission, id=submission_id)
+    reader = request.user
+    author = submission.owner
+    if reader == author:
+        messages.warning(request, "You cannot favorite your own submission.")
+        return redirect(reverse('submissions:view_submission',
+                        kwargs={
+                            'username': username,
+                            'submission_id': submission_id,
+                            'submission_slug': submission_slug,
+                        }))
+    if reader in author.profile.blocked_users.all():
+        messages.error(request, "You cannot favorite this submission, as you "
+                       "have been blocked by the author.")
+        return render(request, 'permission_denied.html', {}, status=403)
+    if submission in reader.profile.favorited_submissions.all():
+        messages.warning(request, "You have already favorited this "
+                         "submission")
+        return redirect(reverse('submissions:view_submission',
+                        kwargs={
+                            'username': username,
+                            'submission_id': submission_id,
+                            'submission_slug': submission_slug,
+                        }))
+    reader.profile.favorited_submissions.add(submission)
+    messages.success(request, "Submission favorited!")
+    notification = Notification(
+        target=author,
+        source=reader,
+        notification_type=Notification.FAVORITE,
+        subject=submission)
+    notification.save()
+    return redirect(reverse('submissions:view_submission',
+                    kwargs={
+                        'username': username,
+                        'submission_id': submission_id,
+                        'submission_slug': submission_slug,
+                    }))
 
 
 @login_required
+@require_POST
 def unfavorite_submission(request, username=None, submission_id=None,
                           submission_slug=None):
-    pass
+    submission = get_object_or_404(Submission, id=submission_id)
+    reader = request.user
+    author = submission.owner
+    if reader == author:
+        messages.warning(request, "You cannot unfavorite your own "
+                         "submission.")
+        return redirect(reverse('submissions:view_submission',
+                        kwargs={
+                            'username': username,
+                            'submission_id': submission_id,
+                            'submission_slug': submission_slug,
+                        }))
+    if reader in author.profile.blocked_users.all():
+        messages.error(request, "You cannot unfavorite this submission, as "
+                       "you have been blocked by the author.")
+        return render(request, 'permission_denied.html', {}, status=403)
+    if submission not in reader.profile.favorited_submissions.all():
+        messages.warning(request, "You haven't yet favorited this "
+                         "submission")
+        return redirect(reverse('submissions:view_submission',
+                        kwargs={
+                            'username': username,
+                            'submission_id': submission_id,
+                            'submission_slug': submission_slug,
+                        }))
+    reader.profile.favorited_submissions.remove(submission)
+    messages.info(request, "Submission removed from favorites.")
+    possible_notifications = Notification.objects.filter(
+        target=author,
+        source=reader,
+        notification_type=Notification.FAVORITE,
+        subject_id=submission_id)
+    if len(possible_notifications) > 0:
+        for notification in possible_notifications:
+            notification.delete()
+    return redirect(reverse('submissions:view_submission',
+                    kwargs={
+                        'username': username,
+                        'submission_id': submission_id,
+                        'submission_slug': submission_slug,
+                    }))
 
 
 @login_required
+@require_POST
 def rate_submission(request, username=None, submission_id=None,
                     submission_slug=None):
-    pass
+    submission = get_object_or_404(Submission, id=submission_id)
+    reader = request.user
+    author = submission.owner
+    try:
+        rating = int(request.POST.get('rating', 0))
+    except ValueError:
+        rating = 0
+    if rating not in range(1, 6):
+        messages.error(request, 'Invalid rating specified.')
+        return redirect(reverse('submissions:view_submission',
+                        kwargs={
+                            'username': username,
+                            'submission_id': submission_id,
+                            'submission_slug': submission_slug,
+                        }))
+    if reader == author:
+        messages.warning(request, "You cannot rate your own submission.")
+        return redirect(reverse('submissions:view_submission',
+                        kwargs={
+                            'username': username,
+                            'submission_id': submission_id,
+                            'submission_slug': submission_slug,
+                        }))
+    if reader in author.profile.blocked_users.all():
+        messages.error(request, "You cannot rate this submission, as "
+                       "you have been blocked by the author.")
+        return render(request, 'permission_denied.html', {}, status=403)
+    try:
+        existing_rating = Rating.objects.get(
+            owner=reader,
+            submission=submission,
+        )
+        existing_rating.rating = rating
+        existing_rating.save()
+        messages.success(request, "Existing rating updated.")
+    except Rating.DoesNotExist:
+        new_rating = Rating(
+            owner=reader,
+            submission=submission,
+            rating=rating,
+        )
+        new_rating.save()
+        messages.success(request, "Submission successfully rated.")
+    notification = Notification(
+        target=author,
+        source=reader,
+        notification_type=Notification.RATING,
+        subject=submission)
+    notification.save()
+    return redirect(reverse('submissions:view_submission',
+                    kwargs={
+                        'username': username,
+                        'submission_id': submission_id,
+                        'submission_slug': submission_slug,
+                    }))
 
 
 @login_required
+@require_POST
 def enjoy_submission(request, username=None, submission_id=None,
                      submission_slug=None):
-    pass
+    submission = get_object_or_404(Submission, id=submission_id)
+    reader = request.user
+    author = submission.owner
+    if reader == author:
+        messages.warning(request, "You cannot add enjoy votes to your own "
+                         "submission.")
+        return redirect(reverse('submissions:view_submission',
+                        kwargs={
+                            'username': username,
+                            'submission_id': submission_id,
+                            'submission_slug': submission_slug,
+                        }))
+    if reader in author.profile.blocked_users.all():
+        messages.error(request, "You cannot add enjoy votes to this "
+                       "submission, as you have been blocked by the author.")
+        return render(request, 'permission_denied.html', {}, status=403)
+    if not submission.can_enjoy:
+        messages.error(request, 'The author has disabled enjoy voting on '
+                       'this submission.')
+        return redirect(reverse('submissions:view_submission',
+                        kwargs={
+                            'username': username,
+                            'submission_id': submission_id,
+                            'submission_slug': submission_slug,
+                        }))
+    submission.enjoy_votes += 1
+    submission.save()
+    messages.success(request, "Enjoy vote added to submission!")
+    notification = Notification(
+        target=author,
+        source=reader,
+        notification_type=Notification.ENJOY,
+        subject=submission)
+    notification.save()
+    return redirect(reverse('submissions:view_submission',
+                    kwargs={
+                        'username': username,
+                        'submission_id': submission_id,
+                        'submission_slug': submission_slug,
+                    }))
