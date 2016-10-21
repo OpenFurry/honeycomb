@@ -268,6 +268,15 @@ def enjoy_submission(request, username=None, submission_id=None,
         messages.error(request, "You cannot add enjoy votes to this "
                        "submission, as you have been blocked by the author.")
         return render(request, 'permission_denied.html', {}, status=403)
+    if not submission.can_enjoy:
+        messages.error(request, 'The author has disabled enjoy voting on '
+                       'this submission.')
+        return redirect(reverse('submissions:view_submission',
+                        kwargs={
+                            'username': username,
+                            'submission_id': submission_id,
+                            'submission_slug': submission_slug,
+                        }))
     submission.enjoy_votes += 1
     submission.save()
     messages.success(request, "Enjoy vote added to submission!")
