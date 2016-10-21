@@ -30,8 +30,7 @@ def watch_user(request, username):
         notification = Notification(
             target=user,
             source=request.user,
-            notification_type=Notification.WATCH,
-        )
+            notification_type=Notification.WATCH)
         notification.save()
     return redirect(reverse('usermgmt:view_profile', args=(user.username,)))
 
@@ -131,8 +130,8 @@ def favorite_submission(request, username=None, submission_id=None,
         target=author,
         source=reader,
         notification_type=Notification.FAVORITE,
-        subject=submission,
-    )
+        subject=submission)
+    notification.save()
     return redirect(reverse('submissions:view_submission',
                     kwargs={
                         'username': username,
@@ -162,7 +161,7 @@ def unfavorite_submission(request, username=None, submission_id=None,
                        "you have been blocked by the author.")
         return render(request, 'permission_denied.html', {}, status=403)
     if submission not in reader.profile.favorited_submissions.all():
-        messages.warning(request, "You have haven't yet favorited this "
+        messages.warning(request, "You haven't yet favorited this "
                          "submission")
         return redirect(reverse('submissions:view_submission',
                         kwargs={
@@ -176,8 +175,7 @@ def unfavorite_submission(request, username=None, submission_id=None,
         target=author,
         source=reader,
         notification_type=Notification.FAVORITE,
-        subject_id=submission_id,
-    )
+        subject_id=submission_id)
     if len(possible_notifications) > 0:
         for notification in possible_notifications:
             notification.delete()
@@ -201,7 +199,7 @@ def rate_submission(request, username=None, submission_id=None,
     except ValueError:
         rating = 0
     if rating not in range(1, 6):
-        message.error(request, 'Invalid rating specified.')
+        messages.error(request, 'Invalid rating specified.')
         return redirect(reverse('submissions:view_submission',
                         kwargs={
                             'username': username,
@@ -240,8 +238,8 @@ def rate_submission(request, username=None, submission_id=None,
         target=author,
         source=reader,
         notification_type=Notification.RATING,
-        subject=submission,
-    )
+        subject=submission)
+    notification.save()
     return redirect(reverse('submissions:view_submission',
                     kwargs={
                         'username': username,
@@ -277,8 +275,8 @@ def enjoy_submission(request, username=None, submission_id=None,
         target=author,
         source=reader,
         notification_type=Notification.ENJOY,
-        subject=submission,
-    )
+        subject=submission)
+    notification.save()
     return redirect(reverse('submissions:view_submission',
                     kwargs={
                         'username': username,
