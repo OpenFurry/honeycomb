@@ -15,7 +15,13 @@ user_urls = [
     url('^message/$', views.message_user, name='message_user'),
 ]
 notification_urls = [
-    url('^$', views.view_notifications, name='view_notifications'),
+    url('^$', views.view_notifications_ab, name='view_notifications'),
+    url('^categories/$', views.view_notifications_categories,
+        name='view_notifications_categories'),
+    url('^timeline/$', views.view_notifications_timeline,
+        name='view_notifications_timeline'),
+    url('^timeline/(?P<page>\d+)/$', views.view_notifications_timeline,
+        name='view_notifications_timeline'),
     url('^remove/$', views.remove_notifications, name='remove_notifications'),
     url('^nuke/$', views.nuke_notifications, name='nuke_notifications'),
 ]

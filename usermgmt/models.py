@@ -92,21 +92,21 @@ class Profile(models.Model):
 
 
 class Notification(models.Model):
+    WATCH = 'W'
     FAVORITE = 'F'
+    MESSAGE = 'M'
     RATING = 'R'
     ENJOY = 'E'
-    WATCH = 'W'
-    MESSAGE = 'M'
     SUBMISSION_COMMENT = 'S'
     COMMENT_REPLY = 'C'
     PROMOTE = 'P'
     HIGHLIGHT = 'H'
     NOTIFICATION_TYPE_CHOICES = (
+        (WATCH, 'Watch'),
+        (MESSAGE, 'Message'),
         (FAVORITE, 'Favorite'),
         (RATING, 'Rating'),
         (ENJOY, 'Enjoy'),
-        (WATCH, 'Watch'),
-        (MESSAGE, 'Message'),
         (SUBMISSION_COMMENT, 'Submission comment'),
         (COMMENT_REPLY, 'Comment reply'),
         (PROMOTE, 'Promote'),
@@ -132,3 +132,6 @@ class Notification(models.Model):
                                              null=True)
     subject_id = models.PositiveIntegerField(blank=True, null=True)
     subject = GenericForeignKey('subject_content_type', 'subject_id')
+
+    class Meta:
+        ordering = ['-ctime']

@@ -454,11 +454,12 @@ class TestNotificationBadges(BaseSocialViewTestCase):
         self.assertContains(response, '<span class="badge">1</span>', count=3)
 
 
-class TestViewNotificationsView(BaseSocialViewTestCase):
+class TestViewNotificationsCategoriesView(BaseSocialViewTestCase):
     def test_no_notifications(self):
         self.client.login(username='foo',
                           password='a good password')
-        response = self.client.get(reverse('social:view_notifications'))
+        response = self.client.get(reverse(
+            'social:view_notifications_categories'))
         self.assertContains(response, '<h2>No notifications <small>Lucky '
                             'you!</small></h2>')
 
@@ -525,7 +526,8 @@ class TestViewNotificationsView(BaseSocialViewTestCase):
         ).save()
         self.client.login(username='foo',
                           password='a good password')
-        response = self.client.get(reverse('social:view_notifications'))
+        response = self.client.get(reverse(
+            'social:view_notifications_categories'))
         self.assertContains(response, '<h2>Messages</h2>')
         self.assertContains(response, '<h2>User Notifications</h2>')
         self.assertContains(response, '<h2>Submission Notifications</h2>')
@@ -544,9 +546,65 @@ class TestViewNotificationsView(BaseSocialViewTestCase):
         self.foo.profile.save()
         self.client.login(username='foo',
                           password='a good password')
-        response = self.client.get(reverse('social:view_notifications'))
+        response = self.client.get(reverse(
+            'social:view_notifications_categories'))
         self.assertContains(response, 'You have 5 notifications that have '
                             'expired.')
+
+
+class TestViewNotificationsTimelineView(BaseSocialViewTestCase):
+    def test_no_notifications(self):
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.get(reverse(
+            'social:view_notifications_timeline'))
+        self.assertContains(response, '<h2>No notifications <small>Lucky '
+                            'you!</small></h2>')
+
+    def test_notifications(self):
+        Notification(
+            target=self.foo,
+            source=self.bar,
+            notification_type=Notification.WATCH,
+        ).save()
+        Notification(
+            target=self.foo,
+            source=self.bar,
+            subject=self.submission,
+            notification_type=Notification.FAVORITE,
+        ).save()
+        Notification(
+            target=self.foo,
+            source=self.bar,
+            notification_type=Notification.MESSAGE,
+        ).save()
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.get(reverse(
+            'social:view_notifications_timeline'))
+        self.assertContains(response, '"list-group-item striped-item"',
+                            count=3)
+
+    def test_notifications_paginate(self):
+        for i in range(1, 100):
+            Notification(
+                target=self.foo,
+                source=self.bar,
+                subject=self.submission,
+                notification_type=Notification.ENJOY,
+            ).save()
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.get(reverse(
+            'social:view_notifications_timeline'))
+        self.assertContains(response, '>(current)<')
+        self.assertContains(response, '2</a>')
+        response = self.client.get(reverse(
+            'social:view_notifications_timeline', kwargs={
+                'page': 50,
+            }))
+        self.assertContains(response, '>(current)<')
+        self.assertContains(response, '1</a>')
 
 
 class TestRemoveNotificationsView(BaseSocialViewTestCase):

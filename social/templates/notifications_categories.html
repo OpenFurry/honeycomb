@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load humanize %}
 
 {% block content %}
 
@@ -18,7 +17,9 @@
             {% csrf_token %}
             <ul class="list-unstyled">
                 {% for notification in notifications.Message %}
-                    <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> sent you a direct message.  View the thread <a href="{% url 'social:message_user' notification.source.username %}">here</a></label>  <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                    <li><label>
+                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                    </label></li>
                 {% endfor %}
             </ul>
             <button type="button">Select all</button>
@@ -35,7 +36,9 @@
             {% csrf_token %}
             <ul class="list-unstyled">
                 {% for notification in notifications.Watch %}
-                    <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> followed you</label>  <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                    <li><label>
+                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                    </label></li>
                 {% endfor %}
             </ul>
             <button type="button">Select all</button>
@@ -56,7 +59,9 @@
                     {% csrf_token %}
                     <ul class="list-unstyled">
                         {% for notification in notifications.Favorite %}
-                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> favorited your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject.id %}">{{ notification.subject.title }}</a></label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                            <li><label>
+                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                            </label></li>
                         {% endfor %}
                     </ul>
                     <button type="button">Select all</button>
@@ -73,7 +78,9 @@
                     {% csrf_token %}
                     <ul class="list-unstyled">
                         {% for notification in notifications.Rating %}
-                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> rated your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject.submission.id %}">{{ notification.subject.submission.title }}</a> {{ notification.subject.get_stars|safe }}</label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                            <li><label>
+                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                            </label></li>
                         {% endfor %}
                     </ul>
                     <button type="button">Select all</button>
@@ -90,7 +97,9 @@
                     {% csrf_token %}
                     <ul class="list-unstyled">
                         {% for notification in notifications.Enjoy %}
-                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> read and enjoyed your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">{{ notification.subject.title }}</a></label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                            <li><label>
+                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                            </label></li>
                         {% endfor %}
                     </ul>
                     <button type="button">Select all</button>
@@ -107,7 +116,9 @@
                     {% csrf_token %}
                     <ul class="list-unstyled">
                         {% for notification in notifications.Submission_comment %}
-                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> commented on your submission <a href="{{ notification.subject.url }}">{{ notification.subject.object_model.title }}</a></label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                            <li><label>
+                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                            </label></li>
                         {% endfor %}
                     </ul>
                     <button type="button">Select all</button>
@@ -124,7 +135,9 @@
                     {% csrf_token %}
                     <ul class="list-unstyled">
                         {% for notification in notifications.Comment_reply %}
-                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> replied to your comment on <a href="{{ notification.subject.url }}">{{ notification.subject.title }}</a></label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                            <li><label>
+                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                            </label></li>
                         {% endfor %}
                     </ul>
                     <button type="button">Select all</button>
@@ -141,7 +154,9 @@
                     {% csrf_token %}
                     <ul class="list-unstyled">
                         {% for notification in notifications.Promote %}
-                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; Your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">{{ notification.subject.title }}</a> was promoted</label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                            <li><label>
+                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                            </label></li>
                         {% endfor %}
                     </ul>
                     <button type="button">Select all</button>
@@ -158,7 +173,9 @@
                     {% csrf_token %}
                     <ul class="list-unstyled">
                         {% for notification in notifications.Highlight %}
-                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> highlighted your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">{{ notification.subject.title }}</a></label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                            <li><label>
+                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                            </label></li>
                         {% endfor %}
                     </ul>
                     <button type="button">Select all</button>

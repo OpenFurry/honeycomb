@@ -49,8 +49,8 @@ body {
     display: inline;
 }
 
-.striped-results:nth-child(odd) .result-row {
-    background-color: #f6f6f6;
+.striped-item:nth-of-type(odd) {
+    background-color: #f8f8f8;
 }
 
 .notifications {

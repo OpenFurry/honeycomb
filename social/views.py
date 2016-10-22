@@ -1,6 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.core.paginator import (
+    EmptyPage,
+    PageNotAnInteger,
+    Paginator,
+)
 from django.core.urlresolvers import reverse
 from django.shortcuts import (
     get_object_or_404,
@@ -295,10 +300,31 @@ def enjoy_submission(request, username=None, submission_id=None,
 
 
 @login_required
-def view_notifications(request):
-    return render(request, 'notifications.html', {
+def view_notifications_ab(request):
+    view = 'categories' if request.user.id % 2 == 0 else 'timeline'
+    return redirect(reverse('social:view_notifications_{}'.format(view)))
+
+
+@login_required
+def view_notifications_categories(request):
+    return render(request, 'notifications_categories.html', {
         'title': 'Notifications',
         'notifications': request.user.profile.get_notifications_sorted(),
+    })
+
+
+@login_required
+def view_notifications_timeline(request, page=1):
+    paginator = Paginator(request.user.notification_set.all(), 50)
+    try:
+        notifications = paginator.page(page)
+    except PageNotAnInteger:
+        notifications = paginator.page(1)
+    except EmptyPage:
+        notifications = paginator.page(paginator.num_pages)
+    return render(request, 'notifications_timeline.html', {
+        'title': 'Notifications',
+        'notifications': notifications,
     })
 
 

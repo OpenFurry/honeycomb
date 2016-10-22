@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if notifications|length > 0 %}
+    <ul class="list-group striped-list">
+        {% for notification in notifications %}
+            <li class="list-group-item striped-item">
+                {% include 'notification-snippet.html' %}
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <nav aria-label="Notification pages">
+                <ul class="pagination">
+                    {% if notifications.has_previous %}
+                        <li>
+                            <a href="{% url 'social:view_notifications_timeline' page=notifications.previous_page_number %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled"><span aria-hidden="true">&laquo;</span></li>
+                    {% endif %}
+                    {% for page in notifications.paginator.page_range %}
+                        {% if notifications.number == page %}
+                            <li class="active"><a href="{% url 'social:view_notifications_timeline' page=page %}">{{ page }} <span class="sr-only">(current)</span></a></li>
+                        {% else %}
+                            <li><a href="{% url 'social:view_notifications_timeline' page=page %}">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if notifications.has_next %}
+                        <li>
+                            <a href="{% url 'social:view_notifications_timeline' page=notifications.next_page_number %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled"><span aria-hidden="true">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% else %}
+    <h2>No notifications <small>Lucky you!</small></h2>
+{% endif %}
+{% endblock %}

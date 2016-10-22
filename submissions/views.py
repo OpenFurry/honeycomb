@@ -50,10 +50,8 @@ def list_user_submissions(request, username=None, page=None):
         submissions = paginator.page(page)
     except PageNotAnInteger:
         submissions = paginator.page(1)
-        page = 1
     except EmptyPage:
         submissions = paginator.page(paginator.num_pages)
-        page = paginator.num_pages
     return render(request, 'list_submissions.html',
                   {
                       'title': "{}'s submissions".format(
