@@ -49,8 +49,19 @@ body {
     display: inline;
 }
 
-.striped-results:nth-child(odd) .result-row {
-    background-color: #f6f6f6;
+.striped-item:nth-of-type(odd) {
+    background-color: #f8f8f8;
+}
+
+.notifications {
+    margin-left: 1em;
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+    border-bottom: 1px dotted #888;
+}
+
+.notifications.no-bottom-border {
+    border-bottom: none;
 }
 
 textarea {

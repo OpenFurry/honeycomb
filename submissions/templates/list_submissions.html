@@ -33,11 +33,9 @@
     </div>
 </div>
 {% for submission in submissions %}
-    <div class="striped-results">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2 result-row">
-                {% include 'submission-list-snippet.html' with submission=submission author=author %}
-            </div>
+    <div class="row striped-item">
+        <div class="col-md-8 col-md-offset-2">
+            {% include 'submission-list-snippet.html' with submission=submission author=author %}
         </div>
     </div>
 {% endfor %}

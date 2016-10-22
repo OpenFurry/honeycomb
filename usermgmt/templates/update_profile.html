@@ -1,9 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form method="post">
-    {% csrf_token %}
-    {% include "registration/form-snippet.html" with form=form %}
-    <input type="submit" value="Update profile" />
-</form>
+<div class="row">
+    <div class="col-md-8">
+        <form method="post">
+            {% csrf_token %}
+            {% include "registration/form-snippet.html" with form=form %}
+            <input type="submit" value="Update profile" />
+        </form>
+    </div>
+    <div class="col-md-4">
+        <p>Flags TODO</p>
+        <p>Attributes TODO</p>
+    </div>
+</div>
 {% endblock %}

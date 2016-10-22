@@ -1,0 +1,93 @@
+{% load humanize %}
+{% if notification.notification_type == 'W' %}
+    <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.profile.get_display_name }}
+    </a> followed you
+    <em>
+        <abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">
+            {{ notification.ctime|naturaltime }}
+        </abbr>
+    </em>
+{% elif notification.notification_type == 'F' %}
+    <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.profile.get_display_name }}
+    </a> favorited your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject.id %}">{{ notification.subject.title }}</a>
+    <em>
+        <abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">
+            {{ notification.ctime|naturaltime }}
+        </abbr>
+    </em>
+{% elif notification.notification_type == 'M' %}
+    <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.profile.get_display_name }}
+    </a> sent you a direct message.  View the thread <a href="{% url 'social:message_user' notification.source.username %}">here</a>
+    <em>
+        <abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">
+            {{ notification.ctime|naturaltime }}
+        </abbr>
+    </em>
+{% elif notification.notification_type == 'R' %}
+    <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.profile.get_display_name }}
+    </a> rated your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject.submission.id %}">
+        {{ notification.subject.submission.title }}
+    </a> {{ notification.subject.get_stars|safe }}
+    <em>
+        <abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">
+            {{ notification.ctime|naturaltime }}
+        </abbr>
+    </em>
+{% elif notification.notification_type == 'E' %}
+    <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.profile.get_display_name }}
+    </a> read and enjoyed your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">
+        {{ notification.subject.title }}
+    </a>
+    <em>
+        <abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">
+            {{ notification.ctime|naturaltime }}
+        </abbr>
+    </em>
+{% elif notification.notification_type == 'S' %}
+    <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.profile.get_display_name }}
+    </a> commented on your submission <a href="{{ notification.subject.url }}">
+        {{ notification.subject.object_model.title }}
+    </a>
+    <em>
+        <abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">
+            {{ notification.ctime|naturaltime }}
+        </abbr>
+    </em>
+{% elif notification.notification_type == 'C' %}
+    <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.profile.get_display_name }}
+    </a> replied to your comment on <a href="{{ notification.subject.url }}">
+        {{ notification.subject.title }}
+    </a>
+    <em>
+        <abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">
+            {{ notification.ctime|naturaltime }}
+        </abbr>
+    </em>
+{% elif notification.notification_type == 'P' %}
+    Your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">
+        {{ notification.subject.title }}
+    </a> was promoted
+    <em>
+        <abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">
+            {{ notification.ctime|naturaltime }}
+        </abbr>
+    </em>
+{% elif notification.notification_type == 'H' %}
+    <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.profile.get_display_name }}
+    </a> highlighted your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">
+        {{ notification.subject.title }}
+    </a>
+    <em>
+        <abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">
+            {{ notification.ctime|naturaltime }}
+        </abbr>
+    </em>
+{% endif %}

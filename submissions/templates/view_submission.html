@@ -42,23 +42,23 @@
                 <div class="panel-body text-center">
                     <form action="rate/" method="post" class="inline">
                         {% csrf_token %}
-                        <button class="link-button" name="rating" value="1">&#x2606;</button>
-                        <button class="link-button" name="rating"  value="2">&#x2606;</button>
-                        <button class="link-button" name="rating"  value="3">&#x2606;</button>
-                        <button class="link-button" name="rating"  value="4">&#x2606;</button>
-                        <button class="link-button" name="rating"  value="5">&#x2606;</button>
+                        <button class="link-button" name="rating" value="1" type="submit">&#x2606;</button>
+                        <button class="link-button" name="rating"  value="2" type="submit">&#x2606;</button>
+                        <button class="link-button" name="rating"  value="3" type="submit">&#x2606;</button>
+                        <button class="link-button" name="rating"  value="4" type="submit">&#x2606;</button>
+                        <button class="link-button" name="rating"  value="5" type="submit">&#x2606;</button>
                     </form> -
                     {% if submission in user.profile.favorited_submissions.all %}
                         <a><form action="unfavorite/" method="post" class="inline">
                             {% csrf_token %}
-                            <button class="link-button">
+                            <button class="link-button" type="submit">
                                 Unfavorite
                             </button>
                         </form></a>
                     {% else %}
                         <a><form action="favorite/" method="post" class="inline">
                             {% csrf_token %}
-                            <button class="link-button">
+                            <button class="link-button" type="submit">
                                 Favorite
                             </button>
                         </form></a>
@@ -66,7 +66,7 @@
                     {% if submission.can_enjoy %}
                         <a><form action="enjoy/" method="post" class="inline">
                             {% csrf_token %}
-                            <button class="link-button">
+                            <button class="link-button" type="submit">
                                 I just read and enjoyed this submission!
                             </button>
                         </form></a>

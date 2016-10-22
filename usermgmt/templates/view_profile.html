@@ -20,7 +20,7 @@
                                 {% if watched %}
                                     <li><a><form action="{% url 'social:unwatch_user' user_profile.username%}" method="post">
                                         {% csrf_token %}
-                                        <button class="link-button">
+                                        <button class="link-button" type="submit">
                                             Unfollow user
                                         </button>
                                     </form></a></li>
@@ -28,7 +28,7 @@
                                     {% if not blocked %}
                                         <li><a><form action="{% url 'social:watch_user' user_profile.username %}" method="post">
                                             {% csrf_token %}
-                                            <button class="link-button">
+                                            <button class="link-button" type="submit">
                                                 Follow user
                                             </button>
                                         </form></a></li>
@@ -37,20 +37,20 @@
                                 {% if blocked %}
                                     <li><a><form action="{% url 'social:unblock_user' user_profile.username %}" method="post">
                                         {% csrf_token %}
-                                        <button class="link-button">
+                                        <button class="link-button" type="submit">
                                             Unblock user
                                         </button>
                                     </form></a></li>
                                 {% else %}
                                     <li><a><form action="{% url 'social:block_user' user_profile.username %}" method="post">
                                         {% csrf_token %}
-                                        <button class="link-button">
+                                        <button class="link-button" type="submit">
                                             Block user
                                         </button>
                                     </form></a></li>
                                     <li><a><form action="{% url 'social:message_user' user_profile.username %}" method="post">
                                         {% csrf_token %}
-                                        <button class="link-button">
+                                        <button class="link-button" type="submit">
                                             Message user
                                         </button>
                                     </form></a></li>

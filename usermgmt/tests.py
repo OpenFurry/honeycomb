@@ -81,7 +81,8 @@ class ViewProfileTests(TestCase):
         cls.foo = User.objects.create_user('foo', 'foo@example.com',
                                            'a good password')
         cls.foo.profile = Profile(profile_raw='Wow!',
-                                  display_name='Mx Foo Bar')
+                                  display_name='Mx Foo Bar',
+                                  attributes='twitter=mx_foo_bar')
         cls.foo.profile.save()
         cls.bar = User.objects.create_user('bar', 'bar@example.com',
                                            'another good password')
@@ -92,6 +93,7 @@ class ViewProfileTests(TestCase):
         response = self.client.get(reverse('usermgmt:view_profile',
                                            args=('foo',)))
         self.assertContains(response, 'Wow!')
+        self.assertContains(response, '<dt>Twitter account</dt>')
 
     def test_page_has_social_if_logged_in_and_other_user(self):
         self.client.login(username='foo', password='a good password')

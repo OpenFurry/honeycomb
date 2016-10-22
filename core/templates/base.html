@@ -42,41 +42,71 @@
                         </div>
                     </form>
                     <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            {% if user.is_authenticated %}
+                        {% if user.is_authenticated %}
+                            <li>
                                 <a href="{% url 'usermgmt:view_profile' user.username %}">~{{ user.username }}</a>
-                            {% endif %}
-                        </li>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{% url 'login' %}">Log in</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'usermgmt:register' %}">Register</a>
+                            </li>
+                        {% endif %}
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                {% if user.is_authenticated %}
-                                <li><a href="#">Read</a></li>
-                                <li><a href="{% url 'submissions:submit' %}">Write</a></li>
-                                <li><a href="#">Notifications</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li class="dropdown-header">User management</li>
-                                <li><a href="{% url 'usermgmt:update_profile' %}">Profile</a></li>
-                                <li><a href="{% url 'logout' %}">Log out</a></li>
-                                {% else %}
-                                    <li>
-                                        <form method="post" action="{% url 'login' %}" class="dropdown-login">
-                                            {% csrf_token %}
-                                            <div class="form-group">
-                                                <label for="dropdown-username">Username:</label>
-                                                <input class="form-control" id="dropdown-password" type="text" name="username" placeholder="Username" />
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="dropdown-password">Password:</label>
-                                                <input class="form-control" id="dropdown-password" type="password" name="password" placeholder="Password"/>
-                                            </div>
-                                            <input type="hidden" name="next" value="{{ request.path }}" />
-                                            <input type="submit" value="Log in" />
-                                        </form>
-                                    </li>
-                                    <li role="separator" class="divider"></li>
-                                    <li><a href="{% url 'usermgmt:register' %}">Register</a></li>
-                                {% endif %}
+                            {% with notifications=user.profile.get_notifications_counts %}
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="badge">{% if notifications.user_notifications or notifications.submission_notifications or notifications.messages %}{{ notifications.user_notifications|add:notifications.submission_notifications|add:notifications.messages }}{% endif %}</span> <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    {% if user.is_authenticated %}
+                                        <li><a href="#"><span class="glyphicon glyphicon-book"></span> Read</a></li>
+                                        <li><a href="{% url 'submissions:submit' %}"><span class="glyphicon glyphicon-pencil"></span> Write</a></li>
+
+                                        <li role="separator" class="divider"></li>
+                                        <li class="dropdown-header">Notifications</li>
+                                        <li>
+                                            <a href="{% url 'social:view_notifications' %}#users">
+                                                <span class="glyphicon glyphicon-user"></span> User notifications
+                                                <span class="badge">{% if notifications.user_notifications %}{{ notifications.user_notifications }}{% endif %}</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'social:view_notifications' %}#submissions">
+                                                <span class="glyphicon glyphicon-file"></span> Submission notifications
+                                                <span class="badge">{% if notifications.submission_notifications %}{{ notifications.submission_notifications }}{% endif %}</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'social:view_notifications' %}#messages">
+                                                <span class="glyphicon glyphicon-envelope"></span> Messages
+                                                <span class="badge">{% if notifications.messages %}{{ notifications.messages }}{% endif %}</span>
+                                            </a>
+                                        </li>
+
+                                        <li role="separator" class="divider"></li>
+                                        <li class="dropdown-header">User management</li>
+                                        <li><a href="{% url 'usermgmt:update_profile' %}"><span class="glyphicon glyphicon-check"></span> Profile</a></li>
+                                        <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-eject"></span> Log out</a></li>
+                                    {% else %}
+                                        <li>
+                                            <form method="post" action="{% url 'login' %}" class="dropdown-login">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label for="dropdown-username">Username:</label>
+                                                    <input class="form-control" id="dropdown-password" type="text" name="username" placeholder="Username" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="dropdown-password">Password:</label>
+                                                    <input class="form-control" id="dropdown-password" type="password" name="password" placeholder="Password"/>
+                                                </div>
+                                                <input type="hidden" name="next" value="{{ request.path }}" />
+                                                <input type="submit" value="Log in" />
+                                            </form>
+                                        </li>
+                                        <li role="separator" class="divider"></li>
+                                        <li><a href="{% url 'usermgmt:register' %}">Register</a></li>
+                                    {% endif %}
+                                {% endwith %}
                             </ul>
                         </li>
                     </ul>
@@ -105,6 +135,7 @@
             <footer class="row">
                 <div class="col-md-12">
                     <p>{# TODO #}Powered by <a href="https://github.com/OpenFurry/honeycomb" target="_blank">&#x2b21; Honeycomb</a>, an <a href="http://openfurry.org" target="_blank">OpenFurry</a> project.  &copy; OpenFurry, 2016.  Source released under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.  All content is &copy; the creators, all rights reserved unless otherwise specified.</p>
+                    <p>See software credits <a href="#">here.</a> (incl links to http://glyphicons.com/, http://getbootstrap.com/, https://www.djangoproject.com/, https://django-nose.readthedocs.io/en/latest/, https://github.com/alex/django-taggit, https://furrywritersguild.com)</p>
                 </div>
             </footer>
         </section>
