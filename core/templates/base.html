@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load git_revno %}
 
 <html>
     <head>
@@ -134,7 +135,7 @@
             </section>
             <footer class="row">
                 <div class="col-md-12">
-                    <p>{# TODO #}Powered by <a href="https://github.com/OpenFurry/honeycomb" target="_blank">&#x2b21; Honeycomb</a>, an <a href="http://openfurry.org" target="_blank">OpenFurry</a> project.  &copy; OpenFurry, 2016.  Source released under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.  All content is &copy; the creators, all rights reserved unless otherwise specified.</p>
+                    <p>{# TODO #}Powered by <a href="https://github.com/OpenFurry/honeycomb" target="_blank">&#x2b21; Honeycomb</a> <span class="text-muted">({% git_revno %})</span>, an <a href="http://openfurry.org" target="_blank">OpenFurry</a> project.  &copy; OpenFurry, 2016.  Source released under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.  All content is &copy; the creators, all rights reserved unless otherwise specified.</p>
                     <p>See software credits <a href="#">here.</a> (incl links to http://glyphicons.com/, http://getbootstrap.com/, https://www.djangoproject.com/, https://django-nose.readthedocs.io/en/latest/, https://github.com/alex/django-taggit, https://furrywritersguild.com)</p>
                 </div>
             </footer>
