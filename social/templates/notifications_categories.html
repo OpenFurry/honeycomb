@@ -2,6 +2,14 @@
 
 {% block content %}
 
+{% if notifications.count > 0 or user.profile.expired_notifications > 0 %}
+    {% if user.id|divisibleby:2 %}
+        <div class="alert alert-info">
+            Honeycomb is currently conducting A/B testing with notification pages.  You've been selected for viewing notifications in category style.  If you'd like to view notifications as a timeline, you may do so <a href="{% url 'social:view_notifications_timeline' %}">here</a>.  Have feedback? Comment or vote <a href="https://github.com/OpenFurry/honeycomb/issues/11" target="_blank">here</a>.
+        </div>
+    {% endif %}
+{% endif %}
+
 {% if user.profile.expired_notifications > 0 %}
     <h2>Expired notifications</h2>
     <div class="alert alert-info">
