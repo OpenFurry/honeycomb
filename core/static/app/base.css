@@ -53,6 +53,17 @@ body {
     background-color: #f6f6f6;
 }
 
+.notifications {
+    margin-left: 1em;
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+    border-bottom: 1px dotted #888;
+}
+
+.notifications.no-bottom-border {
+    border-bottom: none;
+}
+
 textarea {
     font-family: monospace;
 }

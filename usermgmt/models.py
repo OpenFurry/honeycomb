@@ -36,6 +36,7 @@ class Profile(models.Model):
     # Additional settings
     can_see_adult_submissions = models.BooleanField(default=True)
     results_per_page = models.PositiveIntegerField(default=25)
+    expired_notifications = models.PositiveIntegerField(default=0)
 
     def get_display_name(self):
         return self.display_name if self.display_name else self.user.username
@@ -45,6 +46,49 @@ class Profile(models.Model):
             strip_tags(self.profile_raw),
             extension=['markdown.extensions.extra'])
         super(Profile, self).save(*args, **kwargs)
+
+    def get_notifications_counts(self):
+        notifications = self.user.notification_set.all()
+        counts = {
+            'user_notifications': 0,
+            'submission_notifications': 0,
+            'messages': 0,
+        }
+        for notification in notifications:
+            if notification.notification_type == Notification.WATCH:
+                counts['user_notifications'] += 1
+            elif notification.notification_type == Notification.MESSAGE:
+                counts['messages'] += 1
+            else:
+                counts['submission_notifications'] += 1
+        return counts
+
+    def get_notifications_sorted(self):
+        notifications = self.user.notification_set.all()
+        sorted_notifications = {
+            'Watch': [],
+            'Favorite': [],
+            'Rating': [],
+            'Enjoy': [],
+            'Submission_comment': [],
+            'Comment_reply': [],
+            'Promote': [],
+            'Highlight': [],
+            'Message': [],
+            'submission_notification_count': 0,
+            'count': 0,
+        }
+
+        for notification in notifications:
+            sorted_notifications[
+                notification.get_notification_type_display().replace(
+                    ' ', '_')].append(
+                    notification)
+            sorted_notifications['count'] += 1
+            if notification.notification_type not in \
+                    [Notification.WATCH, Notification.MESSAGE]:
+                sorted_notifications['submission_notification_count'] += 1
+        return sorted_notifications
 
 
 class Notification(models.Model):
@@ -63,7 +107,7 @@ class Notification(models.Model):
         (ENJOY, 'Enjoy'),
         (WATCH, 'Watch'),
         (MESSAGE, 'Message'),
-        (SUBMISSION_COMMENT, 'Submission omment'),
+        (SUBMISSION_COMMENT, 'Submission comment'),
         (COMMENT_REPLY, 'Comment reply'),
         (PROMOTE, 'Promote'),
         (HIGHLIGHT, 'Highlight'),
@@ -73,10 +117,15 @@ class Notification(models.Model):
     target = models.ForeignKey(User)
 
     # The user doing the action generating the notification
-    source = models.ForeignKey(User, related_name='notification_source')
+    source = models.ForeignKey(User, related_name='notification_source',
+                               blank=True, null=True)
 
     # The type of notification
-    notification_type = models.CharField(max_length=1)
+    notification_type = models.CharField(max_length=1,
+                                         choices=NOTIFICATION_TYPE_CHOICES)
+
+    # The date of creation
+    ctime = models.DateTimeField(auto_now_add=True)
 
     # The related submission (if applicable)
     subject_content_type = models.ForeignKey(ContentType, blank=True,

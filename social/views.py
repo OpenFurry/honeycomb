@@ -219,26 +219,26 @@ def rate_submission(request, username=None, submission_id=None,
                        "you have been blocked by the author.")
         return render(request, 'permission_denied.html', {}, status=403)
     try:
-        existing_rating = Rating.objects.get(
+        rating_object = Rating.objects.get(
             owner=reader,
             submission=submission,
         )
-        existing_rating.rating = rating
-        existing_rating.save()
+        rating_object.rating = rating
+        rating_object.save()
         messages.success(request, "Existing rating updated.")
     except Rating.DoesNotExist:
-        new_rating = Rating(
+        rating_object = Rating(
             owner=reader,
             submission=submission,
             rating=rating,
         )
-        new_rating.save()
+        rating_object.save()
         messages.success(request, "Submission successfully rated.")
     notification = Notification(
         target=author,
         source=reader,
         notification_type=Notification.RATING,
-        subject=submission)
+        subject=rating_object)
     notification.save()
     return redirect(reverse('submissions:view_submission',
                     kwargs={
@@ -292,3 +292,45 @@ def enjoy_submission(request, username=None, submission_id=None,
                         'submission_id': submission_id,
                         'submission_slug': submission_slug,
                     }))
+
+
+@login_required
+def view_notifications(request):
+    return render(request, 'notifications.html', {
+        'title': 'Notifications',
+        'notifications': request.user.profile.get_notifications_sorted(),
+    })
+
+
+@login_required
+@require_POST
+def remove_notifications(request):
+    for notification_id in request.POST.getlist('notification_id', []):
+        try:
+            notification = Notification.objects.get(pk=notification_id)
+            if notification.target == request.user:
+                notification.delete()
+            else:
+                messages.error(request, 'One or more of the notifications '
+                               'you attempted to delete does not belong to '
+                               'you.  Some notifications may have been '
+                               'deleted successfully, however.')
+                return render(request, 'permission_denied.html', {
+                    'title': 'Permission denied',
+                }, status=403)
+        except Notification.DoesNotExist:
+            continue
+    messages.success(request, 'Notifications deleted.')
+    return redirect(reverse('social:view_notifications'))
+
+
+@login_required
+@require_POST
+def nuke_notifications(request):
+    notifications = Notification.objects.filter(target=request.user)
+    for notification in notifications:
+        notification.delete()
+    request.user.profile.expired_notifications = 0
+    request.user.profile.save()
+    messages.success(request, 'All notifications nuked.')
+    return redirect(reverse('social:view_notifications'))

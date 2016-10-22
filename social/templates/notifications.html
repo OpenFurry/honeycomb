@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+{% if user.profile.expired_notifications > 0 %}
+    <h2>Expired notifications</h2>
+    <div class="alert alert-info">
+        <p><strong>You have {{ user.profile.expired_notifications }} notifications that have expired.</strong>  After six months, notifications expire in order to keep the database from getting too cluttered.  Unfortunately, it is not possible to see what these notifications are after they have expired.</p>
+        <p>To dismiss this message, click "Nuke all notifications" at the bototm of the page</p>
+    </div>
+{% endif %}
+
+{% if notifications.Message|length > 0 %}
+    <h2>Messages</h2>
+    <div class="notifications favorite-notifications">
+        <form action="{% url 'social:remove_notifications' %}" method="post">
+            {% csrf_token %}
+            <ul class="list-unstyled">
+                {% for notification in notifications.Message %}
+                    <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> sent you a direct message.  View the thread <a href="{% url 'social:message_user' notification.source.username %}">here</a></label>  <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                {% endfor %}
+            </ul>
+            <button type="button">Select all</button>
+            <button type="button">Invert selection</button>
+            <button type="submit">Remove selected</button>
+        </form>
+    </div>
+{% endif %}
+
+{% if notifications.Watch|length > 0 %}
+    <h2>User Notifications</h2>
+    <div class="notifications watch-notifications">
+        <form action="{% url 'social:remove_notifications' %}" method="post">
+            {% csrf_token %}
+            <ul class="list-unstyled">
+                {% for notification in notifications.Watch %}
+                    <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> followed you</label>  <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                {% endfor %}
+            </ul>
+            <button type="button">Select all</button>
+            <button type="button">Invert selection</button>
+            <button type="submit">Remove selected</button>
+        </form>
+    </div>
+{% endif %}
+
+{% if notifications.submission_notification_count > 0 %}
+    <h2>Submission Notifications</h2>
+    <div class="notifications no-bottom-border">
+
+        {% if notifications.Favorite|length > 0 %}
+            <h3>Favorites</h3>
+            <div class="notifications favorite-notifications">
+                <form action="{% url 'social:remove_notifications' %}" method="post">
+                    {% csrf_token %}
+                    <ul class="list-unstyled">
+                        {% for notification in notifications.Favorite %}
+                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> favorited your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject.id %}">{{ notification.subject.title }}</a></label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button">Select all</button>
+                    <button type="button">Invert selection</button>
+                    <button type="submit">Remove selected</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if notifications.Rating|length > 0 %}
+            <h3>Ratings</h3>
+            <div class="notifications favorite-notifications">
+                <form action="{% url 'social:remove_notifications' %}" method="post">
+                    {% csrf_token %}
+                    <ul class="list-unstyled">
+                        {% for notification in notifications.Rating %}
+                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> rated your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject.submission.id %}">{{ notification.subject.submission.title }}</a> {{ notification.subject.get_stars|safe }}</label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button">Select all</button>
+                    <button type="button">Invert selection</button>
+                    <button type="submit">Remove selected</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if notifications.Enjoy|length > 0 %}
+            <h3>Enjoy votes</h3>
+            <div class="notifications favorite-notifications">
+                <form action="{% url 'social:remove_notifications' %}" method="post">
+                    {% csrf_token %}
+                    <ul class="list-unstyled">
+                        {% for notification in notifications.Enjoy %}
+                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> read and enjoyed your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">{{ notification.subject.title }}</a></label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button">Select all</button>
+                    <button type="button">Invert selection</button>
+                    <button type="submit">Remove selected</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if notifications.Submission_comment|length > 0 %}
+            <h3>Submission comments</h3>
+            <div class="notifications favorite-notifications">
+                <form action="{% url 'social:remove_notifications' %}" method="post">
+                    {% csrf_token %}
+                    <ul class="list-unstyled">
+                        {% for notification in notifications.Submission_comment %}
+                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> commented on your submission <a href="{{ notification.subject.url }}">{{ notification.subject.object_model.title }}</a></label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button">Select all</button>
+                    <button type="button">Invert selection</button>
+                    <button type="submit">Remove selected</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if notifications.Comment_reply|length > 0 %}
+            <h3>Comment replies</h3>
+            <div class="notifications favorite-notifications">
+                <form action="{% url 'social:remove_notifications' %}" method="post">
+                    {% csrf_token %}
+                    <ul class="list-unstyled">
+                        {% for notification in notifications.Comment_reply %}
+                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> replied to your comment on <a href="{{ notification.subject.url }}">{{ notification.subject.title }}</a></label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button">Select all</button>
+                    <button type="button">Invert selection</button>
+                    <button type="submit">Remove selected</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if notifications.Promote|length > 0 %}
+            <h3>Promotions</h3>
+            <div class="notifications favorite-notifications">
+                <form action="{% url 'social:remove_notifications' %}" method="post">
+                    {% csrf_token %}
+                    <ul class="list-unstyled">
+                        {% for notification in notifications.Promote %}
+                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; Your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">{{ notification.subject.title }}</a> was promoted</label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button">Select all</button>
+                    <button type="button">Invert selection</button>
+                    <button type="submit">Remove selected</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if notifications.Highlight|length > 0 %}
+            <h3>Highlights</h3>
+            <div class="notifications favorite-notifications">
+                <form action="{% url 'social:remove_notifications' %}" method="post">
+                    {% csrf_token %}
+                    <ul class="list-unstyled">
+                        {% for notification in notifications.Highlight %}
+                            <li><label><input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; <a href="{% url 'usermgmt:view_profile' notification.source.username %}">{{ notification.source.profile.get_display_name }}</a> highlighted your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">{{ notification.subject.title }}</a></label> <em><abbr data-toggle="tooltip" title="{{ notification.ctime|date:'r' }}">{{ notification.ctime|naturaltime }}</abbr></em></li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button">Select all</button>
+                    <button type="button">Invert selection</button>
+                    <button type="submit">Remove selected</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if notifications.count > 0 or user.profile.expired_notifications > 0 %}
+    <form action="{% url 'social:nuke_notifications' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Nuke all notifications</button>
+    </form>
+{% else %}
+    <h2>No notifications <small>Lucky you!</small></h2>
+{% endif %}
+
+{% endblock %}

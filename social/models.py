@@ -1,9 +1,11 @@
 from __future__ import unicode_literals
+import markdown
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.html import strip_tags
 
 from submissions.models import Submission
 
@@ -21,8 +23,18 @@ class Comment(models.Model):
 
     # Comment body
     ctime = models.DateTimeField(auto_now_add=True)
-    body = models.TextField()
+    body_raw = models.TextField()
+    body_rendered = models.TextField()
     deleted = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        self.body_rendered = markdown.markdown(
+            strip_tags(self.body_raw),
+            extension=['markdown.extensions.extra'])
+        super(Comment, self).save(*args, **kwargs)
+
+    def url(self):
+        pass
 
 
 class Rating(models.Model):
@@ -42,6 +54,9 @@ class Rating(models.Model):
 
     # The rating
     rating = models.PositiveIntegerField(choices=RATING_CHOICES)
+
+    def get_stars(self):
+        return '&#x2605;' * self.rating + '&#x2606;' * (5 - self.rating)
 
 
 class EnjoyItem(models.Model):
