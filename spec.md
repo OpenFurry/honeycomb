@@ -14,16 +14,17 @@ primarily to the furry subculture.
 ## Specification
 
 * User management
-    * The user should be able to register
-    * The user should be able to log in and out
-    * The user should be able to confirm their password
-    * The user should be able to change their password and profile
-    * The user should be able to change their username
-    * The user should be able to add friends
+    * ~~The user should be able to register~~
+    * ~~The user should be able to log in and out~~
+    * The user should be able to confirm their password *(untested)*
+    * The user should be able to change their password *(untested)*
+    * ~~The user should be able to change their profile~~
+    * The user should be able to change their username *(untested)*
+    * ~~The user should be able to add friends~~
     * The user should be able to organize their friends into groups to control
       visibility
-    * The user should be able to block other users from viewing their content
-      and profile (though any staff bit will override this)
+    * ~~The user should be able to block other users from viewing their content
+      and profile~~ (though any staff bit will override this)
     * The user should be able to belong to a class or classes of users (user,
       content moderator, social moderator, superuser, banned)
         * Users may post submissions, comments, ratings, etc.
@@ -35,14 +36,16 @@ primarily to the furry subculture.
     * Users may view a message, which marks it as read
     * Messages show a conversation, not a free-form reply text thingy
     * Users may opt out of messages, except from staff
-    * Users may view a list of notifications (comments, faves, promotions,
-      moderator highlights, follows, messages, maybe: enjoyed counter, ratings)
-    * Users may delete notifications
-    * Users may visit user pages at `~(username)`
+    * ~~Users may view a list of notifications (comments, faves, promotions,
+      moderator highlights, follows, messages, maybe: enjoyed counter,
+      ratings)~~
+    * ~~Users may delete notifications~~
+    * ~~Users may visit user pages at `~(username)`~~
 * Posting submissions
-    * The user should be able to post a submission as plain text
-    * The user should be able to post a submission as markdown
-    * The user should be able to post the submission using a rich text editor (TinyMCE?)
+    * ~~The user should be able to post a submission as plain text~~
+    * ~~The user should be able to post a submission as markdown~~
+    * The user should be able to post the submission using a rich text editor
+      (TinyMCE?)
     * The user should be able to upload a file
     * The user should be able to upload the two supported default filetypes
       (text/markdown)
@@ -50,10 +53,11 @@ primarily to the furry subculture.
       etc.) via pandoc
     * The user should be able to upload a cover image
     * The cover image should be scaled and stored with attribution (name, link, date?)
-    * The user should be able to dictate what levels of social interaction are
-      allowed with a submission (see "Social interaction")
+    * ~~The user should be able to dictate what levels of social interaction
+      are allowed with a submission (see "Social interaction")~~
+      *(At least enjoy votes)*
 * Submission organization
-    * The user should be able to set the permissions on a submission (private, followers, world)
+    * ~~The user should be able to set the permissions on a submission (private, followers, world)~~ *(minus followers)*
     * The user should be able to set the visibility on a submission to groups
     * The user should be able to tag the submission with relevant tags
     * The user should be able to tag the submission with global tags ("categories"?),
@@ -66,20 +70,20 @@ primarily to the furry subculture.
       displayed in that order when viewed in a folder
     * The user should be able to change the order of submissions in a folder
 * Submission viewing
-    * The user should be able to view a submission and associated cover image
+    * ~~The user should be able to view a submission~~ and associated cover image
     * The user should have a pleasant viewing experience on desktop, mobile, and
       print, including distraction-free and inverted modes when selected
-    * The user should be able to rate a submission (public, used to calculate average
-      rating)
-    * The user should be able to favorite a submission (private)
-    * The user should be able to increment a "enjoyed" counter, if the author
-      has enabled it
+    * ~~The user should be able to rate a submission (private, used to
+      calculate average rating)~~
+    * ~~The user should be able to favorite a submission (public)~~
+    * ~~The user should be able to increment a "enjoyed" counter, if the author
+      has enabled it~~
     * The user should be able to promote a submission, both as an author and as a
       reader, acting as a vote to float the submission to the top of a promotions
       queue.  Once a submission has been promoted, it remains promoted for a week,
       then is depromoted and prevented from being promoted again
     * Content moderators may select submissions to highlight
-    * Users should be able to visit a submission at `~(authorname)/(id)(-(slug))?`
+    * ~~Users should be able to visit a submission at `~(authorname)/(id)(-(slug))?`~~
 * Monetization, ads, and pay-to-promote
     * The user may pay to have their submission promoted, with the same caveat that a
       submission, once promoted, may not be promoted again
@@ -103,9 +107,9 @@ primarily to the furry subculture.
     * The user should be able to order lists of submissions (from searches, user
       pages, etc) by various criteria (popularity, date, etc)
 * Social interaction
-    * The user, as a reader, should be able to increment an "enjoyed" counter on
+    * ~~The user, as a reader, should be able to increment an "enjoyed" counter on
       a submission for each time they've enjoyed the submission, if the author has enabled
-      it
+      it~~
     * The user, as a reader, should be able to comment on the submission if the
       author has enabled it
     * The user should be able to reply to comments in a nested fashion
@@ -115,7 +119,7 @@ primarily to the furry subculture.
       comments
     * The user should be able to share a submission, another user, or a publisher on
       various forms of social media
-    * The user should be able to link to another user using a syntax; linking thus
+    * ~~The user should be able to link to another user using a syntax;~~ linking thus
       should notify the other user
     * The user should be able to link a twitter account to their profile
     * The user should be able to have new submissions auto-tweeted via linked twitter
@@ -123,7 +127,7 @@ primarily to the furry subculture.
     * The site should have its own twitter account that auto-tweets newly-promoted
       or highlighted works
 * Publisher pages
-    * The user should be able to view a publisher page containing links, logos, and info 
+    * The user should be able to view a publisher page containing links, logos, and info
       about the the publisher, as well as a list of users who are published by that
       publisher
     * Content moderators should be able to modify a publisher page and add users to the list
