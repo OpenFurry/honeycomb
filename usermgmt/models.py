@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.html import strip_tags
 
+from honeycomb_markdown import HoneycombMarkdown
 from submissions.models import Submission
 
 
@@ -44,7 +45,7 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         self.profile_rendered = markdown.markdown(
             strip_tags(self.profile_raw),
-            extension=['markdown.extensions.extra'])
+            extensions=['pymdownx.extra', HoneycombMarkdown()])
         super(Profile, self).save(*args, **kwargs)
 
     def get_notifications_counts(self):

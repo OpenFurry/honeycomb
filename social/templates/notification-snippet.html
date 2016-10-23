@@ -1,6 +1,8 @@
 {% load humanize %}
+{% load gravatar %}
 {% if notification.notification_type == 'W' %}
     <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.email|gravatar:'40' }}
         {{ notification.source.profile.get_display_name }}
     </a> followed you
     <em>
@@ -10,6 +12,7 @@
     </em>
 {% elif notification.notification_type == 'F' %}
     <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.email|gravatar:'40' }}
         {{ notification.source.profile.get_display_name }}
     </a> favorited your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject.id %}">{{ notification.subject.title }}</a>
     <em>
@@ -19,6 +22,7 @@
     </em>
 {% elif notification.notification_type == 'M' %}
     <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.email|gravatar:'40' }}
         {{ notification.source.profile.get_display_name }}
     </a> sent you a direct message.  View the thread <a href="{% url 'social:message_user' notification.source.username %}">here</a>
     <em>
@@ -28,6 +32,7 @@
     </em>
 {% elif notification.notification_type == 'R' %}
     <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.email|gravatar:'40' }}
         {{ notification.source.profile.get_display_name }}
     </a> rated your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject.submission.id %}">
         {{ notification.subject.submission.title }}
@@ -39,6 +44,7 @@
     </em>
 {% elif notification.notification_type == 'E' %}
     <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.email|gravatar:'40' }}
         {{ notification.source.profile.get_display_name }}
     </a> read and enjoyed your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">
         {{ notification.subject.title }}
@@ -50,6 +56,7 @@
     </em>
 {% elif notification.notification_type == 'S' %}
     <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.email|gravatar:'40' }}
         {{ notification.source.profile.get_display_name }}
     </a> commented on your submission <a href="{{ notification.subject.url }}">
         {{ notification.subject.object_model.title }}
@@ -61,6 +68,7 @@
     </em>
 {% elif notification.notification_type == 'C' %}
     <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.email|gravatar:'40' }}
         {{ notification.source.profile.get_display_name }}
     </a> replied to your comment on <a href="{{ notification.subject.url }}">
         {{ notification.subject.title }}
@@ -81,6 +89,7 @@
     </em>
 {% elif notification.notification_type == 'H' %}
     <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.email|gravatar:'40' }}
         {{ notification.source.profile.get_display_name }}
     </a> highlighted your submission <a href="{% url 'submissions:view_submission' submission_id=notification.subject_id %}">
         {{ notification.subject.title }}

@@ -18,6 +18,7 @@ from .forms import (
 from .models import (
     Profile,
 )
+from core.templatetags.gravatar import gravatar
 
 
 class Register(FormView):
@@ -66,7 +67,9 @@ def view_profile(request, username):
         blocked = user in request.user.profile.blocked_users.all()
         blocked_by = request.user in user.profile.blocked_users.all()
     subtitle = ''
-    display_name = user.profile.get_display_name()
+    display_name = '{} {}'.format(
+        gravatar(user.email, size=80),
+        user.profile.get_display_name())
     if watched:
         display_name = '&#x2606; {}'.format(display_name)
         subtitle = "following"

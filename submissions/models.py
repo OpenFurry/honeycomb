@@ -9,6 +9,8 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.html import strip_tags
 
+from honeycomb_markdown import HoneycombMarkdown
+
 
 class Submission(models.Model):
     # Submission owner
@@ -55,10 +57,10 @@ class Submission(models.Model):
         self.slug = slugify(self.title)
         self.description_rendered = markdown.markdown(
             strip_tags(self.description_raw),
-            extension=['markdown.extensions.extra'])
+            extensions=['pymdownx.extra', HoneycombMarkdown()])
         self.content_rendered = markdown.markdown(
             strip_tags(self.content_raw),
-            extension=['markdown.extensions.extra'])
+            extensions=['pymdownx.extra', HoneycombMarkdown()])
         super(Submission, self).save(*args, **kwargs)
 
     def get_average_rating(self):

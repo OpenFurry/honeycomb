@@ -75,3 +75,8 @@ footer {
     position: absolute;
     bottom: -100px;
 }
+
+footer img {
+    height: 14px;
+    vertical-align: text-top;
+}

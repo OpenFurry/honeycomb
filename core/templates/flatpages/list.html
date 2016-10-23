@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load flatpages %}
+
+{% block content %}
+{% get_flatpages prefix as flatpages %}
+<div class="row">
+    <ul class="list-group col-md-8 col-md-offset-2">
+        {% for page in flatpages %}
+            <li class="list-group-item striped-item"><a href="{{ page.url }}">{{ page.title| safe}}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

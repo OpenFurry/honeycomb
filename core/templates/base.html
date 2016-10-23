@@ -9,7 +9,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{# TODO #}&#x2b21; Honeycomb - {{ title }}</title>
+        <title>{# TODO #}&#x2b21; Honeycomb - {% if flatpage %}{{ flatpage.title }}{% else %}{{ title|safe }}{% endif %}</title>
 
         <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}" />
         <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap-theme.min.css' %}" />
@@ -29,9 +29,20 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">Home</a></li>
                         <li><a href="#about">Recent</a></li>
                         <li><a href="#contact">Worth a Read</a></li>
+                        <li class="dropdown">
+                            <a href="{% url 'core:flatpage_list' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'core:flatpage_list' %}help/">Help</a></li>
+                                <li><a href="{% url 'core:flatpage_list' %}markdown/">Markdown</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="{% url 'core:flatpage_list' %}terms/">Terms of Service</a></li>
+                                <li><a href="{% url 'core:flatpage_list' %}aup/">Acceptable Upload Policy</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="{% url 'core:flatpage_list' %}credits/">Credits</a></li>
+                            </ul>
+                        </li>
                     </ul>
                     <form class="navbar-form navbar-left">
                         <div class="input-group">
@@ -87,7 +98,7 @@
 
                                         <li role="separator" class="divider"></li>
                                         <li class="dropdown-header">User management</li>
-                                        <li><a href="{% url 'usermgmt:update_profile' %}"><span class="glyphicon glyphicon-check"></span> Profile</a></li>
+                                        <li><a href="{% url 'usermgmt:update_profile' %}"><span class="glyphicon glyphicon-edit"></span> Edit profile</a></li>
                                         <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-eject"></span> Log out</a></li>
                                     {% else %}
                                         <li>
@@ -116,9 +127,9 @@
             </div>
         </nav>
         <section class="main container-fluid">
-            {% if title %}
+            {% if title or flatpage.title %}
                 <header class="page-header">
-                    <h1>{{ title|safe }}{% if subtitle %} <small>{{ subtitle }}</small>{% endif %}</h1>
+                    <h1>{% if flatpage %}{{ flatpage.title }}{% else %}{{ title|safe }}{% endif %}{% if subtitle %} <small>{{ subtitle|safe }}</small>{% endif %}</h1>
                 </header>
             {% endif %}
             {% if messages %}
@@ -135,9 +146,30 @@
                 {% block content %}{% endblock %}
             </section>
             <footer class="row">
-                <div class="col-md-12">
-                    <p>{# TODO #}Powered by <a href="https://github.com/OpenFurry/honeycomb" target="_blank">&#x2b21; Honeycomb</a> <span class="text-muted">(<a href="https://github.com/OpenFurry/honeycomb/commit/{{ git_revno.full }}" class="text-muted">{{ git_revno.short }}</a>)</span>, an <a href="http://openfurry.org" target="_blank">OpenFurry</a> project.  &copy; OpenFurry, 2016.  Source released under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.  All content is &copy; the creators, all rights reserved unless otherwise specified.</p>
-                    <p>See software credits <a href="#">here.</a> (incl links to http://glyphicons.com/, http://getbootstrap.com/, https://www.djangoproject.com/, https://django-nose.readthedocs.io/en/latest/, https://github.com/alex/django-taggit, https://furrywritersguild.com)</p>
+                <div class="col-md-3 col-md-offset-2">
+                    <p>
+                        Powered by <a href="https://github.com/OpenFurry/honeycomb" target="_blank">&#x2b21; Honeycomb</a> <span class="text-muted">(<a href="https://github.com/OpenFurry/honeycomb/commit/{{ git_revno.full }}" class="text-muted">{{ git_revno.short }}</a>)</span>
+                    </p>
+                    <p>
+                        An <a href="http://openfurry.org" target="_blank"><img src="http://openfurry.org/of-icon.png"> OpenFurry</a> project.  &copy; OpenFurry, 2016.
+                    </p>
+                    <p>
+                        Source released under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <p>
+                        All posted content is &copy; the creators.
+                    </p>
+                </div>
+                <div class="col-md-2">
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'core:flatpage_list' %}help/">Help</a></li>
+                        <li><a href="{% url 'core:flatpage_list' %}markdown/">Markdown</a></li>
+                        <li><a href="{% url 'core:flatpage_list' %}terms/">Terms of Service</a></li>
+                        <li><a href="{% url 'core:flatpage_list' %}aup/">Acceptable Upload Policy</a></li>
+                        <li><a href="{% url 'core:flatpage_list' %}credits/">Credits</a></li>
+                    </ul>
                 </div>
             </footer>
         </section>
