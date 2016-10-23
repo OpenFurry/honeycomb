@@ -18,6 +18,7 @@ from django.shortcuts import (
 
 from .forms import SubmissionForm
 from .models import Submission
+from core.templatetags.gravatar import gravatar
 
 
 def list_user_submissions(request, username=None, page=None):
@@ -52,10 +53,12 @@ def list_user_submissions(request, username=None, page=None):
         submissions = paginator.page(1)
     except EmptyPage:
         submissions = paginator.page(paginator.num_pages)
+    display_name = '{} {}'.format(
+        gravatar(author.email, size=80),
+        author.profile.get_display_name())
     return render(request, 'list_submissions.html',
                   {
-                      'title': "{}'s submissions".format(
-                          author.profile.get_display_name()),
+                      'title': "{}'s submissions".format(display_name),
                       'author': author,
                       'submissions': submissions,
                   })
@@ -106,10 +109,12 @@ def view_submission(request, username=None, submission_id=None,
         }, status=403)
     submission.views += 1
     submission.save()
+    display_name = '{} {}'.format(
+        gravatar(author.email, size=40),
+        author.profile.get_display_name())
     return render(request, 'view_submission.html', {
         'title': submission.title,
-        'subtitle': 'by {}'.format(
-            submission.owner.profile.get_display_name()),
+        'subtitle': 'by {}'.format(display_name),
         'submission': submission,
     })
 

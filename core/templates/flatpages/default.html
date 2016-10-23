@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if user.is_staff %}
+    <a class="btn btn-primary" role="button" href="{% url 'admin:flatpages_flatpage_change' flatpage.id %}">Edit</a>
+{% endif %}
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        {{ flatpage.content|safe }}
+    </div>
+</div>
+{% endblock %}

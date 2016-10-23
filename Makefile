@@ -13,10 +13,18 @@ migrate: makemigrations
 makemigrations: venv/bin/django-admin
 	venv/bin/python manage.py makemigrations
 
+.PHONY: fixtures
+fixtures: venv/bin/django-admin
+	venv/bin/python manage.py loaddata core/fixtures/*
+
+.PHONY: generatefixtures
+generatefixtures: venv/bin/django-admin
+	venv/bin/python manage.py dumpdata flatpages -o core/fixtures/flatpages.json
+
 .PHONY: reestdb
 resetdb:
 	- rm db.sqlite3
-	$(MAKE) migrate
+	$(MAKE) migrate fixtures
 
 .PHONY: cleanmigrations
 cleanmigrations: venv/bin/django-admin
