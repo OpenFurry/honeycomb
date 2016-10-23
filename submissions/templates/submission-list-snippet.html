@@ -8,5 +8,8 @@
 </blockquote>
 
 <p>
-    Rating, tags, etc
+    Views: {{ submission.views }} -
+    Rating: <span data-toggle="tooltip" data-placement="bottom" title="{{ submission.rating_average|floatformat }} average out of {{ submission.rating_count }} ratings">{{ submission.rating_stars|safe }}</span> -
+    Favorites: {{ submission.favorited_by.count }} -
+    {% if submission.can_enjoy %}Submission enjoyed {{ submission.enjoy_votes }} times{% endif %}
 </p>

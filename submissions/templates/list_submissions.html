@@ -5,8 +5,8 @@
     <div class="col-md-12">
         <ul class="nav nav-tabs">
             <li role="presentation"><a href="{% url 'usermgmt:view_profile' author.username %}">Profile</a></li>
-            <li role="presentation" class="active"><a href="{% url 'submissions:list_user_submissions' username=author.username %}">Submissions</a></li>
-            <li role="presentation"><a href="#">Favorites</a></li>
+            <li role="presentation"{% if tab == 'submissions' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_submissions' username=author.username %}">Submissions</a></li>
+            <li role="presentation"{% if tab == 'favorites' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_favorites' username=author.username %}">Favorites</a></li>
             {% if user.is_authenticated and user != author %}
                 <li role="presentation" class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
@@ -32,20 +32,31 @@
         </ul>
     </div>
 </div>
-{% for submission in submissions %}
-    <div class="row striped-item">
-        <div class="col-md-8 col-md-offset-2">
-            {% include 'submission-list-snippet.html' with submission=submission author=author %}
-        </div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <p>
+            <em>Showing results {{ submissions.start_index }} through {{ submissions.end_index }} of {{ submissions.paginator.count }}</em>
+        </p>
     </div>
-{% endfor %}
+</div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        {% for submission in submissions %}
+            <div class="row striped-item">
+                <div class="col-md-12">
+                    {% include 'submission-list-snippet.html' with submission=submission author=author %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12 text-center">
         <nav aria-label="Submission pages">
             <ul class="pagination">
                 {% if submissions.has_previous %}
                     <li>
-                        <a href="{% url 'submissions:list_user_submissions' username=author.username page=submissions.previous_page_number %}" aria-label="Previous">
+                        <a href="{% url view username=author.username page=submissions.previous_page_number %}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
@@ -54,14 +65,14 @@
                 {% endif %}
                 {% for page in submissions.paginator.page_range %}
                     {% if submissions.number == page %}
-                        <li class="active"><a href="{% url 'submissions:list_user_submissions' username=author.username page=page %}">{{ page }} <span class="sr-only">(current)</span></a></li>
+                        <li class="active"><a href="{% url view username=author.username page=page %}">{{ page }} <span class="sr-only">(current)</span></a></li>
                     {% else %}
-                        <li><a href="{% url 'submissions:list_user_submissions' username=author.username page=page %}">{{ page }}</a></li>
+                        <li><a href="{% url view username=author.username page=page %}">{{ page }}</a></li>
                     {% endif %}
                 {% endfor %}
                 {% if submissions.has_next %}
                     <li>
-                        <a href="{% url 'submissions:list_user_submissions' username=author.username page=submissions.next_page_number %}" aria-label="Next">
+                        <a href="{% url view username=author.username page=submissions.next_page_number %}" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>

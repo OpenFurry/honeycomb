@@ -52,6 +52,10 @@ class Submission(models.Model):
     mtime = models.DateTimeField(auto_now=True)
     views = models.PositiveIntegerField(default=0)
     enjoy_votes = models.PositiveIntegerField(default=0)
+    rating_stars = models.CharField(max_length=40, blank=True)
+    rating_average = models.DecimalField(max_digits=3, decimal_places=2,
+                                         default=0.0)
+    rating_count = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)

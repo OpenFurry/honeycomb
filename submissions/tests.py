@@ -38,6 +38,9 @@ class SubmissionsViewsBaseTestCase(TestCase):
             content_raw='Content for submission 2',
         )
         cls.submission2.save()
+        cls.bar.profile.favorited_submissions.add(cls.submission1)
+        cls.bar.profile.favorited_submissions.add(cls.submission2)
+        cls.bar.profile.save()
 
 
 class TestLoggedOutListUserSubmissionsView(SubmissionsViewsBaseTestCase):
@@ -141,6 +144,126 @@ class TestLoggedInListUserSubmissionsView(SubmissionsViewsBaseTestCase):
         self.assertContains(response, '<a href="{}">2</a>'.format(
             reverse('submissions:list_user_submissions', kwargs={
                 'username': 'foo',
+                'page': 2
+            })))
+
+    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
+    def test_group_locked_submission_without_matching_group_not_shown(self):
+        pass
+
+    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
+    def test_group_locked_submission_with_matching_group_shown(self):
+        pass
+
+    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
+    def test_author_can_see_own_group_locked_submissions(self):
+        pass
+
+
+class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
+    def test_all_visible(self):
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertContains(response, 'Submission 2')
+
+    def test_one_marked_hidden(self):
+        self.submission2.hidden = True
+        self.submission2.save()
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertNotContains(response, 'Submission 2')
+
+    def test_one_marked_adult(self):
+        self.submission2.adult_rating = True
+        self.submission2.save()
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertNotContains(response, 'Submission 2')
+
+    def test_one_restricted_to_groups(self):
+        self.submission2.restricted_to_groups = True
+        self.submission2.save()
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertNotContains(response, 'Submission 2')
+
+    def test_paginate_after_25(self):
+        for i in range(3, 30):
+            submission = Submission(
+                owner=self.foo,
+                title='Submission {}'.format(i),
+                description_raw='Description',
+                content_raw='Content',
+            )
+            submission.save()
+            self.bar.profile.favorited_submissions.add(submission)
+            self.bar.save()
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        print(response.content)
+        self.assertContains(response, '<a href="{}">2</a>'.format(
+            reverse('submissions:list_user_favorites', kwargs={
+                'username': 'bar',
+                'page': 2
+            })))
+
+    def test_reset_paginate_if_out_of_range(self):
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={
+                'username': 'bar',
+                'page': 2
+            }))
+        self.assertContains(response,
+                            '1 <span class="sr-only">(current)</span>')
+
+
+class TestLoggedInListUserFavoritesView(SubmissionsViewsBaseTestCase):
+    def test_blocked_user_forbidden(self):
+        self.foo.profile.blocked_users.add(self.bar)
+        self.foo.profile.save()
+        self.client.login(username='bar',
+                          password='another good password')
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'foo'}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_author_can_view_own_hidden_submissions(self):
+        self.submission2.hidden = True
+        self.submission2.save()
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertContains(response, 'Submission 2')
+
+    def test_author_can_see_own_adult_submissions(self):
+        self.submission2.adult_rating = True
+        self.submission2.save()
+        self.foo.profile.can_see_adult_submissions = False
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertContains(response, 'Submission 2')
+
+    def test_respect_users_results_per_page(self):
+        self.bar.profile.results_per_page = 1
+        self.bar.profile.save()
+        self.client.login(username='bar',
+                          password='another good password')
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertNotContains(response, 'Submission 2')
+        self.assertContains(response, '<a href="{}">2</a>'.format(
+            reverse('submissions:list_user_favorites', kwargs={
+                'username': 'bar',
                 'page': 2
             })))
 

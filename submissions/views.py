@@ -60,7 +60,55 @@ def list_user_submissions(request, username=None, page=None):
                   {
                       'title': "{}'s submissions".format(display_name),
                       'author': author,
+                      'tab': 'submissions',
                       'submissions': submissions,
+                      'view': 'submissions:list_user_submissions'
+                  })
+
+
+def list_user_favorites(request, username=None, page=None):
+    reader = request.user
+    author = get_object_or_404(User, username=username)
+    if reader.is_authenticated and reader in \
+            author.profile.blocked_users.all():
+        return render(request, 'permission_denied.html', {
+            'title': 'Permission denied',
+        }, status=403)
+    queries = Q(hidden=False)
+    if reader.is_authenticated:
+        queries &= ~Q(owner__id__in=map(
+            lambda x: x.id, reader.blocked_by.all()))
+    if (not reader.is_authenticated or
+            not reader.profile.can_see_adult_submissions):
+        queries &= Q(adult_rating=False)
+    if reader.groups.count() > 0:
+        queries &= (Q(restricted_to_groups=False) |
+                    (Q(restricted_to_groups=True) &
+                     Q(allowed_groups__id__in=map(
+                        lambda x: x.id, reader.groups.all()))))
+    else:
+        queries &= Q(restricted_to_groups=False)
+    queries_with_owner = Q(owner=reader) | (~Q(owner=reader) & queries)
+    result = author.profile.favorited_submissions.filter(
+        queries_with_owner if reader.is_authenticated else queries)
+    paginator = Paginator(result, reader.profile.results_per_page if
+                          reader.is_authenticated else 25)
+    try:
+        submissions = paginator.page(page)
+    except PageNotAnInteger:
+        submissions = paginator.page(1)
+    except EmptyPage:
+        submissions = paginator.page(paginator.num_pages)
+    display_name = '{} {}'.format(
+        gravatar(author.email, size=80),
+        author.profile.get_display_name())
+    return render(request, 'list_submissions.html',
+                  {
+                      'title': "{}'s favorites".format(display_name),
+                      'author': author,
+                      'tab': 'favorites',
+                      'submissions': submissions,
+                      'view': 'submissions:list_user_favorites',
                   })
 
 
