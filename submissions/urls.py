@@ -21,4 +21,8 @@ urlpatterns = [
         views.list_user_submissions, name='list_user_submissions'),
     url('^~(?P<username>[^/]+)/submissions/(?P<page>\d+)/$',
         views.list_user_submissions, name='list_user_submissions'),
+    url('^~(?P<username>[^/]+)/favorites/$',
+        views.list_user_favorites, name='list_user_favorites'),
+    url('^~(?P<username>[^/]+)/favorites/(?P<page>\d+)/$',
+        views.list_user_favorites, name='list_user_favorites'),
 ]

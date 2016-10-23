@@ -5,8 +5,8 @@
     <div class="col-md-12">
         <ul class="nav nav-tabs">
             <li role="presentation"><a href="{% url 'usermgmt:view_profile' author.username %}">Profile</a></li>
-            <li role="presentation" class="active"><a href="{% url 'submissions:list_user_submissions' username=author.username %}">Submissions</a></li>
-            <li role="presentation"><a href="#">Favorites</a></li>
+            <li role="presentation"{% if tab == 'submissions' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_submissions' username=author.username %}">Submissions</a></li>
+            <li role="presentation"{% if tab == 'favorites' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_favorites' username=author.username %}">Favorites</a></li>
             {% if user.is_authenticated and user != author %}
                 <li role="presentation" class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
@@ -32,13 +32,22 @@
         </ul>
     </div>
 </div>
-{% for submission in submissions %}
-    <div class="row striped-item">
-        <div class="col-md-8 col-md-offset-2">
-            {% include 'submission-list-snippet.html' with submission=submission author=author %}
-        </div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <em>Showing results {{ submissions.start_index }} through {{ submissions.end_index }} of {{ submissions.paginator.count }}</em>
     </div>
-{% endfor %}
+</div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        {% for submission in submissions %}
+            <div class="row striped-item">
+                <div class="col-md-12">
+                    {% include 'submission-list-snippet.html' with submission=submission author=author %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12 text-center">
         <nav aria-label="Submission pages">
