@@ -36,18 +36,20 @@ class HoneycombUserIcon(Pattern):
                 user = User.objects.get(username=m.group(2))
                 self.fetched_users[m.group(2)] = user
             el = etree.Element('a')
-            el.set('href', reverse('usermgmt:view_profile', args=(m.group(2),)))
+            el.set('href', reverse('usermgmt:view_profile',
+                   args=(m.group(2),)))
             el.set('class', 'icon-user-link')
             el.text = ('![gravatar]'
-                '(https://www.gravatar.com/avatar/{}?s=50)').format(
-                    hashlib.md5(
-                        user.email.strip().lower().encode('utf-8')
-                    ).hexdigest(),
-                    m.group(2))
+                       '(https://www.gravatar.com/avatar/{}?s=50)').format(
+                           hashlib.md5(
+                               user.email.strip().lower().encode('utf-8')
+                           ).hexdigest(),
+                           m.group(2))
             return el
         except User.DoesNotExist:
             el = etree.Element('a')
-            el.set('href', reverse('usermgmt:view_profile', args=(m.group(3),)))
+            el.set('href', reverse('usermgmt:view_profile',
+                   args=(m.group(3),)))
             el.set('class', 'user-link')
             el.text = m.group(2)
             return el
@@ -64,18 +66,20 @@ class HoneycombUserIconName(Pattern):
                 user = User.objects.get(username=m.group(2))
                 self.fetched_users[m.group(2)] = user
             el = etree.Element('a')
-            el.set('href', reverse('usermgmt:view_profile', args=(m.group(2),)))
+            el.set('href', reverse('usermgmt:view_profile',
+                   args=(m.group(2),)))
             el.set('class', 'icon-name-user-link')
             el.text = ('![gravatar](https://www.gravatar.com/avatar/{}?s=50) '
-                '{}').format(
-                    hashlib.md5(
-                        user.email.strip().lower().encode('utf-8')
-                    ).hexdigest(),
-                    m.group(2))
+                       '{}').format(
+                           hashlib.md5(
+                                   user.email.strip().lower().encode('utf-8')
+                           ).hexdigest(),
+                           m.group(2))
             return el
         except User.DoesNotExist:
             el = etree.Element('a')
-            el.set('href', reverse('usermgmt:view_profile', args=(m.group(3),)))
+            el.set('href', reverse('usermgmt:view_profile',
+                   args=(m.group(3),)))
             el.set('class', 'user-link')
             el.text = m.group(2)
             return el

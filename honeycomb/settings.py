@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'honeycomb.middleware.QueryCountDebugMiddleware',
 ]
 
 SITE_ID = 1

@@ -11,8 +11,9 @@ def gravatar_url(email, size=40):
         hashlib.md5(email.encode('utf-8').lower()).hexdigest(),
         size, 'identicon')
 
+
 @register.filter
 def gravatar(email, size=40):
     url = gravatar_url(email, size)
     return mark_safe('<img src="{}" height="{}" width="{}">'.format(
-    url, size, size))
+                     url, size, size))
