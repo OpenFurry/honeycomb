@@ -157,3 +157,7 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+}
