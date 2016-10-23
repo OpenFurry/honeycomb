@@ -62,6 +62,7 @@ def list_user_submissions(request, username=None, page=None):
                       'author': author,
                       'tab': 'submissions',
                       'submissions': submissions,
+                      'view': 'submissions:list_user_submissions'
                   })
 
 
@@ -90,7 +91,6 @@ def list_user_favorites(request, username=None, page=None):
     queries_with_owner = Q(owner=reader) | (~Q(owner=reader) & queries)
     result = author.profile.favorited_submissions.filter(
         queries_with_owner if reader.is_authenticated else queries)
-    print(result.query)
     paginator = Paginator(result, reader.profile.results_per_page if
                           reader.is_authenticated else 25)
     try:
@@ -108,6 +108,7 @@ def list_user_favorites(request, username=None, page=None):
                       'author': author,
                       'tab': 'favorites',
                       'submissions': submissions,
+                      'view': 'submissions:list_user_favorites',
                   })
 
 

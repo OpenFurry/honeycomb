@@ -56,7 +56,7 @@
             <ul class="pagination">
                 {% if submissions.has_previous %}
                     <li>
-                        <a href="{% url 'submissions:list_user_submissions' username=author.username page=submissions.previous_page_number %}" aria-label="Previous">
+                        <a href="{% url view username=author.username page=submissions.previous_page_number %}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
@@ -65,14 +65,14 @@
                 {% endif %}
                 {% for page in submissions.paginator.page_range %}
                     {% if submissions.number == page %}
-                        <li class="active"><a href="{% url 'submissions:list_user_submissions' username=author.username page=page %}">{{ page }} <span class="sr-only">(current)</span></a></li>
+                        <li class="active"><a href="{% url view username=author.username page=page %}">{{ page }} <span class="sr-only">(current)</span></a></li>
                     {% else %}
-                        <li><a href="{% url 'submissions:list_user_submissions' username=author.username page=page %}">{{ page }}</a></li>
+                        <li><a href="{% url view username=author.username page=page %}">{{ page }}</a></li>
                     {% endif %}
                 {% endfor %}
                 {% if submissions.has_next %}
                     <li>
-                        <a href="{% url 'submissions:list_user_submissions' username=author.username page=submissions.next_page_number %}" aria-label="Next">
+                        <a href="{% url view username=author.username page=submissions.next_page_number %}" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
