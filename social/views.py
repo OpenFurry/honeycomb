@@ -245,6 +245,11 @@ def rate_submission(request, username=None, submission_id=None,
         notification_type=Notification.RATING,
         subject=rating_object)
     notification.save()
+    ratings = submission.get_average_rating()
+    submission.rating_stars = ratings['stars']
+    submission.rating_average = ratings['average']
+    submission.rating_count = ratings['count']
+    submission.save()
     return redirect(reverse('submissions:view_submission',
                     kwargs={
                         'username': username,

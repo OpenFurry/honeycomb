@@ -18,9 +18,7 @@
             </div>
             <div class="panel-footer text-center">
                 Views: {{ submission.views }} -
-                Rating: {% with rating=submission.get_average_rating %}
-                    <span data-toggle="tooltip" data-placement="bottom" title="{{ rating.average|floatformat }} average out of {{ rating.count }} ratings">{{ rating.stars|safe }}</span>
-                {% endwith %} -
+                Rating: <span data-toggle="tooltip" data-placement="bottom" title="{{ submission.rating_average|floatformat }} average out of {{ submission.rating_count }} ratings">{{ submission.rating_stars|safe }}</span> -
                 Favorites: {{ submission.favorited_by.count }} -
                 {% if submission.can_enjoy %}Submission enjoyed {{ submission.enjoy_votes }} times{% endif %}
             </div>
