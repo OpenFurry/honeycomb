@@ -10,7 +10,8 @@
                 <ul class="nav nav-tabs">
                     <li role="presentation" class="active"><a href="{% url 'usermgmt:view_profile' user_profile.username %}">Profile</a></li>
                     <li role="presentation"><a href="{% url 'submissions:list_user_submissions' username=user_profile.username %}">Submissions</a></li>
-                    <li role="presentation"><a href="#">Favorites</a></li>
+                    <li role="presentation"><a href="{% url 'submissions:view_root_level_folders' username=user_profile.username %}">Folders</a></li>
+                    <li role="presentation"><a href="{% url 'submissions:list_user_favorites' username=user_profile.username %}">Favorites</a></li>
                     {% if user.is_authenticated and user != user_profile %}
                         <li role="presentation" class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">

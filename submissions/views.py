@@ -17,7 +17,10 @@ from django.shortcuts import (
 )
 
 from .forms import SubmissionForm
-from .models import Submission
+from .models import (
+    FolderItem,
+    Submission,
+)
 from core.templatetags.gravatar import gravatar
 
 
@@ -56,14 +59,15 @@ def list_user_submissions(request, username=None, page=None):
     display_name = '{} {}'.format(
         gravatar(author.email, size=80),
         author.profile.get_display_name())
-    return render(request, 'list_submissions.html',
-                  {
-                      'title': "{}'s submissions".format(display_name),
-                      'author': author,
-                      'tab': 'submissions',
-                      'submissions': submissions,
-                      'view': 'submissions:list_user_submissions'
-                  })
+    return render(request, 'list_submissions.html', {
+        'title': "{}'s submissions".format(display_name),
+        'author': author,
+        'tab': 'submissions',
+        'submissions': submissions,
+        'url_prefix': reverse('submissions:list_user_submissions', kwargs={
+            'username': author.username,
+        })
+    })
 
 
 def list_user_favorites(request, username=None, page=None):
@@ -102,14 +106,15 @@ def list_user_favorites(request, username=None, page=None):
     display_name = '{} {}'.format(
         gravatar(author.email, size=80),
         author.profile.get_display_name())
-    return render(request, 'list_submissions.html',
-                  {
-                      'title': "{}'s favorites".format(display_name),
-                      'author': author,
-                      'tab': 'favorites',
-                      'submissions': submissions,
-                      'view': 'submissions:list_user_favorites',
-                  })
+    return render(request, 'list_submissions.html', {
+        'title': "{}'s favorites".format(display_name),
+        'author': author,
+        'tab': 'favorites',
+        'submissions': submissions,
+        'url_prefix': reverse('submissions:list_user_favorites', kwargs={
+            'username': author.username,
+        })
+    })
 
 
 def view_submission(request, username=None, submission_id=None,
@@ -178,7 +183,31 @@ def edit_submission(request, username=None, submission_id=None,
         }, status=403)
     if request.method == 'POST':
         form = SubmissionForm(request.POST, instance=submission)
-        submission = form.save()
+        submission = form.save(commit=False)
+        submission.save()
+        for folder in form.cleaned_data['folders']:
+            if folder.owner == request.user:
+                try:
+                    item = FolderItem.objects.get(
+                        submission=submission,
+                        folder=folder)
+                    item.save()
+                except FolderItem.DoesNotExist:
+                    item = FolderItem(
+                        submission=submission,
+                        folder=folder,
+                        position=len(FolderItem.objects.filter(
+                            submission=submission)) + 1)
+                    item.save()
+        for folder in submission.folders.all():
+            if folder not in form.cleaned_data['folders']:
+                try:
+                    item = FolderItem.objects.get(
+                        submission=submission,
+                        folder=folder)
+                    item.delete()
+                except FolderItem.DoesNotExist:
+                    continue
         messages.success(request, 'Submission updated.')
         return redirect(reverse(
             'submissions:view_submission',
@@ -188,6 +217,7 @@ def edit_submission(request, username=None, submission_id=None,
                 'submission_slug': submission.slug,
             }))
     form = SubmissionForm(instance=submission)
+    form.fields['folders'].queryset = request.user.folder_set.all()
     return render(request, 'edit_submission.html', {
         'title': 'Edit submission',
         'form': form,
@@ -220,6 +250,14 @@ def submit(request):
         submission = form.save(commit=False)
         submission.owner = request.user
         submission.save()
+        for folder in form.cleaned_data['folders']:
+            if folder.owner == request.user:
+                item = FolderItem(
+                    submission=submission,
+                    folder=folder,
+                    position=len(FolderItem.objects.filter(
+                        submission=submission)) + 1)
+                item.save()
         messages.success(request, 'Submission created.')
         return redirect(reverse(
             'submissions:view_submission',
@@ -229,6 +267,7 @@ def submit(request):
                 'submission_slug': submission.slug,
             }))
     form = SubmissionForm()
+    form.fields['folders'].queryset = request.user.folder_set.all()
     return render(request, 'edit_submission.html', {
         'title': 'Create submission',
         'form': form,

@@ -1,6 +1,9 @@
 from django import forms
 
-from .models import Submission
+from .models import (
+    Folder,
+    Submission,
+)
 
 
 class SubmissionForm(forms.ModelForm):
@@ -19,4 +22,14 @@ class SubmissionForm(forms.ModelForm):
             'hidden',
             'restricted_to_groups',
             'allowed_groups',
+            'folders',
+        )
+
+
+class FolderForm(forms.ModelForm):
+    class Meta:
+        model = Folder
+        fields = (
+            'name',
+            'parent',
         )

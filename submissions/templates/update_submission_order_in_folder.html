@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <p>Drag and drop the submissions below to change the order in which they appear in the folder.  When you are happy with the order, click save.</p>
+        <ul class='list-group sortable'>
+            {% for item in folder_items %}
+                <li class="list-group-item striped-item folder-item" data-folderitemid="id_{{ item.id }}">
+                    <span class="glyphicon glyphicon-move"></span>
+                    {{ item.submission.title }}
+                </li>
+            {% endfor %}
+        </ul>
+        <form class="ordering-form" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.sortable').sortable();
+        $('.sortable').disableSelection();
+        $('.sortable').on('sortupdate', set_qs);
+        set_qs();
+        function set_qs() {
+            var qs = $('.sortable').sortable('serialize', {
+                attribute: 'data-folderitemid',
+                key: 'ids'
+            });
+            $('.ordering-form').attr('action', '?' + qs);
+            console.log(qs);
+        }
+    });
+</script>
+{% endblock %}
