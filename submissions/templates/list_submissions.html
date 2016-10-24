@@ -118,7 +118,7 @@
         {% endfor %}
     </div>
 </div>
-{% if submissions.has_next and submissions.has_previous %}
+{% if submissions.has_next or submissions.has_previous %}
     <div class="row">
         <div class="col-md-12 text-center">
             <nav aria-label="Submission pages">

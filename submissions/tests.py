@@ -92,13 +92,21 @@ class TestLoggedOutListUserSubmissionsView(SubmissionsViewsBaseTestCase):
             })))
 
     def test_reset_paginate_if_out_of_range(self):
+        for i in range(3, 30):
+            submission = Submission(
+                owner=self.foo,
+                title='Submission {}'.format(i),
+                description_raw='Description',
+                content_raw='Content',
+            )
+            submission.save()
         response = self.client.get(reverse(
             'submissions:list_user_submissions', kwargs={
                 'username': 'foo',
-                'page': 2
+                'page': 20,
             }))
         self.assertContains(response,
-                            '1 <span class="sr-only">(current)</span>')
+                            '2 <span class="sr-only">(current)</span>')
 
 
 class TestLoggedInListUserSubmissionsView(SubmissionsViewsBaseTestCase):
@@ -201,7 +209,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
             )
             submission.save()
             self.bar.profile.favorited_submissions.add(submission)
-            self.bar.save()
+        self.bar.save()
         response = self.client.get(reverse(
             'submissions:list_user_favorites', kwargs={'username': 'bar'}))
         print(response.content)
@@ -212,13 +220,23 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
             })))
 
     def test_reset_paginate_if_out_of_range(self):
+        for i in range(3, 30):
+            submission = Submission(
+                owner=self.foo,
+                title='Submission {}'.format(i),
+                description_raw='Description',
+                content_raw='Content',
+            )
+            submission.save()
+            self.bar.profile.favorited_submissions.add(submission)
+        self.bar.profile.save()
         response = self.client.get(reverse(
             'submissions:list_user_favorites', kwargs={
                 'username': 'bar',
                 'page': 2
             }))
         self.assertContains(response,
-                            '1 <span class="sr-only">(current)</span>')
+                            '2 <span class="sr-only">(current)</span>')
 
 
 class TestLoggedInListUserFavoritesView(SubmissionsViewsBaseTestCase):
