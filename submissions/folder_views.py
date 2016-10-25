@@ -47,6 +47,9 @@ def view_root_level_folders(request, username=None, page=None):
         'title': title,
         'tab': 'folders',
         'subtitle': '/',
+        'url_prefix': reverse('submissions:view_root_level_folders', kwargs={
+            'username': user.username,
+        }),
     })
 
 
@@ -96,6 +99,11 @@ def view_folder(request, username=None, folder_id=None, folder_slug=None,
         'title': title,
         'tab': 'folders',
         'subtitle': '/{}'.format(path),
+        'url_prefix': reverse('submissions:view_folder', kwargs={
+            'username': folder.owner.username,
+            'folder_id': folder.id,
+            'folder_slug': folder.slug,
+        }),
     })
 
 
@@ -127,8 +135,8 @@ def update_folder(request, username=None, folder_id=None, folder_slug=None):
         messages.error(request, "You can't update a folder that isn't yours")
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied'
-        }, status_code=403)
-    folders = request.user.folder_set.all()
+        }, status=403)
+    folders = request.user.folder_set.exclude(id=folder.id)
     form = FolderForm(instance=folder)
     if request.method == 'POST':
         form = FolderForm(request.POST, instance=folder)
@@ -154,13 +162,13 @@ def delete_folder(request, username=None, folder_id=None, folder_slug=None):
         messages.error(request, "You can't delete a folder that isn't yours")
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied'
-        }, status_code=403)
+        }, status=403)
     if request.method == 'POST':
         if folder.parent:
             next_url = reverse('submissions:view_folder', kwargs={
                 'username': request.user.username,
-                'folder_id': folder.id,
-                'folder_slug': folder.slug,
+                'folder_id': folder.parent.id,
+                'folder_slug': folder.parent.slug,
             })
         else:
             next_url = reverse('submissions:view_root_level_folders', kwargs={
@@ -175,34 +183,23 @@ def delete_folder(request, username=None, folder_id=None, folder_slug=None):
 
 
 @login_required
-def add_submission_to_folder(request):
-    # XXX Do we even need these?
-    pass
-
-
-@login_required
-def remove_submission_from_folder(request):
-    # XXX Do we even need these?
-    pass
-
-
-@login_required
 def update_submission_order_in_folder(request, username=None, folder_id=None,
                                       folder_slug=None):
     folder = get_object_or_404(Folder, id=folder_id)
     if request.user != folder.owner:
-        messages.error(request, "You can't delete a folder that isn't yours")
+        messages.error(request, "You can't sort a folder that isn't yours")
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied'
-        }, status_code=403)
+        }, status=403)
     if request.method == 'POST':
         position = 1
+        items = FolderItem.objects.filter(folder=folder)
         for id in request.GET.getlist('ids', []):
-            item = FolderItem.objects.get(pk=id)
+            item = items.get(pk=id)
             item.position = position
             item.save()
             position += 1
-            print("set item {} to position {}".format(item.id, item.position))
+        messages.success(request, 'Submissions sorted successfully.')
     breadcrumbs = ['<em>{}</em>'.format(folder.name)]
     curr = folder.parent
     while curr is not None:

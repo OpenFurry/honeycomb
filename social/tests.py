@@ -25,12 +25,6 @@ class BaseSocialViewTestCase(TestCase):
                                            'another good password')
         cls.bar.profile = Profile(profile_raw='Whoa', display_name='Bad Wolf')
         cls.bar.profile.save()
-        cls.submission = Submission(
-            owner=cls.foo,
-            title="Submission",
-            description_raw="Description",
-            content_raw="Content")
-        cls.submission.save()
 
 
 class TestWatchUserView(BaseSocialViewTestCase):
@@ -171,7 +165,19 @@ class TestMessageUserView(BaseSocialViewTestCase):
     pass
 
 
-class TestFavoriteSubmissionView(BaseSocialViewTestCase):
+class BaseSocialSubmissionViewTestCase(BaseSocialViewTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super(BaseSocialSubmissionViewTestCase, cls).setUpTestData()
+        cls.submission = Submission(
+            owner=cls.foo,
+            title="Submission",
+            description_raw="Description",
+            content_raw="Content")
+        cls.submission.save()
+
+
+class TestFavoriteSubmissionView(BaseSocialSubmissionViewTestCase):
     def test_submission_favorited(self):
         self.client.login(username='bar',
                           password='another good password')
@@ -228,7 +234,7 @@ class TestFavoriteSubmissionView(BaseSocialViewTestCase):
                             'submission')
 
 
-class TestUnfavoriteSubmissionView(BaseSocialViewTestCase):
+class TestUnfavoriteSubmissionView(BaseSocialSubmissionViewTestCase):
     def test_submission_unfavorited(self):
         self.bar.profile.favorited_submissions.add(self.submission)
         Notification(
@@ -288,7 +294,7 @@ class TestUnfavoriteSubmissionView(BaseSocialViewTestCase):
                             'submission')
 
 
-class TestRateSubmissionView(BaseSocialViewTestCase):
+class TestRateSubmissionView(BaseSocialSubmissionViewTestCase):
     def test_submission_rated(self):
         self.client.login(username='bar',
                           password='another good password')
@@ -367,7 +373,7 @@ class TestRateSubmissionView(BaseSocialViewTestCase):
                             status_code=403)
 
 
-class TestEnjoySubmissionView(BaseSocialViewTestCase):
+class TestEnjoySubmissionView(BaseSocialSubmissionViewTestCase):
     def test_submission_enjoyed(self):
         self.client.login(username='bar',
                           password='another good password')
@@ -423,7 +429,7 @@ class TestEnjoySubmissionView(BaseSocialViewTestCase):
                             'author.', status_code=403)
 
 
-class TestNotificationBadges(BaseSocialViewTestCase):
+class TestNotificationBadges(BaseSocialSubmissionViewTestCase):
     def test_empty_badges(self):
         self.client.login(username='foo',
                           password='a good password')
@@ -454,7 +460,7 @@ class TestNotificationBadges(BaseSocialViewTestCase):
         self.assertContains(response, '<span class="badge">1</span>', count=3)
 
 
-class TestViewNotificationsCategoriesView(BaseSocialViewTestCase):
+class TestViewNotificationsCategoriesView(BaseSocialSubmissionViewTestCase):
     def test_no_notifications(self):
         self.client.login(username='foo',
                           password='a good password')
@@ -552,7 +558,7 @@ class TestViewNotificationsCategoriesView(BaseSocialViewTestCase):
                             'expired.')
 
 
-class TestViewNotificationsTimelineView(BaseSocialViewTestCase):
+class TestViewNotificationsTimelineView(BaseSocialSubmissionViewTestCase):
     def test_no_notifications(self):
         self.client.login(username='foo',
                           password='a good password')
@@ -652,7 +658,7 @@ class TestRemoveNotificationsView(BaseSocialViewTestCase):
         self.assertContains(response, 'Permission denied', status_code=403)
 
 
-class TestNukeNotificationsView(BaseSocialViewTestCase):
+class TestNukeNotificationsView(BaseSocialSubmissionViewTestCase):
     def test_nukes_notifications(self):
         Notification(
             target=self.foo,
