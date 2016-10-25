@@ -4,7 +4,11 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from .models import Submission
+from .models import (
+    Folder,
+    FolderItem,
+    Submission,
+)
 from usermgmt.models import Profile
 
 
@@ -92,13 +96,21 @@ class TestLoggedOutListUserSubmissionsView(SubmissionsViewsBaseTestCase):
             })))
 
     def test_reset_paginate_if_out_of_range(self):
+        for i in range(3, 30):
+            submission = Submission(
+                owner=self.foo,
+                title='Submission {}'.format(i),
+                description_raw='Description',
+                content_raw='Content',
+            )
+            submission.save()
         response = self.client.get(reverse(
             'submissions:list_user_submissions', kwargs={
                 'username': 'foo',
-                'page': 2
+                'page': 20,
             }))
         self.assertContains(response,
-                            '1 <span class="sr-only">(current)</span>')
+                            '2 <span class="sr-only">(current)</span>')
 
 
 class TestLoggedInListUserSubmissionsView(SubmissionsViewsBaseTestCase):
@@ -201,7 +213,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
             )
             submission.save()
             self.bar.profile.favorited_submissions.add(submission)
-            self.bar.save()
+        self.bar.save()
         response = self.client.get(reverse(
             'submissions:list_user_favorites', kwargs={'username': 'bar'}))
         print(response.content)
@@ -212,13 +224,23 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
             })))
 
     def test_reset_paginate_if_out_of_range(self):
+        for i in range(3, 30):
+            submission = Submission(
+                owner=self.foo,
+                title='Submission {}'.format(i),
+                description_raw='Description',
+                content_raw='Content',
+            )
+            submission.save()
+            self.bar.profile.favorited_submissions.add(submission)
+        self.bar.profile.save()
         response = self.client.get(reverse(
             'submissions:list_user_favorites', kwargs={
                 'username': 'bar',
                 'page': 2
             }))
         self.assertContains(response,
-                            '1 <span class="sr-only">(current)</span>')
+                            '2 <span class="sr-only">(current)</span>')
 
 
 class TestLoggedInListUserFavoritesView(SubmissionsViewsBaseTestCase):
@@ -467,6 +489,58 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
         self.assertContains(response, 'Wow, a new title!')
         self.assertContains(response, 'A whole new story!')
 
+    def test_can_add_to_folders(self):
+        folder = Folder(
+            owner=self.foo,
+            name='Folder 1')
+        folder.save()
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.post(
+            reverse('submissions:edit_submission',
+                    kwargs={
+                        'username': 'foo',
+                        'submission_id': 1,
+                        'submission_slug': 'submission-1',
+                    }),
+            {
+                'title': 'Wow, a new title!',
+                'content_raw': 'A whole new story!',
+                'folders': [1]
+            },
+            follow=True)
+        self.assertContains(response, 'Wow, a new title!')
+        self.assertContains(response, 'A whole new story!')
+        self.assertEqual(folder.submissions.count(), 1)
+
+    def test_can_remove_from_folders(self):
+        folder = Folder(
+            owner=self.foo,
+            name='Folder 1')
+        folder.save()
+        FolderItem(
+            folder=folder,
+            submission=self.submission1,
+            position=1).save()
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.post(
+            reverse('submissions:edit_submission',
+                    kwargs={
+                        'username': 'foo',
+                        'submission_id': 1,
+                        'submission_slug': 'submission-1',
+                    }),
+            {
+                'title': 'Wow, a new title!',
+                'content_raw': 'A whole new story!',
+                'folders': [],
+            },
+            follow=True)
+        self.assertContains(response, 'Wow, a new title!')
+        self.assertContains(response, 'A whole new story!')
+        self.assertEqual(folder.submissions.count(), 0)
+
 
 class TestDeleteSubmissionView(SubmissionsViewsBaseTestCase):
     def test_logged_out_forbidden(self):
@@ -528,11 +602,17 @@ class TestSubmitView(SubmissionsViewsBaseTestCase):
             '<input type="submit" value="Update submission" />')
 
     def test_submission_created(self):
+        folder = Folder(
+            owner=self.foo,
+            name='Folder 1')
+        folder.save()
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.post(reverse('submissions:submit'),
                                     {
                                         'title': 'Reasons foxes are great',
                                         'content_raw': 'There are too many.',
+                                        'folders': [1]
                                     }, follow=True)
         self.assertContains(response, 'Reasons foxes are great')
+        self.assertEqual(folder.submissions.count(), 1)

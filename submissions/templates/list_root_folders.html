@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul style="list-group">
+    {% for folder in folders %}
+        <li class="list-group-item striped-item">
+            <a href="{% url 'submissions:view_folder' username=owner.username folder_id=folder.id folder_slug=folder.slug %}">{{ folder.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

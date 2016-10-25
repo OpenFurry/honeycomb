@@ -16,7 +16,7 @@ class Submission(models.Model):
     # Submission owner
     owner = models.ForeignKey(User)
 
-    # Title and slug generated from ID and title
+    # Title and slug generated from title
     title = models.CharField(max_length=1000)
     slug = models.SlugField()
 
@@ -42,17 +42,21 @@ class Submission(models.Model):
         default=False,
         verbose_name='submission for adults only')
     hidden = models.BooleanField(default=False)
+    allowed_groups = models.ManyToManyField(Group, blank=True)
+
+    # Organization
     restricted_to_groups = models.BooleanField(
         default=False,
         verbose_name='restrict visibility to certain groups')
-    allowed_groups = models.ManyToManyField(Group, blank=True)
+    folders = models.ManyToManyField('Folder', through='FolderItem',
+                                     blank=True)
 
     # Additional metadata
     ctime = models.DateTimeField(auto_now_add=True)
     mtime = models.DateTimeField(auto_now=True)
     views = models.PositiveIntegerField(default=0)
     enjoy_votes = models.PositiveIntegerField(default=0)
-    rating_stars = models.CharField(max_length=40, blank=True)
+    rating_stars = models.CharField(max_length=40, default='&#x2606;' * 5)
     rating_average = models.DecimalField(max_digits=3, decimal_places=2,
                                          default=0.0)
     rating_count = models.PositiveIntegerField(default=0)
@@ -87,15 +91,33 @@ class Folder(models.Model):
     # Folder owner
     owner = models.ForeignKey(User)
 
+    # Parent folder
+    parent = models.ForeignKey('Folder', blank=True, null=True)
+
     # Folder name and slug generated from name
     name = models.CharField(max_length=1000)
     slug = models.SlugField()
 
+    submissions = models.ManyToManyField(Submission, through='FolderItem')
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Folder, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
+
 
 class FolderItem(models.Model):
     # Submission and folder relations
-    submission = models.ForeignKey(Submission)
-    folder = models.ForeignKey(Folder)
+    submission = models.ForeignKey(Submission, on_delete=models.CASCADE)
+    folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
 
     # Position in ordering
     position = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['position']

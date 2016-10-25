@@ -6,6 +6,7 @@
         <ul class="nav nav-tabs">
             <li role="presentation"><a href="{% url 'usermgmt:view_profile' author.username %}">Profile</a></li>
             <li role="presentation"{% if tab == 'submissions' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_submissions' username=author.username %}">Submissions</a></li>
+            <li role="presentation"{% if tab == 'folders' %} class="active"{% endif %}><a href="{% url 'submissions:view_root_level_folders' username=author.username %}">Folders</a></li>
             <li role="presentation"{% if tab == 'favorites' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_favorites' username=author.username %}">Favorites</a></li>
             {% if user.is_authenticated and user != author %}
                 <li role="presentation" class="dropdown">
@@ -32,6 +33,73 @@
         </ul>
     </div>
 </div>
+{% if folders or folder %}
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h2>Folders</h2>
+            {% if folder and folder.owner == user %}
+                <p>
+                    <a role="button" class="btn btn-primary" href="{% url 'submissions:update_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
+                        <span class="glyphicon glyphicon-edit"></span> Edit folder
+                    </a>
+                    <a role="button" class="btn btn-default" href="{% url 'submissions:update_submission_order_in_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
+                        <span class="glyphicon glyphicon-sort"></span> Sort submissions
+                    </a>
+                    <a role="button" class="btn btn-danger" href="{% url 'submissions:delete_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
+                        <span class="glyphicon glyphicon-remove"></span> Delete folder
+                    </a>
+                </p>
+            {% endif %}
+            <ul style="list-group">
+                {% if folder %}
+                    {% if folder.parent %}
+                        <li class="list-group-item list-group-item-info">
+                            <a href="{% url 'submissions:view_folder' username=author.username folder_id=folder.parent.id folder_slug=folder.parent.slug %}">
+                                <em>Parent folder: {{ folder.parent.name }}</em>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="list-group-item list-group-item-info">
+                            <a href="{% url 'submissions:view_root_level_folders' username=author.username %}">
+                                <em>Parent folder</em>
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+                {% for curr_folder in folders %}
+                    <li class="list-group-item striped-item">
+                        <a href="{% url 'submissions:view_folder' username=author.username folder_id=curr_folder.id folder_slug=curr_folder.slug %}">
+                            <span class="glyphicon glyphicon-folder-open"></span> &nbsp; {{ curr_folder.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% if user == author %}
+            <div class="col-md-2">
+                <h2>
+                    <a role="button" class="btn btn-primary" href="{% url 'submissions:create_folder' username=author.username %}">
+                        <span class="glyphicon glyphicon-plus"></span> New folder
+                    </a>
+                </h2>
+            </div>
+        {% endif %}
+    </div>
+    <hr />
+    {% if not folder %}
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>Submissions not sorted into folders</h2>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>Submissions in <em>{{ folder.name }}</em></h2>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
         <p>
@@ -50,37 +118,39 @@
         {% endfor %}
     </div>
 </div>
-<div class="row">
-    <div class="col-md-12 text-center">
-        <nav aria-label="Submission pages">
-            <ul class="pagination">
-                {% if submissions.has_previous %}
-                    <li>
-                        <a href="{% url view username=author.username page=submissions.previous_page_number %}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="disabled"><span aria-hidden="true">&laquo;</span></li>
-                {% endif %}
-                {% for page in submissions.paginator.page_range %}
-                    {% if submissions.number == page %}
-                        <li class="active"><a href="{% url view username=author.username page=page %}">{{ page }} <span class="sr-only">(current)</span></a></li>
+{% if submissions.has_next or submissions.has_previous %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <nav aria-label="Submission pages">
+                <ul class="pagination">
+                    {% if submissions.has_previous %}
+                        <li>
+                            <a href="{{ url_prefix }}page/{{ submissions.previous_page_number }}/" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
                     {% else %}
-                        <li><a href="{% url view username=author.username page=page %}">{{ page }}</a></li>
+                        <li class="disabled"><span aria-hidden="true">&laquo;</span></li>
                     {% endif %}
-                {% endfor %}
-                {% if submissions.has_next %}
-                    <li>
-                        <a href="{% url view username=author.username page=submissions.next_page_number %}" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="disabled"><span aria-hidden="true">&raquo;</span></li>
-                {% endif %}
-            </ul>
-        </nav>
+                    {% for page in submissions.paginator.page_range %}
+                        {% if submissions.number == page %}
+                            <li class="active"><a href="{{ url_prefix }}page/{{ page }}/">{{ page }} <span class="sr-only">(current)</span></a></li>
+                        {% else %}
+                            <li><a href="{{ url_prefix }}page/{{ page }}/">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if submissions.has_next %}
+                        <li>
+                            <a href="{{ url_prefix }}page/{{ submissions.next_page_number }}/" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled"><span aria-hidden="true">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
     </div>
-</div>
+{% endif %}
 {% endblock %}
