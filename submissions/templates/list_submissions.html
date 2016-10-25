@@ -6,7 +6,39 @@
         <ul class="nav nav-tabs">
             <li role="presentation"><a href="{% url 'usermgmt:view_profile' author.username %}">Profile</a></li>
             <li role="presentation"{% if tab == 'submissions' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_submissions' username=author.username %}">Submissions</a></li>
-            <li role="presentation"{% if tab == 'folders' %} class="active"{% endif %}><a href="{% url 'submissions:view_root_level_folders' username=author.username %}">Folders</a></li>
+            {% if tab == 'folders' and user == author %}
+                <li role="presentation" class="active dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">Folders <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'submissions:create_folder' username=author.username %}">
+                                <span class="glyphicon glyphicon-plus"></span> New folder
+                            </a>
+                        </li>
+                        {% if folder %}
+                            <li role="divider" class="divider"></li>
+                            <li class="dropdown-header">Edit current folder</li>
+                            <li>
+                                <a href="{% url 'submissions:update_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
+                                    <span class="glyphicon glyphicon-edit"></span> Edit folder details
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'submissions:update_submission_order_in_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
+                                    <span class="glyphicon glyphicon-sort"></span> Sort submissions
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'submissions:delete_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
+                                    <span class="glyphicon glyphicon-remove"></span> Delete folder
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+            {% else %}
+                <li role="presentation"><a href="{% url 'submissions:view_root_level_folders' username=author.username %}">Folders</a></li>
+            {% endif %}
             <li role="presentation"{% if tab == 'favorites' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_favorites' username=author.username %}">Favorites</a></li>
             {% if user.is_authenticated and user != author %}
                 <li role="presentation" class="dropdown">
@@ -37,19 +69,6 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <h2>Folders</h2>
-            {% if folder and folder.owner == user %}
-                <p>
-                    <a role="button" class="btn btn-primary" href="{% url 'submissions:update_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
-                        <span class="glyphicon glyphicon-edit"></span> Edit folder
-                    </a>
-                    <a role="button" class="btn btn-default" href="{% url 'submissions:update_submission_order_in_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
-                        <span class="glyphicon glyphicon-sort"></span> Sort submissions
-                    </a>
-                    <a role="button" class="btn btn-danger" href="{% url 'submissions:delete_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
-                        <span class="glyphicon glyphicon-remove"></span> Delete folder
-                    </a>
-                </p>
-            {% endif %}
             <ul style="list-group">
                 {% if folder %}
                     {% if folder.parent %}
@@ -75,15 +94,6 @@
                 {% endfor %}
             </ul>
         </div>
-        {% if user == author %}
-            <div class="col-md-2">
-                <h2>
-                    <a role="button" class="btn btn-primary" href="{% url 'submissions:create_folder' username=author.username %}">
-                        <span class="glyphicon glyphicon-plus"></span> New folder
-                    </a>
-                </h2>
-            </div>
-        {% endif %}
     </div>
     <hr />
     {% if not folder %}
