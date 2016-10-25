@@ -1,5 +1,5 @@
 configparser==3.5.0
-coverage==4.2
+coverage==4.0.3
 coverage-badge==0.1.2
 Django==1.10.2
 django-nose==1.4.4
@@ -13,4 +13,8 @@ Pillow==3.4.1
 pycodestyle==2.0.0
 pyflakes==1.2.3
 pymdown-extensions==1.1
+python-coveralls==2.9.0
+PyYAML==3.12
+requests==2.11.1
+six==1.10.0
 wheel==0.24.0
