@@ -73,13 +73,13 @@
                 {% if folder %}
                     {% if folder.parent %}
                         <li class="list-group-item list-group-item-info">
-                            <a href="{% url 'submissions:view_folder' username=author.username folder_id=folder.parent.id folder_slug=folder.parent.slug %}">
+                            <a href="{% url 'submissions:view_folder' username=author.username folder_id=folder.parent.id folder_slug=folder.parent.slug %}"><span class="glyphicon glyphicon-menu-left"></span>
                                 <em>Parent folder: {{ folder.parent.name }}</em>
                             </a>
                         </li>
                     {% else %}
                         <li class="list-group-item list-group-item-info">
-                            <a href="{% url 'submissions:view_root_level_folders' username=author.username %}">
+                            <a href="{% url 'submissions:view_root_level_folders' username=author.username %}"><span class="glyphicon glyphicon-menu-left"></span>
                                 <em>Parent folder</em>
                             </a>
                         </li>

@@ -14,6 +14,11 @@ from honeycomb_markdown import HoneycombMarkdown
 from submissions.models import Submission
 
 
+class FriendGroup(models.Model):
+    name = models.CharField(max_length=100)
+    users = models.ManyToManyField(User)
+
+
 class Profile(models.Model):
     # The user object this profile is tied to
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -23,7 +28,7 @@ class Profile(models.Model):
     watched_users = models.ManyToManyField(User, related_name='watched_by')
     favorited_submissions = models.ManyToManyField(Submission,
                                                    related_name='favorited_by')
-    user_groups = models.ManyToManyField(Group)
+    friend_groups = models.ManyToManyField(FriendGroup)
 
     # Profile information
     display_name = models.CharField(max_length=100)

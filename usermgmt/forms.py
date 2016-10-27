@@ -1,8 +1,14 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from django.contrib.auth.models import User
+from django.contrib.auth.models import (
+    Group,
+    User,
+)
 
-from .models import Profile
+from .models import (
+    FriendGroup,
+    Profile,
+)
 
 
 class RegisterForm(UserCreationForm):
@@ -26,3 +32,14 @@ class UpdateProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('display_name', 'profile_raw')
+
+
+class GroupForm(forms.ModelForm):
+    members = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        label='Group members',
+        required=False,
+        help_text="Select the members of the group.")
+    class Meta:
+        model = FriendGroup
+        fields = ('name',)

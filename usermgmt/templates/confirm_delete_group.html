@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="alert alert-info">
+    <p>You are about to delete your group {{ group.name }}.  Are you sure that you want to do this?</p>
+    <form method="post">
+        {% csrf_token %}
+        <input type="submit" value="I'm sure" />
+        <a href="{% url 'usermgmt:view_group' username=user.username group_id=group.id %}">No, take me back</a>
+    </form>
+</div>
+{% endblock %}
