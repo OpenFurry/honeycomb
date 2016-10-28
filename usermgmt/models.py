@@ -1,22 +1,15 @@
 from __future__ import unicode_literals
 import markdown
 
-from django.contrib.auth.models import (
-    Group,
-    User,
-)
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.html import strip_tags
 
+from .group_models import FriendGroup
 from honeycomb_markdown import HoneycombMarkdown
 from submissions.models import Submission
-
-
-class FriendGroup(models.Model):
-    name = models.CharField(max_length=100)
-    users = models.ManyToManyField(User)
 
 
 class Profile(models.Model):

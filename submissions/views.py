@@ -7,9 +7,7 @@ from django.core.paginator import (
     Paginator,
 )
 from django.core.urlresolvers import reverse
-from django.db.models import (
-    Q,
-)
+from django.db.models import Q
 from django.shortcuts import (
     get_object_or_404,
     redirect,
@@ -20,6 +18,10 @@ from .forms import SubmissionForm
 from .models import (
     FolderItem,
     Submission,
+)
+from .utils import (
+    filters_for_anonymous_user,
+    filters_for_authenticated_user,
 )
 from core.templatetags.gravatar import gravatar
 
@@ -32,22 +34,10 @@ def list_user_submissions(request, username=None, page=None):
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
         }, status=403)
-    queries = [Q(owner=author)]
-    if reader != author:
-        queries.append(Q(hidden=False))
-        if (not reader.is_authenticated or
-                not reader.profile.can_see_adult_submissions):
-            queries.append(Q(adult_rating=False))
-        group_queries = []
-        for group in author.groups.all():
-            group_queries.append(Q(user_group__contains=group))
-        if len(group_queries) > 0:
-            queries.append(
-                Q(restricted_to_groups=False) |
-                (Q(restricted_to_groups=True), group_queries))
-        else:
-            queries.append(Q(restricted_to_groups=False))
-    result = Submission.objects.filter(*queries)
+    result = author.submission_set.filter(
+        filters_for_authenticated_user(reader, author) if
+        reader.is_authenticated else filters_for_anonymous_user())
+    print(result)
     paginator = Paginator(result, reader.profile.results_per_page if
                           reader.is_authenticated else 25)
     try:
@@ -78,31 +68,15 @@ def list_user_favorites(request, username=None, page=None):
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
         }, status=403)
-    queries = Q(hidden=False)
-    if reader.is_authenticated:
-        queries &= ~Q(owner__id__in=map(
-            lambda x: x.id, reader.blocked_by.all()))
-    if (not reader.is_authenticated or
-            not reader.profile.can_see_adult_submissions):
-        queries &= Q(adult_rating=False)
-    if reader.groups.count() > 0:
-        queries &= (Q(restricted_to_groups=False) |
-                    (Q(restricted_to_groups=True) &
-                     Q(allowed_groups__id__in=map(
-                        lambda x: x.id, reader.groups.all()))))
-    else:
-        queries &= Q(restricted_to_groups=False)
-    queries_with_owner = Q(owner=reader) | (~Q(owner=reader) & queries)
     result = author.profile.favorited_submissions.filter(
-        queries_with_owner if reader.is_authenticated else queries)
+        filters_for_authenticated_user(reader, author) if
+        reader.is_authenticated else filters_for_anonymous_user())
     paginator = Paginator(result, reader.profile.results_per_page if
                           reader.is_authenticated else 25)
     try:
         submissions = paginator.page(page)
     except PageNotAnInteger:
         submissions = paginator.page(1)
-    except EmptyPage:
-        submissions = paginator.page(paginator.num_pages)
     display_name = '{} {}'.format(
         gravatar(author.email, size=80),
         author.profile.get_display_name())
@@ -119,8 +93,8 @@ def list_user_favorites(request, username=None, page=None):
 
 def view_submission(request, username=None, submission_id=None,
                     submission_slug=None):
-    submission = get_object_or_404(Submission, id=submission_id)
     # Expand short URLs.
+    submission = get_object_or_404(Submission, id=submission_id)
     if username != submission.owner.username or submission_slug != \
             submission.slug:
         return redirect(reverse(
@@ -130,33 +104,14 @@ def view_submission(request, username=None, submission_id=None,
                 'submission_id': submission.id,
                 'submission_slug': submission.slug,
             }))
-    # Check permissions
+    # Fetch the submission if allowed
     reader = request.user
     author = submission.owner
-    can_view = True
-    logged_in = reader.is_authenticated
-    if (logged_in and reader in author.profile.blocked_users.all()):
-        can_view = False
-    if can_view and reader != author:
-        if submission.adult_rating and (
-                not logged_in or not
-                reader.profile.can_see_adult_submissions):
-            can_view = False
-        if can_view and submission.hidden:
-            can_view = False
-        if can_view and (not logged_in and submission.restricted_to_groups):
-            can_view = False
-        if can_view and (logged_in and submission.restricted_to_groups):
-            group_allowed = False
-            submission_group_ids = map(lambda x: x.id,
-                                       submission.allowed_groups.all())
-            user_group_ids = map(lambda x: x.id, request.user.group_set.all())
-            for user_group in user_group_ids:
-                if user_group in submission_group_ids:
-                    group_allowed = True
-                    break
-            can_view = can_view and group_allowed
-    if not can_view:
+    try:
+        submission = Submission.objects.get(Q(id=submission_id) & (
+            filters_for_authenticated_user(reader, author) if
+            reader.is_authenticated else filters_for_anonymous_user()))
+    except Submission.DoesNotExist:
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
         }, status=403)
@@ -181,43 +136,49 @@ def edit_submission(request, username=None, submission_id=None,
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
         }, status=403)
+    form = SubmissionForm(instance=submission)
     if request.method == 'POST':
         form = SubmissionForm(request.POST, instance=submission)
-        submission = form.save(commit=False)
-        submission.save()
-        for folder in form.cleaned_data['folders']:
-            if folder.owner == request.user:
-                try:
-                    item = FolderItem.objects.get(
-                        submission=submission,
-                        folder=folder)
-                    item.save()
-                except FolderItem.DoesNotExist:
-                    item = FolderItem(
-                        submission=submission,
-                        folder=folder,
-                        position=len(FolderItem.objects.filter(
-                            submission=submission)) + 1)
-                    item.save()
-        for folder in submission.folders.all():
-            if folder not in form.cleaned_data['folders']:
-                try:
+        if form.is_valid():
+            submission = form.save(commit=False)
+            submission.save()
+            for folder in form.cleaned_data['folders']:
+                if folder.owner == request.user:
+                    try:
+                        item = FolderItem.objects.get(
+                            submission=submission,
+                            folder=folder)
+                    except FolderItem.DoesNotExist:
+                        item = FolderItem(
+                            submission=submission,
+                            folder=folder,
+                            position=len(FolderItem.objects.filter(
+                                submission=submission)) + 1)
+                        item.save()
+            for folder in submission.folders.all():
+                if folder not in form.cleaned_data['folders']:
                     item = FolderItem.objects.get(
                         submission=submission,
                         folder=folder)
                     item.delete()
-                except FolderItem.DoesNotExist:
-                    continue
-        messages.success(request, 'Submission updated.')
-        return redirect(reverse(
-            'submissions:view_submission',
-            kwargs={
-                'username': submission.owner.username,
-                'submission_id': submission_id,
-                'submission_slug': submission.slug,
-            }))
-    form = SubmissionForm(instance=submission)
+            for group in form.cleaned_data['allowed_groups']:
+                if (group in request.user.profile.friend_groups.all() and
+                        group not in submission.allowed_groups.all()):
+                    submission.allowed_groups.add(group)
+            for group in submission.allowed_groups.all():
+                if group not in form.cleaned_data['allowed_groups']:
+                    submission.allowed_groups.remove(group)
+            messages.success(request, 'Submission updated.')
+            return redirect(reverse(
+                'submissions:view_submission',
+                kwargs={
+                    'username': submission.owner.username,
+                    'submission_id': submission_id,
+                    'submission_slug': submission.slug,
+                }))
     form.fields['folders'].queryset = request.user.folder_set.all()
+    form.fields['allowed_groups'].queryset = \
+        request.user.profile.friend_groups.all()
     return render(request, 'edit_submission.html', {
         'title': 'Edit submission',
         'form': form,
@@ -245,29 +206,35 @@ def delete_submission(request, username=None, submission_id=None,
 
 @login_required
 def submit(request):
+    form = SubmissionForm()
     if request.method == 'POST':
         form = SubmissionForm(request.POST)
-        submission = form.save(commit=False)
-        submission.owner = request.user
-        submission.save()
-        for folder in form.cleaned_data['folders']:
-            if folder.owner == request.user:
-                item = FolderItem(
-                    submission=submission,
-                    folder=folder,
-                    position=len(FolderItem.objects.filter(
-                        submission=submission)) + 1)
-                item.save()
-        messages.success(request, 'Submission created.')
-        return redirect(reverse(
-            'submissions:view_submission',
-            kwargs={
-                'username': submission.owner.username,
-                'submission_id': submission.id,
-                'submission_slug': submission.slug,
-            }))
-    form = SubmissionForm()
+        if form.is_valid():
+            submission = form.save(commit=False)
+            submission.owner = request.user
+            submission.save()
+            for folder in form.cleaned_data['folders']:
+                if folder.owner == request.user:
+                    item = FolderItem(
+                        submission=submission,
+                        folder=folder,
+                        position=len(FolderItem.objects.filter(
+                            submission=submission)) + 1)
+                    item.save()
+            for group in form.cleaned_data['allowed_groups']:
+                if group in request.user.profile.friend_groups.all():
+                    submission.allowed_groups.add(group)
+            messages.success(request, 'Submission created.')
+            return redirect(reverse(
+                'submissions:view_submission',
+                kwargs={
+                    'username': submission.owner.username,
+                    'submission_id': submission.id,
+                    'submission_slug': submission.slug,
+                }))
     form.fields['folders'].queryset = request.user.folder_set.all()
+    form.fields['allowed_groups'].queryset = \
+        request.user.profile.friend_groups.all()
     return render(request, 'edit_submission.html', {
         'title': 'Create submission',
         'form': form,

@@ -4,7 +4,7 @@
 <ul class="list-group">
     <li class="list-group-item list-group-item-info"><a href="{% url 'usermgmt:list_groups' username=user.username %}"><span class="glyphicon glyphicon-menu-left"></span> Back to group listing</a></li>
     {% for member in group.users.all %}
-        <li class="list-group-item striped-item">
+        <li class="list-group-item striped-item group-member">
             <a href="{% url 'usermgmt:view_profile' user.username %}">{{ member.profile.get_display_name }}</a>
         </li>
     {% endfor %}

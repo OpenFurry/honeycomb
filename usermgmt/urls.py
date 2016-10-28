@@ -13,7 +13,8 @@ group_urls = [
     url('^$', group_views.list_groups, name='list_groups'),
     url('^create/$', group_views.create_group, name='create_group'),
     url('^(?P<group_id>\d+)/$', group_views.view_group, name='view_group'),
-    url('^(?P<group_id>\d+)/edit/$', group_views.edit_group, name='edit_group'),
+    url('^(?P<group_id>\d+)/edit/$', group_views.edit_group,
+        name='edit_group'),
     url('^(?P<group_id>\d+)/delete/$', group_views.delete_group,
         name='delete_group'),
 ]

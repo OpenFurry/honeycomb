@@ -1,9 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from django.contrib.auth.models import (
-    Group,
-    User,
-)
+from django.contrib.auth.models import User
 
 from .models import (
     FriendGroup,
@@ -40,6 +37,7 @@ class GroupForm(forms.ModelForm):
         label='Group members',
         required=False,
         help_text="Select the members of the group.")
+
     class Meta:
         model = FriendGroup
         fields = ('name',)
