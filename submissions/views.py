@@ -200,6 +200,7 @@ def delete_submission(request, username=None, submission_id=None,
         return redirect(reverse('usermgmt:view_profile',
                         args=(request.user.username,)))
     return render(request, 'confirm_delete_submission.html', {
+        'title': 'Deleting submission "{}"'.format(submission.title),
         'submission': submission,
     })
 

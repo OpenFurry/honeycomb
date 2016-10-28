@@ -1,70 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row profile-tabs">
-    <div class="col-md-12">
-        <ul class="nav nav-tabs">
-            <li role="presentation"><a href="{% url 'usermgmt:view_profile' author.username %}">Profile</a></li>
-            <li role="presentation"{% if tab == 'submissions' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_submissions' username=author.username %}">Submissions</a></li>
-            {% if tab == 'folders' and user == author %}
-                <li role="presentation" class="active dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">Folders <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="{% url 'submissions:create_folder' username=author.username %}">
-                                <span class="glyphicon glyphicon-plus"></span> New folder
-                            </a>
-                        </li>
-                        {% if folder %}
-                            <li role="divider" class="divider"></li>
-                            <li class="dropdown-header">Edit current folder</li>
-                            <li>
-                                <a href="{% url 'submissions:update_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
-                                    <span class="glyphicon glyphicon-edit"></span> Edit folder details
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'submissions:update_submission_order_in_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
-                                    <span class="glyphicon glyphicon-sort"></span> Sort submissions
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'submissions:delete_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
-                                    <span class="glyphicon glyphicon-remove"></span> Delete folder
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </li>
-            {% else %}
-                <li role="presentation"><a href="{% url 'submissions:view_root_level_folders' username=author.username %}">Folders</a></li>
-            {% endif %}
-            <li role="presentation"{% if tab == 'favorites' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_favorites' username=author.username %}">Favorites</a></li>
-            {% if user.is_authenticated and user != author %}
-                <li role="presentation" class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                        Social <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        {% if watched %}
-                            <li><a href="{% url 'social:unwatch_user' author.username%}">Unfollow user</a></li>
-                        {% else %}
-                            {% if not blocked %}
-                            <li><a href="{% url 'social:watch_user' author.username %}">Follow user</a></li>
-                            {% endif %}
-                        {% endif %}
-                        {% if blocked %}
-                            <li><a href="{% url 'social:unblock_user' author.username %}">Unblock user</a></li>
-                        {% else %}
-                            <li><a href="{% url 'social:block_user' author.username %}">Block user</a></li>
-                            <li><a href="{% url 'social:message_user' author.username %}">Message user</a></li>
-                        {% endif %}
-                    </ul>
-                </li>
-            {% endif %}
-        </ul>
-    </div>
-</div>
+{% include 'profile-tabs-snippet.html' %}
 {% if folders or folder %}
     <div class="row">
         <div class="col-md-8 col-md-offset-2">

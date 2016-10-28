@@ -1,9 +1,111 @@
 {% extends "base.html" %}
+{% load form_extras %}
 
 {% block content %}
 <form method="post">
     {% csrf_token %}
-    {% include "registration/form-snippet.html" with form=form %}
-    <input type="submit" value="Update submission" />
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                {{ form.title.label_tag }}
+                {{ form.title|append_form_control }}
+                {% if form.title.help_text %}
+                    <p class="help-block">{{ form.title.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.description_raw.label_tag }}
+                {{ form.description_raw|append_form_control }}
+                {% if form.description_raw.help_text %}
+                    <p class="help-block">{{ form.description_raw.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.content_raw.label_tag }}
+                {{ form.content_raw|append_form_control }}
+                {% if form.content_raw.help_text %}
+                    <p class="help-block">{{ form.content_raw.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.content_file.label_tag }}
+                {{ form.content_file|append_form_control }}
+                {% if form.content_file.help_text %}
+                    <p class="help-block">{{ form.content_file.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.icon.label_tag }}
+                {{ form.icon|append_form_control }}
+                {% if form.icon.help_text %}
+                    <p class="help-block">{{ form.icon.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.cover.label_tag }}
+                {{ form.cover|append_form_control }}
+                {% if form.cover.help_text %}
+                    <p class="help-block">{{ form.cover.help_text|safe }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                {{ form.adult_rating.label_tag }}
+                {{ form.adult_rating|append_form_control }}
+                {% if form.adult_rating.help_text %}
+                    <p class="help-block">{{ form.adult_rating.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.can_comment.label_tag }}
+                {{ form.can_comment|append_form_control }}
+                {% if form.can_comment.help_text %}
+                    <p class="help-block">{{ form.can_comment.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.can_enjoy.label_tag }}
+                {{ form.can_enjoy|append_form_control }}
+                {% if form.can_enjoy.help_text %}
+                    <p class="help-block">{{ form.can_enjoy.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.hidden.label_tag }}
+                {{ form.hidden|append_form_control }}
+                {% if form.hidden.help_text %}
+                    <p class="help-block">{{ form.hidden.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.restricted_to_groups.label_tag }}
+                {{ form.restricted_to_groups|append_form_control }}
+                {% if form.restricted_to_groups.help_text %}
+                    <p class="help-block">{{ form.restricted_to_groups.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.allowed_groups.label_tag }}
+                {{ form.allowed_groups|append_form_control }}
+                {% if form.allowed_groups.help_text %}
+                    <p class="help-block">{{ form.allowed_groups.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.folders.label_tag }}
+                {{ form.folders|append_form_control }}
+                {% if form.folders.help_text %}
+                    <p class="help-block">{{ form.folders.help_text|safe }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Update submission</button>
+    </div>
 </form>
 {% endblock %}

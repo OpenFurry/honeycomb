@@ -559,7 +559,7 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
                                    }))
         self.assertContains(
             response,
-            '<input type="submit" value="Update submission" />')
+            'Update submission</button')
 
     def test_can_save_form(self):
         self.client.login(username='foo',
@@ -730,7 +730,7 @@ class TestSubmitView(SubmissionsViewsBaseTestCase):
         response = self.client.get(reverse('submissions:submit'))
         self.assertContains(
             response,
-            '<input type="submit" value="Update submission" />')
+            'Update submission</button>')
 
     def test_submission_created(self):
         folder = Folder(

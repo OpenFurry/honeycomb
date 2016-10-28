@@ -55,7 +55,7 @@ class TestCreateGroupView(BaseGroupViewsTestCase):
                 'username': 'foo',
             }))
         self.assertContains(response, 'Create a new group')
-        self.assertContains(response, 'value="Save group"')
+        self.assertContains(response, 'Save group')
 
     def test_can_save_form_no_members(self):
         self.client.login(username='foo',
@@ -128,7 +128,7 @@ class TestEditGroupView(BaseGroupViewsTestCase):
                 'group_id': self.group.id,
             }))
         self.assertContains(response, 'Edit group "Group 1"')
-        self.assertContains(response, 'value="Save group"')
+        self.assertContains(response, 'Save group')
 
     def test_can_save_form_no_members(self):
         self.client.login(username='foo',

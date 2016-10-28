@@ -46,6 +46,7 @@ class Register(FormView):
 
 @login_required
 def update_profile(request):
+    form = UpdateProfileForm(instance=request.user.profile)
     if request.method == 'POST':
         form = UpdateProfileForm(request.POST, instance=request.user.profile)
         form.save()
@@ -53,10 +54,11 @@ def update_profile(request):
                          '<a href="{}">here</a>!'.format(
                              reverse('usermgmt:view_profile',
                                      args=(request.user.username,))))
-    form = UpdateProfileForm(instance=request.user.profile)
-    return render(request,
-                  'update_profile.html',
-                  {'title': 'Update profile', 'form': form})
+    return render(request, 'update_profile.html', {
+        'title': 'Update profile',
+        'form': form,
+        'tab': 'profile',
+    })
 
 
 def view_profile(request, username):
@@ -81,8 +83,9 @@ def view_profile(request, username):
                   {
                       'title': display_name,
                       'subtitle': subtitle,
-                      'user_profile': user,
+                      'author': user,
                       'watched': watched,
                       'blocked': blocked,
                       'blocked_by': blocked_by,
+                      'tab': 'profile',
                   })

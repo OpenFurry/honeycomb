@@ -24,7 +24,7 @@ class Profile(models.Model):
     friend_groups = models.ManyToManyField(FriendGroup)
 
     # Profile information
-    display_name = models.CharField(max_length=100)
+    display_name = models.CharField(max_length=100, blank=True)
     profile_raw = models.TextField(blank=True, verbose_name='profile text')
     profile_rendered = models.TextField(blank=True)
 

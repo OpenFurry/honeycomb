@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include 'profile-tabs-snippet.html' with author=user %}
 <ul style="list-group">
     {% for folder in folders %}
         <li class="list-group-item striped-item">

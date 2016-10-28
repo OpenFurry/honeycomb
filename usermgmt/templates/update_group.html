@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include 'profile-tabs-snippet.html' with author=user %}
 <form method="post">
     {% csrf_token %}
-    {% include 'registration/form-snippet.html' with form=form %}
-    <input type="submit" value="Save group" />
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            {% include 'registration/form-snippet.html' with form=form %}
+        </div>
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Save group" </button>
+    </div>
 </form>
 {% endblock %}

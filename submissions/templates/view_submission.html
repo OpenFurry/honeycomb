@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if user == submission.owner %}
+<div class="row">
+    <div class="col-md-12 text-right">
+        <p>
+            <a role="button" class="btn btn-default" href="{% url 'submissions:edit_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}"><span class="glyphicon glyphicon-edit"></span> Edit submission</a>
+            <a role="button" class="btn btn-danger" href="{% url 'submissions:delete_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}"><span class="glyphicon glyphicon-remove"></span> Delete submission</a>
+        </p>
+    </div>
+</div>
+{% endif %}
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">

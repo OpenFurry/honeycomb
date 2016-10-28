@@ -5,6 +5,23 @@ body {
     /* background: url('lightpaperfibers.png'); */
 }
 
+.accessibility-aid {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+}
+
+.accessability-aid:focus {
+    width: auto;
+    height: auto;
+    margin: auto;
+    overflow: visible;
+    clip: none;
+}
+
 .navbar-static-top {
     margin-bottom: 19px;
 }
@@ -79,4 +96,10 @@ footer {
 footer img {
     height: 14px;
     vertical-align: text-top;
+}
+
+@media (max-width: 992px) {
+    footer div {
+        text-align: right;
+    }
 }

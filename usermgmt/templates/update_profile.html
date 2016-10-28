@@ -1,17 +1,50 @@
 {% extends "base.html" %}
+{% load form_extras %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <form method="post">
-            {% csrf_token %}
-            {% include "registration/form-snippet.html" with form=form %}
-            <input type="submit" value="Update profile" />
-        </form>
+{% include 'profile-tabs-snippet.html' with author=user %}
+<form method="post">
+    {% csrf_token %}
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                {{ form.display_name.label_tag }}
+                {{ form.display_name|append_form_control }}
+                {% if form.display_name.help_text %}
+                    <p class="help-block">{{ form.display_name.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.profile_raw.label_tag }}
+                {{ form.profile_raw|append_form_control }}
+                {% if form.profile_raw.help_text %}
+                    <p class="help-block">{{ form.profile_raw.help_text|safe }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                {{ form.can_see_adult_submissions.label_tag }}
+                {{ form.can_see_adult_submissions|append_form_control }}
+                {% if form.can_see_adult_submissions.help_text %}
+                    <p class="help-block">{{ form.can_see_adult_submissions.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.results_per_page.label_tag }}
+                {{ form.results_per_page|append_form_control }}
+                {% if form.results_per_page.help_text %}
+                    <p class="help-block">{{ form.results_per_page.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            {# Attributes TODO #}
+        </div>
     </div>
-    <div class="col-md-4">
-        <p>Flags TODO</p>
-        <p>Attributes TODO</p>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Update profile</button>
     </div>
-</div>
+</form>
 {% endblock %}

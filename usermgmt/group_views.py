@@ -16,6 +16,7 @@ def list_groups(request, username=None):
     return render(request, 'list_groups.html', {
         'title': 'Groups',
         'groups': request.user.profile.friend_groups.all(),
+        'tab': 'social',
     })
 
 
@@ -39,6 +40,7 @@ def create_group(request, username=None):
     return render(request, 'update_group.html', {
         'title': 'Create a new group',
         'form': form,
+        'tab': 'social',
     })
 
 
@@ -53,6 +55,7 @@ def view_group(request, username=None, group_id=None):
     return render(request, 'view_group.html', {
         'title': 'Viewing group "{}"'.format(group.name),
         'group': group,
+        'tab': 'social',
     })
 
 
@@ -84,6 +87,7 @@ def edit_group(request, username=None, group_id=None):
     return render(request, 'update_group.html', {
         'title': 'Edit group "{}"'.format(group.name),
         'form': form,
+        'tab': 'social',
     })
 
 
@@ -102,6 +106,7 @@ def delete_group(request, username=None, group_id=None):
             'username': request.user.username,
         }))
     return render(request, 'confirm_delete_group.html', {
-        'title': 'Deleting {}'.format(group.name),
+        'title': 'Deleting group "{}"'.format(group.name),
         'group': group,
+        'tab': 'social',
     })
