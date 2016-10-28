@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {% include 'registration/form-snippet.html' with form=form %}
+    <input type="submit" value="Save group" />
+</form>
+{% endblock %}

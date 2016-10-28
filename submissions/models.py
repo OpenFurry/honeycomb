@@ -1,15 +1,13 @@
 from __future__ import unicode_literals
 import markdown
 
-from django.contrib.auth.models import (
-    Group,
-    User,
-)
+from django.contrib.auth.models import User
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.html import strip_tags
 
 from honeycomb_markdown import HoneycombMarkdown
+from usermgmt.group_models import FriendGroup
 
 
 class Submission(models.Model):
@@ -42,7 +40,7 @@ class Submission(models.Model):
         default=False,
         verbose_name='submission for adults only')
     hidden = models.BooleanField(default=False)
-    allowed_groups = models.ManyToManyField(Group, blank=True)
+    allowed_groups = models.ManyToManyField(FriendGroup, blank=True)
 
     # Organization
     restricted_to_groups = models.BooleanField(
@@ -85,6 +83,14 @@ class Submission(models.Model):
             }
         else:
             return {'stars': '', 'average': 0, 'count': 0}
+
+    def __str__(self):
+        return '{} by {} (id:{})'.format(self.title, self.owner.username,
+                                         self.id)
+
+    def __unicode__(self):
+        return '{} by {} (id:{})'.format(self.title, self.owner.username,
+                                         self.id)
 
 
 class Folder(models.Model):

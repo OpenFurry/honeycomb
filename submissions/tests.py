@@ -1,5 +1,3 @@
-import unittest
-
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -9,10 +7,8 @@ from .models import (
     FolderItem,
     Submission,
 )
+from usermgmt.group_models import FriendGroup
 from usermgmt.models import Profile
-
-
-groups_implemented = False
 
 
 class SubmissionsViewsBaseTestCase(TestCase):
@@ -28,6 +24,13 @@ class SubmissionsViewsBaseTestCase(TestCase):
         cls.bar.profile = Profile(profile_raw='Whoa', display_name='Bad Wolf',
                                   results_per_page=1)
         cls.bar.profile.save()
+        cls.baz = User.objects.create_user('baz', 'baz@example.com',
+                                           'wow a good password')
+        cls.baz.profile = Profile(profile_raw='Honk', display_name='BAZ Wolf')
+        cls.baz.profile.save()
+        cls.group = FriendGroup(name='Group 1')
+        cls.group.save()
+        cls.foo.profile.friend_groups.add(cls.group)
         cls.submission1 = Submission(
             owner=cls.foo,
             title='Submission 1',
@@ -159,17 +162,43 @@ class TestLoggedInListUserSubmissionsView(SubmissionsViewsBaseTestCase):
                 'page': 2
             })))
 
-    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
     def test_group_locked_submission_without_matching_group_not_shown(self):
-        pass
+        self.submission2.restricted_to_groups = True
+        self.submission2.save()
+        self.submission2.allowed_groups.add(self.group)
+        self.client.login(username='bar',
+                          password='another good password')
+        response = self.client.get(reverse(
+            'submissions:list_user_submissions', kwargs={'username': 'foo'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertNotContains(response, 'Submission 2')
 
-    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
     def test_group_locked_submission_with_matching_group_shown(self):
-        pass
+        self.group.users.add(self.bar)
+        self.group.save()
+        self.bar.profile.results_per_page = 25
+        self.bar.profile.save()
+        self.submission2.restricted_to_groups = True
+        self.submission2.hidden = False
+        self.submission2.allowed_groups.add(self.group)
+        self.submission2.save()
+        self.client.login(username='bar',
+                          password='another good password')
+        response = self.client.get(reverse(
+            'submissions:list_user_submissions', kwargs={'username': 'foo'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertContains(response, 'Submission 2')
 
-    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
     def test_author_can_see_own_group_locked_submissions(self):
-        pass
+        self.submission2.restricted_to_groups = True
+        self.submission2.save()
+        self.submission2.allowed_groups.add(self.group)
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.get(reverse(
+            'submissions:list_user_submissions', kwargs={'username': 'foo'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertContains(response, 'Submission 2')
 
 
 class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
@@ -289,17 +318,41 @@ class TestLoggedInListUserFavoritesView(SubmissionsViewsBaseTestCase):
                 'page': 2
             })))
 
-    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
     def test_group_locked_submission_without_matching_group_not_shown(self):
-        pass
+        self.submission2.restricted_to_groups = True
+        self.submission2.save()
+        self.submission2.allowed_groups.add(self.group)
+        self.client.login(username='baz',
+                          password='wow a good password')
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertNotContains(response, 'Submission 2')
 
-    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
     def test_group_locked_submission_with_matching_group_shown(self):
-        pass
+        self.group.users.add(self.baz)
+        self.group.save()
+        self.submission2.restricted_to_groups = True
+        self.submission2.hidden = False
+        self.submission2.allowed_groups.add(self.group)
+        self.submission2.save()
+        self.client.login(username='baz',
+                          password='wow a good password')
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertContains(response, 'Submission 2')
 
-    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
     def test_author_can_see_own_group_locked_submissions(self):
-        pass
+        self.submission2.restricted_to_groups = True
+        self.submission2.save()
+        self.submission2.allowed_groups.add(self.group)
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.get(reverse(
+            'submissions:list_user_favorites', kwargs={'username': 'bar'}))
+        self.assertContains(response, 'Submission 1')
+        self.assertContains(response, 'Submission 2')
 
 
 class TestLoggedOutViewSubmissionView(SubmissionsViewsBaseTestCase):
@@ -428,13 +481,50 @@ class TestLoggedInViewSubmissionView(SubmissionsViewsBaseTestCase):
                                    }))
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
-    def test_submission_restricted_to_groups_forbidden(self):
-        pass
+    def test_group_locked_submission_without_matching_group_not_shown(self):
+        self.submission1.restricted_to_groups = True
+        self.submission1.save()
+        self.submission1.allowed_groups.add(self.group)
+        self.client.login(username='baz',
+                          password='wow a good password')
+        response = self.client.get(reverse('submissions:view_submission',
+                                   kwargs={
+                                        'username': 'foo',
+                                        'submission_id': 1,
+                                        'submission_slug': 'submission-1',
+                                   }))
+        self.assertEqual(response.status_code, 403)
 
-    @unittest.skipUnless(groups_implemented, 'requires groups implemented')
-    def test_author_can_see_own_group_locked_submission(self):
-        pass
+    def test_group_locked_submission_with_matching_group_shown(self):
+        self.group.users.add(self.baz)
+        self.group.save()
+        self.submission1.restricted_to_groups = True
+        self.submission1.hidden = False
+        self.submission1.allowed_groups.add(self.group)
+        self.submission1.save()
+        self.client.login(username='baz',
+                          password='wow a good password')
+        response = self.client.get(reverse('submissions:view_submission',
+                                   kwargs={
+                                        'username': 'foo',
+                                        'submission_id': 1,
+                                        'submission_slug': 'submission-1',
+                                   }))
+        self.assertEqual(response.status_code, 200)
+
+    def test_author_can_see_own_group_locked_submissions(self):
+        self.submission1.restricted_to_groups = True
+        self.submission1.save()
+        self.submission1.allowed_groups.add(self.group)
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.get(reverse('submissions:view_submission',
+                                   kwargs={
+                                        'username': 'foo',
+                                        'submission_id': 1,
+                                        'submission_slug': 'submission-1',
+                                   }))
+        self.assertEqual(response.status_code, 200)
 
 
 class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
@@ -506,7 +596,7 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
             {
                 'title': 'Wow, a new title!',
                 'content_raw': 'A whole new story!',
-                'folders': [1]
+                'folders': [folder.id]
             },
             follow=True)
         self.assertContains(response, 'Wow, a new title!')
@@ -540,6 +630,47 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
         self.assertContains(response, 'Wow, a new title!')
         self.assertContains(response, 'A whole new story!')
         self.assertEqual(folder.submissions.count(), 0)
+
+    def test_can_add_to_groups(self):
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.post(
+            reverse('submissions:edit_submission',
+                    kwargs={
+                        'username': 'foo',
+                        'submission_id': 1,
+                        'submission_slug': 'submission-1',
+                    }),
+            {
+                'title': 'Wow, a new title!',
+                'content_raw': 'A whole new story!',
+                'allowed_groups': [self.group.id]
+            },
+            follow=True)
+        self.assertContains(response, 'Wow, a new title!')
+        self.assertContains(response, 'A whole new story!')
+        self.assertEqual(self.submission1.allowed_groups.count(), 1)
+
+    def test_can_remove_from_groups(self):
+        self.submission1.allowed_groups.add(self.group)
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.post(
+            reverse('submissions:edit_submission',
+                    kwargs={
+                        'username': 'foo',
+                        'submission_id': 1,
+                        'submission_slug': 'submission-1',
+                    }),
+            {
+                'title': 'Wow, a new title!',
+                'content_raw': 'A whole new story!',
+                'folders': [],
+            },
+            follow=True)
+        self.assertContains(response, 'Wow, a new title!')
+        self.assertContains(response, 'A whole new story!')
+        self.assertEqual(self.submission1.allowed_groups.count(), 0)
 
 
 class TestDeleteSubmissionView(SubmissionsViewsBaseTestCase):
@@ -612,7 +743,9 @@ class TestSubmitView(SubmissionsViewsBaseTestCase):
                                     {
                                         'title': 'Reasons foxes are great',
                                         'content_raw': 'There are too many.',
-                                        'folders': [1]
+                                        'folders': [1],
+                                        'allowed_groups': [self.group.id],
                                     }, follow=True)
         self.assertContains(response, 'Reasons foxes are great')
         self.assertEqual(folder.submissions.count(), 1)
+        self.assertEqual(self.group.submission_set.count(), 1)
