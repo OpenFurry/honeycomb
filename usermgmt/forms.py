@@ -28,7 +28,12 @@ class RegisterForm(UserCreationForm):
 class UpdateProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('display_name', 'profile_raw')
+        fields = (
+            'can_see_adult_submissions',
+            'display_name',
+            'profile_raw',
+            'results_per_page',
+        )
 
 
 class GroupForm(forms.ModelForm):

@@ -178,6 +178,7 @@ def delete_folder(request, username=None, folder_id=None, folder_slug=None):
         messages.success(request, 'Folder deleted successfully.')
         return redirect(next_url)
     return render(request, 'confirm_delete_folder.html', {
+        'title': 'Deleting folder "{}"'.format(folder.name),
         'folder': folder,
     })
 

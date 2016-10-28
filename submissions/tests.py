@@ -559,7 +559,7 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
                                    }))
         self.assertContains(
             response,
-            '<input type="submit" value="Update submission" />')
+            'Update submission</button')
 
     def test_can_save_form(self):
         self.client.login(username='foo',
@@ -578,6 +578,7 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
             follow=True)
         self.assertContains(response, 'Wow, a new title!')
         self.assertContains(response, 'A whole new story!')
+        self.assertNotEqual(self.submission1.ctime, self.submission1.mtime)
 
     def test_can_add_to_folders(self):
         folder = Folder(
@@ -730,7 +731,7 @@ class TestSubmitView(SubmissionsViewsBaseTestCase):
         response = self.client.get(reverse('submissions:submit'))
         self.assertContains(
             response,
-            '<input type="submit" value="Update submission" />')
+            'Update submission</button>')
 
     def test_submission_created(self):
         folder = Folder(

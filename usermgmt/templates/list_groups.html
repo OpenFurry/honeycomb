@@ -1,16 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-<ul class="list-group">
-    {% for group in groups %}
-        <li class="list-group-item striped-item">
-            <a href="{% url 'usermgmt:view_group' username=user.username group_id=group.id %}">{{ group.name }}</a>
-            <div class="pull-right">
-                <a class="btn btn-default" role="button" href="{% url 'usermgmt:edit_group' username=user.username group_id=group.id %}"><span class="glyphicon glyphicon-edit"></span> Edit group</a>
-                <a class="btn btn-danger" role="button" href="{% url 'usermgmt:delete_group' username=user.username group_id=group.id %}"><span class="glyphicon glyphicon-remove"></span> Delete group</a>
-            </div>
-            <div class="clearfix"></div>
-        </li>
-    {% endfor %}
-</ul>
+{% include 'profile-tabs-snippet.html' with author=user %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <ul class="list-group">
+            {% for group in groups %}
+                <li class="list-group-item striped-item">
+                    <a href="{% url 'usermgmt:view_group' username=user.username group_id=group.id %}">{{ group.name }}</a>
+                    <div class="pull-right">
+                        <a class="btn btn-default" role="button" href="{% url 'usermgmt:edit_group' username=user.username group_id=group.id %}"><span class="glyphicon glyphicon-edit"></span> Edit group</a>
+                        <a class="btn btn-danger" role="button" href="{% url 'usermgmt:delete_group' username=user.username group_id=group.id %}"><span class="glyphicon glyphicon-remove"></span> Delete group</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

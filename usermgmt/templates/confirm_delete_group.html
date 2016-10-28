@@ -1,12 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include 'profile-tabs-snippet.html' with author=user %}
 <div class="alert alert-info">
     <p>You are about to delete your group {{ group.name }}.  Are you sure that you want to do this?</p>
     <form method="post">
         {% csrf_token %}
-        <input type="submit" value="I'm sure" />
-        <a href="{% url 'usermgmt:view_group' username=user.username group_id=group.id %}">No, take me back</a>
+        <p><button class="btn btn-danger" type="submit"><span class="glyphicon glyphicon-remove"></span> Delete group</button></p>
+        <p><a href="{% url 'usermgmt:view_group' username=user.username group_id=group.id %}">No, take me back</a></p>
     </form>
+</div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h2>Group members</h2>
+        <ul class="list-group">
+            {% for member in group.users.all %}
+                <li class="list-group-item striped-item group-member">
+                    <a href="{% url 'usermgmt:view_profile' user.username %}">{{ member.profile.get_display_name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endblock %}

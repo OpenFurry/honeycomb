@@ -1,12 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include 'profile-tabs-snippet.html' with author=user %}
 <div class="alert alert-info">
     <p>You are about to delete your folder {{ folder.name }}.  Are you sure that you want to do this?  All submissions in the folder are safe; this folder will simply be removed from their list of folders.</p>
     <form method="post">
         {% csrf_token %}
-        <input type="submit" value="I'm sure" />
-        <a href="{% url 'submissions:view_folder' username=user.username folder_id=folder.id folder_slug=folder.slug %}">No, take me back</a>
+        <p><button class="btn btn-danger" type="submit"><span class="glyphicon glyphicon-remove"></span> Delete folder</button></p>
+        <p><a href="{% url 'submissions:view_folder' username=user.username folder_id=folder.id folder_slug=folder.slug %}">No, take me back</a></p>
     </form>
+</div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h2>Folder contents</h2>
+        {% for submission in folder.submissions.all %}
+            <div class="row striped-item">
+                <div class="col-md-12">
+                    {% include 'submission-list-snippet.html' with submission=submission author=submission.owner %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

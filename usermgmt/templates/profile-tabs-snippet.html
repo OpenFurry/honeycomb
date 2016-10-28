@@ -1,0 +1,107 @@
+<div class="row profile-tabs">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs">
+            <li role="presentation"{% if tab == 'profile' %} class="active"{% endif %}><a href="{% url 'usermgmt:view_profile' author.username %}">Profile</a></li>
+            <li role="presentation"{% if tab == 'submissions' %} class="active"{% endif %}><a href="{% url 'submissions:list_user_submissions' username=author.username %}">Submissions</a></li>
+            {% if user == author %}
+                <li role="presentation" class="dropdown{% if tab == 'folders' %} active{% endif %}">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="#">Folders <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-toggle" href="{% url 'submissions:view_root_level_folders' username=author.username %}"><span class="glyphicon glyphicon-list"></span> List folders</a></li>
+                        <li>
+                            <a href="{% url 'submissions:create_folder' username=author.username %}">
+                                <span class="glyphicon glyphicon-plus"></span> New folder
+                            </a>
+                        </li>
+                        {% if folder %}
+                            <li role="divider" class="divider"></li>
+                            <li class="dropdown-header">Edit current folder</li>
+                            <li>
+                                <a href="{% url 'submissions:update_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
+                                    <span class="glyphicon glyphicon-edit"></span> Edit folder details
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'submissions:update_submission_order_in_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
+                                    <span class="glyphicon glyphicon-sort"></span> Sort submissions
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'submissions:delete_folder' username=author.username folder_id=folder.id folder_slug=folder.slug %}">
+                                    <span class="glyphicon glyphicon-remove"></span> Delete folder
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+            {% else %}
+                <li role="presentation"{% if tab == 'folders' %} class="active"{% endif %}><a href="{% url 'submissions:view_root_level_folders' username=author.username %}">Folders</a></li>
+            {% endif %}
+            <li role="presentation"{% if tab == 'favorites' %} class="active"{% endif %}"><a href="{% url 'submissions:list_user_favorites' username=author.username %}">Favorites</a></li>
+            {% if user.is_authenticated %}
+                {% if user == author %}
+                    <li role="presentation" class="dropdown{% if tab == 'social' %} active{% endif %}">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            Social <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'usermgmt:list_groups' username=author.username %}"><span class="glyphicon glyphicon-list"></span> Groups</a></li>
+                            {% if group %}
+                                <li><a href="{% url 'usermgmt:edit_group' username=author.username group_id=group.id %}"><span class="glyphicon glyphicon-edit"></span> Edit group</a></li>
+                                <li><a href="{% url 'usermgmt:delete_group' username=author.username group_id=group.id %}"><span class="glyphicon glyphicon-remove"></span> Delete group</a></li>
+                            {% else %}
+                                <li><a href="{% url 'usermgmt:create_group' username=author.username %}"><span class="glyphicon glyphicon-plus"></span> Create group</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% else %}
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            Social <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if watched %}
+                                <li><a><form action="{% url 'social:unwatch_user' author.username%}" method="post">
+                                    {% csrf_token %}
+                                    <button class="link-button" type="submit">
+                                        Unfollow user
+                                    </button>
+                                </form></a></li>
+                            {% else %}
+                                {% if not blocked %}
+                                    <li><a><form action="{% url 'social:watch_user' author.username %}" method="post">
+                                        {% csrf_token %}
+                                        <button class="link-button" type="submit">
+                                            Follow user
+                                        </button>
+                                    </form></a></li>
+                                {% endif %}
+                            {% endif %}
+                            {% if blocked %}
+                                <li><a><form action="{% url 'social:unblock_user' author.username %}" method="post">
+                                    {% csrf_token %}
+                                    <button class="link-button" type="submit">
+                                        Unblock user
+                                    </button>
+                                </form></a></li>
+                            {% else %}
+                                <li><a><form action="{% url 'social:block_user' author.username %}" method="post">
+                                    {% csrf_token %}
+                                    <button class="link-button" type="submit">
+                                        Block user
+                                    </button>
+                                </form></a></li>
+                                <li><a><form action="{% url 'social:message_user' author.username %}" method="post">
+                                    {% csrf_token %}
+                                    <button class="link-button" type="submit">
+                                        Message user
+                                    </button>
+                                </form></a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
+            {% endif %}
+        </ul>
+    </div>
+</div>

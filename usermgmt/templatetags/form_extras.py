@@ -11,4 +11,6 @@ def append_form_control(value):
             'input', 'input class="form-control"'
         ).replace(
             'textarea', 'textarea class="form-control"'
+        ).replace(
+            '<select', '<select class="form-control"'
         )

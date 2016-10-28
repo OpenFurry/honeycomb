@@ -51,7 +51,7 @@ class Submission(models.Model):
 
     # Additional metadata
     ctime = models.DateTimeField(auto_now_add=True)
-    mtime = models.DateTimeField(auto_now=True)
+    mtime = models.DateTimeField(blank=True, null=True)
     views = models.PositiveIntegerField(default=0)
     enjoy_votes = models.PositiveIntegerField(default=0)
     rating_stars = models.CharField(max_length=40, default='&#x2606;' * 5)
