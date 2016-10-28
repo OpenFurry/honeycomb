@@ -13,6 +13,7 @@ from django.shortcuts import (
     redirect,
     render,
 )
+from django.utils import timezone
 
 from .forms import SubmissionForm
 from .models import (
@@ -141,6 +142,7 @@ def edit_submission(request, username=None, submission_id=None,
         form = SubmissionForm(request.POST, instance=submission)
         if form.is_valid():
             submission = form.save(commit=False)
+            submission.mtime = timezone.now()
             submission.save()
             for folder in form.cleaned_data['folders']:
                 if folder.owner == request.user:

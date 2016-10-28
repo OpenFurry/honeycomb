@@ -578,6 +578,7 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
             follow=True)
         self.assertContains(response, 'Wow, a new title!')
         self.assertContains(response, 'A whole new story!')
+        self.assertNotEqual(self.submission1.ctime, self.submission1.mtime)
 
     def test_can_add_to_folders(self):
         folder = Folder(
