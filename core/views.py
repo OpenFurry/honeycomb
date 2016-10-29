@@ -1,5 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
+from haystack.generic_views import SearchView
+from haystack.forms import SearchForm
 
 
 def front(request):
@@ -11,3 +13,8 @@ def flatpage_list(request):
         'title': 'About',
         'prefix': reverse('core:flatpage_list'),
     })
+
+
+class BasicSearchView(SearchView):
+    template_name = 'search/search.html'
+    form_class = SearchForm

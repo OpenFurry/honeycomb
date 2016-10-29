@@ -1,0 +1,5 @@
+{{ object.title }}
+{{ object.owner.username }}
+{{ object.owner.get_display_name }}
+{{ object.description_rendered|striptags }}
+{{ object.content_rendered|striptags }}
