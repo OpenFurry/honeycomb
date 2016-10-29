@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'publishers',
     'promotion',
     'taggit',
+    'haystack',
     'django_nose',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -146,6 +147,11 @@ STATIC_ROOT = './static'
 
 
 # Additional configuration for Honeycomb
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
 SUBMISSION_BASE = ('^~(?P<username>[^/]+)/(?P<submission_id>\d+)-'
                    '(?P<submission_slug>[-\w]+)/')
 LOGOUT_REDIRECT_URL = "/login/"

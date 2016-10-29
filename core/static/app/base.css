@@ -81,6 +81,16 @@ body {
     border-bottom: none;
 }
 
+.search-form .input-group {
+    width: 100%;
+}
+.search-form .form-control {
+    width: 80%;
+}
+.search-form .input-group-btn {
+    width: 20%;
+}
+
 textarea {
     font-family: monospace;
 }
