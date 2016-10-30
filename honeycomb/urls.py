@@ -11,4 +11,5 @@ urlpatterns = [
     url('^', include('social.urls')),
     url('^', include('core.urls')),
     url('^', include('submissions.urls')),
+    url('^activity/', include('activitystream.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

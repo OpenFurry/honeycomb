@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'social',
     'publishers',
     'promotion',
+    'activitystream',
+    'administration',
     'taggit',
     'haystack',
     'django_nose',
@@ -147,13 +149,37 @@ STATIC_ROOT = './static'
 
 
 # Additional configuration for Honeycomb
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'dev-cache',
+    }
+    # TODO production should use memcached
+    # 'default': {
+    #     'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+    #     'LOCATION': '127.0.0.1:11211',
+    # }
+}
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     },
+    # 'default': {
+    #     'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    # },
+    # TODO production should use elasticsearch
+    # 'default': {
+    #     'ENGINE':
+    #         ('haystack.backends.elasticsearch_backend.'
+    #          'ElasticsearchSearchEngine'),
+    #     'URL': 'http://127.0.0.1:9200/',
+    #     'INDEX_NAME': 'haystack',
+    # },
 }
+TAGGIT_CASE_INSENSITIVE = True
 SUBMISSION_BASE = ('^~(?P<username>[^/]+)/(?P<submission_id>\d+)-'
                    '(?P<submission_slug>[-\w]+)/')
+ACTIVITYSTREAM_ROTATION = 30  # Rotation period in days
 LOGOUT_REDIRECT_URL = "/login/"
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',

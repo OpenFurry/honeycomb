@@ -26,6 +26,9 @@ class Promotion(models.Model):
     # The user promoting the submission
     promoter = models.ForeignKey(User)
 
+    # The date the promotion ends
+    promotion_end_date = models.DateTimeField(null=True)
+
 
 class Ad(models.Model):
     # The ad's owner
