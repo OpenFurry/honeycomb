@@ -8,75 +8,74 @@ from django.contrib.contenttypes.models import ContentType
 class Activity(models.Model):
     ACTIVITY_TYPES = (
         # Users and profiles
-        ('USER:REG', 'User: registered'),
-        ('USER:LOGIN', 'User: logged in'),
-        ('USER:LOGOUT', 'User: logged out'),
-        ('USER:PWCHANGE', 'User: password changed'),
-        ('USER:PWRESET', 'User: password reset'),
-        ('PROFILE:UPDATE', 'User: profile updated'),
-        ('PROFILE:VIEW', 'User: profile viewed'),
+        ('user:reg', 'user: registered'),
+        ('user:login', 'user: logged in'),
+        ('user:logout', 'user: logged out'),
+        ('user:pwchange', 'user: password changed'),  # TODO
+        ('user:pwreset', 'user: password reset'),  # TODO
+        ('profile:update', 'user: profile updated'),
+        ('profile:view', 'user: profile viewed'),
 
         # Administration flags
-        ('ADMINFLAG:CREATE', 'Administration flag: created'),
-        ('ADMINFLAG:UPDATE', 'Administration flag: updated'),
-        ('ADMINFLAG:DELETE', 'Administration flag: deleted'),
-        ('ADMINFLAG:VIEW', 'Administration flag: viewed'),
+        ('adminflag:create', 'administration flag: created'),
+        ('adminflag:update', 'administration flag: updated'),
+        ('adminflag:delete', 'administration flag: deleted'),
+        ('adminflag:view', 'administration flag: viewed'),
 
         # User groups
-        ('GROUP:CREATE', 'Group: created'),
-        ('GROUP:UPDATE', 'Group: updated'),
-        ('GROUP:DELETE', 'Group: deleted'),
-        ('GROUP:VIEW', 'Group: viewed'),
+        ('group:create', 'group: created'),
+        ('group:update', 'group: updated'),
+        ('group:delete', 'group: deleted'),
 
         # Social interactions
-        ('SOCIAL:WATCH', 'Social: watch user'),
-        ('SOCIAL:UNWATCH', 'Social: unwatch user'),
-        ('SOCIAL:BLOCK', 'Social: block user'),
-        ('SOCIAL:UNBLOCK', 'Social: unblock user'),
-        ('SOCIAL:FAVORITE', 'Social: favorite submission'),
-        ('SOCIAL:UNFAVORITE', 'Social: unfavorite submission'),
-        ('SOCIAL:RATE', 'Social: rate submission'),
-        ('SOCIAL:ENJOY', 'Social: enjoy submission'),
+        ('social:watch', 'social: watch user'),
+        ('social:unwatch', 'social: unwatch user'),
+        ('social:block', 'social: block user'),
+        ('social:unblock', 'social: unblock user'),
+        ('social:favorite', 'social: favorite submission'),
+        ('social:unfavorite', 'social: unfavorite submission'),
+        ('social:rate', 'social: rate submission'),
+        ('social:enjoy', 'social: enjoy submission'),
 
         # Submissions
-        ('SUBMISSION:CREATE', 'Submission: created'),
-        ('SUBMISSION:UPDATE', 'Submission: updated'),
-        ('SUBMISSION:DELETE', 'Submission: deleted'),
-        ('SUBMISSION:VIEW', 'Submission: viewed'),
+        ('submission:create', 'submission: created'),
+        ('submission:update', 'submission: updated'),
+        ('submission:delete', 'submission: deleted'),
+        ('submission:view', 'submission: viewed'),
 
         # Submission folders
-        ('FOLDER:CREATE', 'Folder: created'),
-        ('FOLDER:UPDATE', 'Folder: updated'),
-        ('FOLDER:DELETE', 'Folder: deleted'),
-        ('FOLDER:VIEW', 'Folder: viewed'),
-        ('FOLDER:SORT', 'Folder: sorted'),
+        ('folder:create', 'folder: created'),
+        ('folder:update', 'folder: updated'),
+        ('folder:delete', 'folder: deleted'),
+        ('folder:view', 'folder: viewed'),
+        ('folder:sort', 'folder: sorted'),
 
         # Tags
-        ('TAG:CREATE', 'Tag: tag created'),
-        ('TAG:TAG', 'Tag: tagged item created'),
+        ('tag:create', 'tag: tag created'),
+        ('tag:tag', 'tag: tagged item created'),
 
         # Comments
-        ('COMMENT:CREATE', 'Comment: created'),
-        ('COMMENT:UPDATE', 'Comment: updated'),
-        ('COMMENT:DELETE', 'Comment: deleted'),
+        ('comment:create', 'comment: created'),
+        ('comment:update', 'comment: updated'),
+        ('comment:delete', 'comment: deleted'),
 
         # Promotions
-        ('PROMOTION:CREATE', 'Promotion: created'),
-        ('PROMOTION:RETIRE', 'Promotion: retired'),
-        ('AD:CREATE', 'Ad: created,'),
-        ('AD:UPDATE', 'Ad: update'),
-        ('AD:GOLIVE', 'Ad: went live'),
-        ('AD:RETIRE', 'Ad: retired'),
+        ('promotion:create', 'promotion: created'),
+        ('promotion:retire', 'promotion: retired'),
+        ('ad:create', 'ad: created,'),
+        ('ad:update', 'ad: update'),
+        ('ad:golive', 'ad: went live'),
+        ('ad:retire', 'ad: retired'),
 
         # Publisher pages
-        ('PUBLISHER:CREATE', 'Publisher: created'),
-        ('PUBLISHER:UPDATE', 'Publisher: updated'),
-        ('PUBLISHER:DELETE', 'Publisher: deleted'),
-        ('PUBLISHER:VIEW', 'Publisher: viewed'),
-        ('PUBLISHER:CLAIMED', 'Publisher: claimed'),
+        ('publisher:create', 'publisher: created'),
+        ('publisher:update', 'publisher: updated'),
+        ('publisher:delete', 'publisher: deleted'),
+        ('publisher:view', 'publisher: viewed'),
+        ('publisher:claimed', 'publisher: claimed'),
 
         # Search
-        ('SEARCH:SEARCH', 'Search: run'),
+        ('search:search', 'search: run'),
     )
 
     activity_time = models.DateTimeField(auto_now_add=True)
@@ -87,7 +86,7 @@ class Activity(models.Model):
 
     @classmethod
     def create(cls, app, action, object_model):
-        item_type = "{}:{}".format(app.upper(), action.upper())
+        item_type = "{}:{}".format(app.lower(), action.lower())
         if item_type not in dict(Activity.ACTIVITY_TYPES):
             return  # XXX should we fail silently?
         activity = cls(activity_type=item_type)

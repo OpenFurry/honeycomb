@@ -14,6 +14,7 @@ from taggit.models import (
 
 from .models import Activity
 from administration.models import Flag
+from core.templatetags.git_revno import git_revno
 from promotion.models import (
     Ad,
     AdLifecycle,
@@ -55,7 +56,8 @@ def get_stream(request, models=None, object_id=None):
     if object_id:
         stream = stream.filter(object_id=object_id)
     if request.GET.get('type') is not None:
-        stream = stream.filter(activity_type=request.GET['type'])
+        stream = stream.filter(
+            activity_type__in=request.GET['type'].split(','))
     data = []
     for activity in stream:
         data.append(generate_stream_entry(activity))
@@ -67,6 +69,7 @@ def get_stream(request, models=None, object_id=None):
 @cache_page(60 * 60)
 def sitewide_data(request):
     data = {
+        'version': git_revno(),
         'users': {
             'all': User.objects.count(),
             'staff': User.objects.filter(is_staff=True).count(),

@@ -11,10 +11,18 @@ register = template.Library()
 
 @register.assignment_tag
 def git_revno():
-    p = Popen(['git', 'rev-parse', '--verify', 'HEAD'], stdout=PIPE,
-              cwd=settings.BASE_DIR)
-    out, _ = p.communicate()
-    return {
-        'full': out,
-        'short': out.strip()[:7],
-    }
+    if settings.DEBUG:
+        p = Popen(['git', 'rev-parse', '--verify', 'HEAD'], stdout=PIPE,
+                  cwd=settings.BASE_DIR)
+        revno, _ = p.communicate()
+        return {
+            'full': revno.decode('utf-8').strip(),
+            'short': revno.decode('utf-8').strip()[:7],
+            'version': 'DEBUG',
+        }
+    else:
+        return {
+            'full': settings.GIT_REVNO,
+            'short': settings.GIT_REVNO[:7],
+            'version': settings.VERSION,
+        }

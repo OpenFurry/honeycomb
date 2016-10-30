@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 from django.contrib import messages
+from .revno import *  # noqa: F401,F403
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -150,10 +151,15 @@ STATIC_ROOT = './static'
 
 # Additional configuration for Honeycomb
 CACHES = {
+    # Enable this backend for no caching.
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'dev-cache',
-    }
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+    # Enable this backend for default caching in local memory.
+    # 'default': {
+    #     'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    #     'LOCATION': 'dev-cache',
+    # }
     # TODO production should use memcached
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
@@ -162,24 +168,21 @@ CACHES = {
 }
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
     },
-    # 'default': {
-    #     'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-    # },
     # TODO production should use elasticsearch
     # 'default': {
     #     'ENGINE':
     #         ('haystack.backends.elasticsearch_backend.'
     #          'ElasticsearchSearchEngine'),
     #     'URL': 'http://127.0.0.1:9200/',
-    #     'INDEX_NAME': 'haystack',
+    #     'INDEX_NAME': 'haystack',  # Changeme
     # },
 }
 TAGGIT_CASE_INSENSITIVE = True
 SUBMISSION_BASE = ('^~(?P<username>[^/]+)/(?P<submission_id>\d+)-'
                    '(?P<submission_slug>[-\w]+)/')
-ACTIVITYSTREAM_ROTATION = 30  # Rotation period in days
+ACTIVITYSTREAM_ROTATION = 1  # Rotation period in days
 LOGOUT_REDIRECT_URL = "/login/"
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',

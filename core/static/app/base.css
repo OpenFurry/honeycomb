@@ -112,4 +112,10 @@ footer img {
     footer div {
         text-align: right;
     }
+    footer .first-footer {
+        padding-top: 1em !important;
+    }
+    footer .gh-corner svg {
+        z-index: 1000;
+    }
 }

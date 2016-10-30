@@ -42,6 +42,10 @@ cleanmigrations: venv/bin/django-admin
 		touch $$i/migrations/__init__.py; \
 	done
 
+.PHONY: update-revno
+update-revno: venv/bin/django-admin
+	venv/bin/python manage.py git_revno $(TAG)
+
 .PHONY: test
 test:
 	tox
