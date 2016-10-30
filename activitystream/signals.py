@@ -37,8 +37,9 @@ def log_base_create_or_update(sender, **kwargs):
             'Folder': 'folder',
             'FriendGroup': 'group',
             'Profile': 'profile',
-            'Submission': 'submission',
             'PublisherPage': 'publisher',
+            'Submission': 'submission',
+            'Tag': 'tag',
         }[sender.__name__]
     except:
         return

@@ -25,6 +25,6 @@ class BasicSearchView(SearchView):
         if request.GET.get('page') is None:
             Activity.create(
                 'search',
-                'search',
+                'basic_search',
                 request.user if request.user.is_authenticated else None)
         return super(BasicSearchView, self).get(request, *args, **kwargs)

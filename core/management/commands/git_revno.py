@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         revno = check_output(
-            ['git', 'rev-parse', '--verify', 'HEAD']).strip()[-7:]
+            ['git', 'rev-parse', '--verify', 'HEAD']).strip()
 
         with open(os.sep.join(['honeycomb', 'revno.py']), 'w') as f:
             f.write("GIT_REVNO = '{}'\nVERSION = '{}'\n".format(

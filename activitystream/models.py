@@ -75,7 +75,7 @@ class Activity(models.Model):
         ('publisher:claimed', 'publisher: claimed'),
 
         # Search
-        ('search:search', 'search: run'),
+        ('search:basic_search', 'search: basic search run'),
     )
 
     activity_time = models.DateTimeField(auto_now_add=True)
@@ -88,10 +88,11 @@ class Activity(models.Model):
     def create(cls, app, action, object_model):
         item_type = "{}:{}".format(app.lower(), action.lower())
         if item_type not in dict(Activity.ACTIVITY_TYPES):
-            return  # XXX should we fail silently?
+            return None  # XXX should we fail silently?
         activity = cls(activity_type=item_type)
         activity.object_model = object_model
         activity.save()
+        return activity
 
     class Meta:
         ordering = ['-activity_time']

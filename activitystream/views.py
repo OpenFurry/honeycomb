@@ -54,7 +54,8 @@ def get_stream(request, models=None, object_id=None):
             model__in=[i[1] for i in expanded])
         stream = stream.filter(content_type__in=ctypes)
     if object_id:
-        stream = stream.filter(object_id=object_id)
+        if ',' not in models:
+            stream = stream.filter(object_id=object_id)
     if request.GET.get('type') is not None:
         stream = stream.filter(
             activity_type__in=request.GET['type'].split(','))
