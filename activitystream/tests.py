@@ -35,7 +35,7 @@ class TestModels(ActivityBaseTestCase):
         activity = Activity.create('bad', 'wolf', self.foo)
         self.assertEqual(activity, None)
         self.assertEqual(Activity.objects.count(), 2)
-        
+
 
 class TestGetStreamView(ActivityBaseTestCase):
     def generate_activity_items(self):
