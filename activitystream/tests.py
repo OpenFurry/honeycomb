@@ -51,7 +51,7 @@ class TestGetStreamView(ActivityBaseTestCase):
     def test_full_stream(self):
         self.generate_activity_items()
         response = self.client.get(reverse('activitystream:get_stream'))
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(data), 8)
         self.assertEqual([item['type'] for item in data], [
             'search:basic_search',
@@ -70,7 +70,7 @@ class TestGetStreamView(ActivityBaseTestCase):
             'activitystream:get_stream', kwargs={
                 'models': 'auth:user',
             }))
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(data), 7)
         self.assertEqual([item['type'] for item in data], [
             'search:basic_search',
@@ -89,7 +89,7 @@ class TestGetStreamView(ActivityBaseTestCase):
                 'models': 'auth:user',
                 'object_id': self.foo.id,
             }))
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(data), 4)
         self.assertEqual([item['type'] for item in data], [
             'user:logout',
@@ -103,7 +103,7 @@ class TestGetStreamView(ActivityBaseTestCase):
         response = self.client.get(reverse('activitystream:get_stream'), {
             'type': 'search:basic_search',
         })
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(data), 3)
         self.assertEqual([item['type'] for item in data], [
             'search:basic_search',
@@ -116,7 +116,7 @@ class TestSitewideDataView(ActivityBaseTestCase):
     def test_results(self):
         self.maxDiff = None
         response = self.client.get(reverse('activitystream:sitewide_data'))
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(data['version']['full']), 40)
         data['version']['full'] = 'revno'
         self.assertEqual(len(data['version']['short']), 7)
