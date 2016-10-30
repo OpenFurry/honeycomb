@@ -33,7 +33,7 @@ cleanmigrations: venv/bin/django-admin
 	@echo "In case @makyo does not delete this before first alpha, do not"
 	@echo "run this target.  Migrations are hecka important for dev after"
 	@echo "that point!"
-	@exit 1 # We really shouldn't do this, but may need to in the future
+	exit 1 # We really shouldn't do this, but may need to in the future
 	@echo
 	@echo "Psst, @makyo, don't forget to delete this target!"
 	@sleep 5

@@ -62,7 +62,11 @@ class Activity(models.Model):
 
         # Promotions
         ('PROMOTION:CREATE', 'Promotion: created'),
-        ('PROMOTION:RETIRED', 'Promotion: retired'),
+        ('PROMOTION:RETIRE', 'Promotion: retired'),
+        ('AD:CREATE', 'Ad: created,'),
+        ('AD:UPDATE', 'Ad: update'),
+        ('AD:GOLIVE', 'Ad: went live'),
+        ('AD:RETIRE', 'Ad: retired'),
 
         # Publisher pages
         ('PUBLISHER:CREATE', 'Publisher: created'),
