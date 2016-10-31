@@ -1,43 +1,55 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if user == submission.owner %}
 <div class="row">
-    <div class="col-md-12 text-right">
-        <p>
-            <a role="button" class="btn btn-default" href="{% url 'submissions:edit_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}"><span class="glyphicon glyphicon-edit"></span> Edit submission</a>
-            <a role="button" class="btn btn-danger" href="{% url 'submissions:delete_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}"><span class="glyphicon glyphicon-remove"></span> Delete submission</a>
-        </p>
-    </div>
-</div>
-{% endif %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <a data-toggle="collapse" data-target="#collapse-submission-info" aria-expanded="false" aria-controls="collapseInfo">
-                    Submission information <span class="caret"></span>
-                </a>
+    <div class="col-md-8 col-md-offset-2">
+        {% if submission.description_rendered %}
+            <div class="submission-description clearfix">
+                <p><strong>Description</strong></p>
+                {{ submission.description_rendered|safe }}
             </div>
-            <div class="panel-body collapse" id="collapse-submission-info">
-                {% if submission.description_rendered %}
-                    {{ submission.description_rendered|safe }}
-                {% else %}
-                    <em>No description provided</em>
+        {% endif %}
+        <div class="panel panel-default submission-details">
+            <div class="panel-body">
+                <dl>
+                    <dt>Views</dt>
+                    <dd>{{ submission.views }}</dd>
+                    <dt>Rating</dt>
+                    <dd><span data-toggle="tooltip" data-placement="bottom" title="{{ submission.rating_average|floatformat }} average out of {{ submission.rating_count }} ratings">{{ submission.rating_stars|safe }}</span></dd>
+                    <dt>Favorites</dt>
+                    <dd>{{ submission.favorited_by.count }}</dd>
+                    {% if submission.can_enjoy %}
+                        <dt>Enjoy votes</dt>
+                        <dd>Submission enjoyed {{ submission.enjoy_votes }} times</dd>
+                    {% endif %}
+                    <dt>Tags</dt>
+                    <dd>
+                        {% for tag in submission.tags.all %}
+                            <a href="{% url 'tags:view_tag' tag_slug=tag.slug %}">{{ tag }}</a>{% if not forloop.last %},{% endif%}
+                        {% endfor %}
+                    </dd>
+                </dl>
+                {% if user == submission.owner %}
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Submission actions <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="{% url 'submissions:edit_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}"><span class="glyphicon glyphicon-edit"></span> Edit submission</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'submissions:delete_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}"><span class="glyphicon glyphicon-remove"></span> Delete submission</a>
+                            </li>
+                            <li><a href="#"><span class="glyphicon glyphicon-usd"></span> Promote submission</a></li>
+                        </ul>
+                    </div>
                 {% endif %}
             </div>
-            <div class="panel-footer text-center">
-                Views: {{ submission.views }} -
-                Rating: <span data-toggle="tooltip" data-placement="bottom" title="{{ submission.rating_average|floatformat }} average out of {{ submission.rating_count }} ratings">{{ submission.rating_stars|safe }}</span> -
-                Favorites: {{ submission.favorited_by.count }} -
-                {% if submission.can_enjoy %}Submission enjoyed {{ submission.enjoy_votes }} times{% endif %}
-            </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-8 col-md-offset-2 text-block">
-        {{ submission.content_rendered|safe }}
+        <div class="text-block{% if not submission.description_rendered %} less-top-margin{% endif %}">
+            {{ submission.content_rendered|safe }}
+        </div>
     </div>
 </div>
 {% if user.is_authenticated and user != submission.owner %}

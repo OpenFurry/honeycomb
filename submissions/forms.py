@@ -23,6 +23,7 @@ class SubmissionForm(forms.ModelForm):
             'restricted_to_groups',
             'allowed_groups',
             'folders',
+            'tags',
         )
 
 

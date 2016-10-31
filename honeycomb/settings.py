@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'promotion',
     'activitystream',
     'administration',
+    'tags',
     'taggit',
     'haystack',
     'django_nose',

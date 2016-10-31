@@ -1,0 +1,22 @@
+from django.conf.urls import (
+    include,
+    url,
+)
+
+from . import views
+
+
+app_name = 'tags'
+tag_views = [
+    url('^$', views.view_tag, name='view_tag'),
+    url('^favorite/', views.favorite_tag, name='favorite_tag'),
+    url('^unfavorite', views.unfavorite_tag, name='unfavorite_tag'),
+    url('^block/', views.block_tag, name='block_tag'),
+    url('^unblock/', views.block_tag, name='block_tag'),
+]
+urlpatterns = [
+    url('^$', views.list_tags, name='list_tags'),
+    url('^favorites/$', views.list_submissions_with_favorite_tags,
+        name='list_submissions_with_favorite_tags'),
+    url('^tag/(?P<tag_slug>[-\w]+)/', include(tag_views)),
+]

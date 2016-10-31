@@ -13,3 +13,9 @@
     Favorites: {{ submission.favorited_by.count }} -
     {% if submission.can_enjoy %}Submission enjoyed {{ submission.enjoy_votes }} times{% endif %}
 </p>
+<p>
+    Tags:
+    {% for tag in submission.tags.all|slice:":10" %}
+        <a href="{% url 'tags:view_tag' tag_slug=tag.slug %}">{{ tag }}</a>{% if not forloop.last %}, {% else %}{% if submission.tags.count > 10 %}...{% endif %}{% endif %}
+    {% endfor %}
+</p>

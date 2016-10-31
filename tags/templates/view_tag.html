@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        {% for submission in submissions %}
+            <div class="row striped-item">
+                <div class="col-md-12">
+                    {% include 'submission-list-snippet.html' with author=submission.owner %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
