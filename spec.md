@@ -93,6 +93,8 @@ primarily to the furry subculture.
     * The user may see a report of their ad impressions/interactions,
       promotions, highlights, etc on a central page, and, in the latter two
       cases, on the submission itself
+    * The site should be able to host promotions based on events (Halloween horror,
+      furry book month, etc)
 * Content discovery and recommendation
     * The user should be able to add favorite tags
     * The user should be able to block tags
