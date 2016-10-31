@@ -3,9 +3,11 @@
     <a href="{% url 'submissions:view_submission' username=author.username submission_id=submission.id submission_slug=submission.slug %}"><strong>{{ submission.title }}</strong></a> <em>by
     <a href="{% url 'usermgmt:view_profile' author.username %}">{{ author.email|gravatar }}{{ author.profile.get_display_name }}</a></em></p>
 
-<blockquote class="small">
-    {{ submission.description_rendered|safe|truncatewords_html:100 }}
-</blockquote>
+{% if submission.description_rendered %}
+    <blockquote class="small">
+        {{ submission.description_rendered|safe|truncatewords_html:100 }}
+    </blockquote>
+{% endif %}
 
 <p>
     Views: {{ submission.views }} -

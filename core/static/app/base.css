@@ -74,6 +74,10 @@ body {
     background-color: #f8f8f8;
 }
 
+.dl-indent dd {
+    margin-left: 1em;
+}
+
 .notifications {
     margin-left: 1em;
     margin-bottom: 1em;

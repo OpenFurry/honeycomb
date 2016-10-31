@@ -15,6 +15,7 @@ pycodestyle==2.0.0
 pyflakes==1.2.3
 pymdown-extensions==1.1
 python-coveralls==2.9.0
+pytz==2016.7
 PyYAML==3.12
 requests==2.11.1
 six==1.10.0
