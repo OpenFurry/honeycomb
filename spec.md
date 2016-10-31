@@ -21,8 +21,8 @@ primarily to the furry subculture.
     * ~~The user should be able to change their profile~~
     * The user should be able to change their username *(untested)*
     * ~~The user should be able to add friends~~
-    * The user should be able to organize their friends into groups to control
-      visibility
+    * ~~The user should be able to organize their friends into groups to control
+      visibility~~
     * ~~The user should be able to block other users from viewing their content
       and profile~~ (though any staff bit will override this)
     * The user should be able to belong to a class or classes of users (user,
@@ -58,17 +58,17 @@ primarily to the furry subculture.
       *(At least enjoy votes)*
 * Submission organization
     * ~~The user should be able to set the permissions on a submission (private, followers, world)~~ *(minus followers)*
-    * The user should be able to set the visibility on a submission to groups
-    * The user should be able to tag the submission with relevant tags
+    * ~~The user should be able to set the visibility on a submission to groups~~
+    * ~~The user should be able to tag the submission with relevant tags~~
     * The user should be able to tag the submission with global tags ("categories"?),
       such as participant configurations, species, and genre
-    * The user should be able to create folders
-    * The user should be able to create nested folders
-    * The user should be able to add the submission to a folder
-    * The user should be able to add the submission to multiple folders
-    * The user should be able to upload submissions in order and expect them to be
-      displayed in that order when viewed in a folder
-    * The user should be able to change the order of submissions in a folder
+    * ~~The user should be able to create folders~~
+    * ~~The user should be able to create nested folders~~
+    * ~~The user should be able to add the submission to a folder~~
+    * ~~The user should be able to add the submission to multiple folders~~
+    * ~~The user should be able to upload submissions in order and expect them to be
+      displayed in that order when viewed in a folder~~
+    * ~~The user should be able to change the order of submissions in a folder~~
 * Submission viewing
     * ~~The user should be able to view a submission~~ and associated cover image
     * The user should have a pleasant viewing experience on desktop, mobile, and
