@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import (
     EmptyPage,
-    PageNotAnInteger,
     Paginator,
 )
 from django.core.urlresolvers import reverse
@@ -28,7 +27,7 @@ from activitystream.models import Activity
 from core.templatetags.gravatar import gravatar
 
 
-def list_user_submissions(request, username=None, page=None):
+def list_user_submissions(request, username=None, page=1):
     reader = request.user
     author = get_object_or_404(User, username=username)
     if reader.is_authenticated and reader in \
@@ -43,8 +42,6 @@ def list_user_submissions(request, username=None, page=None):
                           reader.is_authenticated else 25)
     try:
         submissions = paginator.page(page)
-    except PageNotAnInteger:
-        submissions = paginator.page(1)
     except EmptyPage:
         submissions = paginator.page(paginator.num_pages)
     display_name = '{} {}'.format(
@@ -61,7 +58,7 @@ def list_user_submissions(request, username=None, page=None):
     })
 
 
-def list_user_favorites(request, username=None, page=None):
+def list_user_favorites(request, username=None, page=1):
     reader = request.user
     author = get_object_or_404(User, username=username)
     if reader.is_authenticated and reader in \
@@ -76,8 +73,8 @@ def list_user_favorites(request, username=None, page=None):
                           reader.is_authenticated else 25)
     try:
         submissions = paginator.page(page)
-    except PageNotAnInteger:
-        submissions = paginator.page(1)
+    except EmptyPage:
+        submissions = paginator.page(paginator.num_pages)
     display_name = '{} {}'.format(
         gravatar(author.email, size=80),
         author.profile.get_display_name())

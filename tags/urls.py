@@ -9,6 +9,7 @@ from . import views
 app_name = 'tags'
 tag_views = [
     url('^$', views.view_tag, name='view_tag'),
+    url('^(?P<page>\d+)/$', views.view_tag, name='view_tag'),
     url('^favorite/', views.favorite_tag, name='favorite_tag'),
     url('^unfavorite', views.unfavorite_tag, name='unfavorite_tag'),
     url('^block/', views.block_tag, name='block_tag'),

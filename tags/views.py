@@ -1,4 +1,8 @@
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import (
+    EmptyPage,
+    Paginator,
+)
 from django.db.models import Q
 from django.shortcuts import (
     get_object_or_404,
@@ -20,12 +24,18 @@ def list_tags(request):
     })
 
 
-def view_tag(request, tag_slug=None):
+def view_tag(request, tag_slug=None, page=1):
     tag = get_object_or_404(Tag, slug=tag_slug)
     filters = filters_for_authenticated_user(request.user) if \
         request.user.is_authenticated else filters_for_anonymous_user()
-    submissions = Submission.objects.filter(
+    results = Submission.objects.filter(
         Q(tags__in=[tag]) & filters)
+    paginator = Paginator(results, request.user.profile.results_per_page if
+                          request.user.is_authenticated else 25)
+    try:
+        submissions = paginator.page(page)
+    except EmptyPage:
+        submissions = paginator.page(paginator.num_pages)
     return render(request, 'view_tag.html', {
         'title': 'Submissions tagged "{}"'.format(tag.name),
         'tag': tag,

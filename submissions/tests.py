@@ -328,7 +328,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
         response = self.client.get(reverse(
             'submissions:list_user_favorites', kwargs={
                 'username': 'bar',
-                'page': 2
+                'page': 50,
             }))
         self.assertContains(response,
                             '2 <span class="sr-only">(current)</span>')

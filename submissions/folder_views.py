@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import (
     EmptyPage,
-    PageNotAnInteger,
     Paginator,
 )
 from django.core.urlresolvers import reverse
@@ -24,7 +23,7 @@ from activitystream.models import Activity
 from core.templatetags.gravatar import gravatar
 
 
-def view_root_level_folders(request, username=None, page=None):
+def view_root_level_folders(request, username=None, page=1):
     user = get_object_or_404(User, username=username)
     folders = user.folder_set.filter(parent=None)
     members = Submission.objects.filter(owner=user) \
@@ -34,8 +33,6 @@ def view_root_level_folders(request, username=None, page=None):
                           request.user.is_authenticated else 25)
     try:
         submissions = paginator.page(page)
-    except PageNotAnInteger:
-        submissions = paginator.page(1)
     except EmptyPage:
         submissions = paginator.page(paginator.num_pages)
     title = "{} {}'s folders".format(
@@ -55,7 +52,7 @@ def view_root_level_folders(request, username=None, page=None):
 
 
 def view_folder(request, username=None, folder_id=None, folder_slug=None,
-                page=None):
+                page=1):
     folder = get_object_or_404(Folder, id=folder_id)
     if username != folder.owner.username or folder_slug != folder.slug:
         return redirect(reverse('submissions:view_folder', kwargs={
@@ -71,8 +68,6 @@ def view_folder(request, username=None, folder_id=None, folder_slug=None,
                           request.user.is_authenticated else 25)
     try:
         submissions = paginator.page(page)
-    except PageNotAnInteger:
-        submissions = paginator.page(1)
     except EmptyPage:
         submissions = paginator.page(paginator.num_pages)
     title = "{} {}'s folders".format(
