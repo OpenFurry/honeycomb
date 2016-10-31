@@ -50,7 +50,6 @@ Templates:
 Markdown:
 
 * 4 space indent
-* 80 character line-length limit
 * Continued lines in lists indented so that the first character is vertically
   in line with the first character (not list item signifier) on previous
   line.  See the source of this doc for examples.

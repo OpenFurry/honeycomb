@@ -24,6 +24,7 @@ from .utils import (
     filters_for_anonymous_user,
     filters_for_authenticated_user,
 )
+from activitystream.models import Activity
 from core.templatetags.gravatar import gravatar
 
 
@@ -118,6 +119,7 @@ def view_submission(request, username=None, submission_id=None,
         }, status=403)
     submission.views += 1
     submission.save()
+    Activity.create('submission', 'view', submission)
     display_name = '{} {}'.format(
         gravatar(author.email, size=40),
         author.profile.get_display_name())

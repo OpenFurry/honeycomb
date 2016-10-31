@@ -7,8 +7,70 @@ from .models import (
     FolderItem,
     Submission,
 )
+from social.models import Rating
 from usermgmt.group_models import FriendGroup
 from usermgmt.models import Profile
+
+
+class ModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.foo = User.objects.create_user('foo', 'foo@example.com',
+                                           'a good password')
+        cls.foo.profile = Profile(profile_raw='Wow!',
+                                  display_name='Mx Foo Bar')
+        cls.foo.profile.save()
+        cls.submission1 = Submission(
+            owner=cls.foo,
+            title='Submission 1',
+            description_raw='Description for submission 1',
+            content_raw='Content for submission 1',
+        )
+        cls.submission1.save()
+        cls.folder = Folder(
+            owner=cls.foo,
+            name='Folder 1')
+        cls.folder.save()
+
+
+class TestSubmissionModel(ModelTest):
+    def test_get_average_rating_default(self):
+        self.assertEqual(self.submission1.get_average_rating(), {
+            'stars': '',
+            'average': 0,
+            'count': 0,
+        })
+
+    def test_get_average_rating_with_ratings(self):
+        Rating(
+            owner=self.foo,
+            submission=self.submission1,
+            rating=1).save()
+        Rating(
+            owner=self.foo,
+            submission=self.submission1,
+            rating=5).save()
+        self.assertEqual(self.submission1.get_average_rating(), {
+            u'average': 3.0,
+            u'count': 2,
+            u'stars': u'&#x2605;&#x2605;&#x2605;&#x2606;&#x2606;'
+        })
+
+    def test_str(self):
+        self.assertEqual(self.submission1.__str__(),
+                         'Submission 1 by ~foo (id:1)')
+
+    def test_unicode(self):
+        self.assertEqual(self.submission1.__unicode__(),
+                         'Submission 1 by ~foo (id:1)')
+
+
+class TestFolderModel(ModelTest):
+    def test_str(self):
+        self.assertEqual(self.folder.__str__(), 'Folder 1')
+
+    def test_unicode(self):
+        self.assertEqual(self.folder.__unicode__(), 'Folder 1')
 
 
 class SubmissionsViewsBaseTestCase(TestCase):

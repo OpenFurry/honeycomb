@@ -71,6 +71,22 @@ class TestUnwatchUserView(BaseSocialViewTestCase):
         self.assertContains(response, "You are no longer watching bar.")
         self.assertNotIn(self.bar, self.foo.profile.watched_users.all())
 
+    def test_notification_removed(self):
+        self.client.login(username='foo', password='a good password')
+        self.foo.profile.watched_users.add(self.bar)
+        notification = Notification(
+            target=self.bar,
+            source=self.foo,
+            notification_type=Notification.WATCH)
+        notification.save()
+        response = self.client.post(reverse('social:unwatch_user',
+                                    args=('bar',)),
+                                    follow=True)
+        self.assertContains(response, "You are no longer watching bar.")
+        self.assertNotIn(self.bar, self.foo.profile.watched_users.all())
+        with self.assertRaises(Notification.DoesNotExist):
+            notification.refresh_from_db()
+
     def test_cant_unwatch_self(self):
         self.client.login(username='foo', password='a good password')
         response = self.client.post(reverse('social:unwatch_user',
