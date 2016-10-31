@@ -1,13 +1,29 @@
 {% if activity.activity_type == 'social:favorite' %}
-<li class="list-group-item striped-item">The submission <a href="{% url 'submissions:view_submission' username=activity.object_model.owner.username submission_id=activity.object_model.id submission_slug=activity.object_model.slug %}">{{ activity.object_model.title }}</a> by <a href="{% url 'usermgmt:view_profile' activity.object_model.owner.username %}">{{ activity.object_model.owner.profile.get_display_name }}</a> was favorited</li>
+<li class="list-group-item striped-item">
+    The submission <a href="{% url 'submissions:view_submission' username=activity.object_model.owner.username submission_id=activity.object_model.id submission_slug=activity.object_model.slug %}">{{ activity.object_model.title }}</a>
+    by <a href="{% url 'usermgmt:view_profile' activity.object_model.owner.username %}">{{ activity.object_model.owner.profile.get_display_name }}</a>
+    was favorited
+</li>
 {% elif activity.activity_type == 'social:rated' %}
-<li class="list-group-item striped-item">The submission <a href="{% url 'submissions:view_submission' username=activity.object_model.submission.owner.username submission_id=activity.object_model.submission.id submission_slug=activity.object_model.submission.slug %}">{{ activity.object_model.submission.title }}</a> by <a href="{% url 'usermgmt:view_profile' activity.object_model.submission.owner.username %}">{{ activity.object_model.submission.owner.profile.get_display_name }}</a> was rated {{ activity.object_model.get_stars }}</li>
+<li class="list-group-item striped-item">
+    The submission <a href="{% url 'submissions:view_submission' username=activity.object_model.submission.owner.username submission_id=activity.object_model.submission.id submission_slug=activity.object_model.submission.slug %}">{{ activity.object_model.submission.title }}</a>
+    by <a href="{% url 'usermgmt:view_profile' activity.object_model.submission.owner.username %}">{{ activity.object_model.submission.owner.profile.get_display_name }}</a>
+    was rated {{ activity.object_model.get_stars }}
+</li>
 {% elif activity.activity_type == 'social:enjoy' %}
-<li class="list-group-item striped-item">The submission <a href="{% url 'submissions:view_submission' username=activity.object_model.submission.owner.username submission_id=activity.object_model.submission.id submission_slug=activity.object_model.submission.slug %}">{{ activity.object_model.submission.title }}</a> by <a href="{% url 'usermgmt:view_profile' activity.object_model.submission.owner.username %}">{{ activity.object_model.submission.owner.profile.get_display_name }}</a> was marked as enjoyed</li>
+<li class="list-group-item striped-item">
+    The submission <a href="{% url 'submissions:view_submission' username=activity.object_model.submission.owner.username submission_id=activity.object_model.submission.id submission_slug=activity.object_model.submission.slug %}">{{ activity.object_model.submission.title }}</a>
+    by <a href="{% url 'usermgmt:view_profile' activity.object_model.submission.owner.username %}">{{ activity.object_model.submission.owner.profile.get_display_name }}</a>
+    was marked as enjoyed
+</li>
 {% elif activity.activity_type == 'submission:create' %}
-<li class="list-group-item striped-item">The submission <a href="{% url 'submissions:view_submission' username=activity.object_model.owner.username submission_id=activity.object_model.id submission_slug=activity.object_model.slug %}">{{ activity.object_model.title }}</a> was created by <a href="{% url 'usermgmt:view_profile' activity.object_model.owner.username %}">{{ activity.object_model.owner.profile.get_display_name }}</a></li>
+<li class="list-group-item striped-item">
+    The submission <a href="{% url 'submissions:view_submission' username=activity.object_model.owner.username submission_id=activity.object_model.id submission_slug=activity.object_model.slug %}">{{ activity.object_model.title }}</a>
+    was created by <a href="{% url 'usermgmt:view_profile' activity.object_model.owner.username %}">{{ activity.object_model.owner.profile.get_display_name }}</a>
+</li>
 {% elif activity.activity_type == 'tag:create' %}
-<li class="list-group-item striped-item">The tag <a href="{% url 'tags:view_tag' tag_slug=activity.object_model.slug %}">{{ activity.object_model.name }}</a> was created</li>
-{% elif activity.activity_type == 'publisher:create' %}
-<li class="list-group-item striped-item">publisher:create not yet implemented</li>
+<li class="list-group-item striped-item">
+    The tag <a href="{% url 'tags:view_tag' tag_slug=activity.object_model.slug %}">{{ activity.object_model.name }}</a>
+    was created
+</li>
 {% endif %}
