@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import (
     EmptyPage,
-    PageNotAnInteger,
     Paginator,
 )
 from django.core.urlresolvers import reverse
@@ -28,7 +27,7 @@ from activitystream.models import Activity
 from core.templatetags.gravatar import gravatar
 
 
-def list_user_submissions(request, username=None, page=None):
+def list_user_submissions(request, username=None, page=1):
     reader = request.user
     author = get_object_or_404(User, username=username)
     if reader.is_authenticated and reader in \
@@ -37,15 +36,12 @@ def list_user_submissions(request, username=None, page=None):
             'title': 'Permission denied',
         }, status=403)
     result = author.submission_set.filter(
-        filters_for_authenticated_user(reader, author) if
+        filters_for_authenticated_user(reader) if
         reader.is_authenticated else filters_for_anonymous_user())
-    print(result)
     paginator = Paginator(result, reader.profile.results_per_page if
                           reader.is_authenticated else 25)
     try:
         submissions = paginator.page(page)
-    except PageNotAnInteger:
-        submissions = paginator.page(1)
     except EmptyPage:
         submissions = paginator.page(paginator.num_pages)
     display_name = '{} {}'.format(
@@ -62,7 +58,7 @@ def list_user_submissions(request, username=None, page=None):
     })
 
 
-def list_user_favorites(request, username=None, page=None):
+def list_user_favorites(request, username=None, page=1):
     reader = request.user
     author = get_object_or_404(User, username=username)
     if reader.is_authenticated and reader in \
@@ -71,14 +67,14 @@ def list_user_favorites(request, username=None, page=None):
             'title': 'Permission denied',
         }, status=403)
     result = author.profile.favorited_submissions.filter(
-        filters_for_authenticated_user(reader, author) if
+        filters_for_authenticated_user(reader) if
         reader.is_authenticated else filters_for_anonymous_user())
     paginator = Paginator(result, reader.profile.results_per_page if
                           reader.is_authenticated else 25)
     try:
         submissions = paginator.page(page)
-    except PageNotAnInteger:
-        submissions = paginator.page(1)
+    except EmptyPage:
+        submissions = paginator.page(paginator.num_pages)
     display_name = '{} {}'.format(
         gravatar(author.email, size=80),
         author.profile.get_display_name())
@@ -111,7 +107,7 @@ def view_submission(request, username=None, submission_id=None,
     author = submission.owner
     try:
         submission = Submission.objects.get(Q(id=submission_id) & (
-            filters_for_authenticated_user(reader, author) if
+            filters_for_authenticated_user(reader) if
             reader.is_authenticated else filters_for_anonymous_user()))
     except Submission.DoesNotExist:
         return render(request, 'permission_denied.html', {
@@ -165,13 +161,8 @@ def edit_submission(request, username=None, submission_id=None,
                         submission=submission,
                         folder=folder)
                     item.delete()
-            for group in form.cleaned_data['allowed_groups']:
-                if (group in request.user.profile.friend_groups.all() and
-                        group not in submission.allowed_groups.all()):
-                    submission.allowed_groups.add(group)
-            for group in submission.allowed_groups.all():
-                if group not in form.cleaned_data['allowed_groups']:
-                    submission.allowed_groups.remove(group)
+            form.cleaned_data.pop('folders')
+            form.save_m2m()
             messages.success(request, 'Submission updated.')
             return redirect(reverse(
                 'submissions:view_submission',
@@ -226,9 +217,8 @@ def submit(request):
                         position=len(FolderItem.objects.filter(
                             submission=submission)) + 1)
                     item.save()
-            for group in form.cleaned_data['allowed_groups']:
-                if group in request.user.profile.friend_groups.all():
-                    submission.allowed_groups.add(group)
+            form.cleaned_data.pop('folders')
+            form.save_m2m()
             messages.success(request, 'Submission created.')
             return redirect(reverse(
                 'submissions:view_submission',

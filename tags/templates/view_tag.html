@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <p>
+            <em>Showing results {{ submissions.start_index }} through {{ submissions.end_index }} of {{ submissions.paginator.count }}</em>
+        </p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        {% for submission in submissions %}
+            <div class="row striped-item">
+                <div class="col-md-12">
+                    {% include 'submission-list-snippet.html' with author=submission.owner %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% if submissions.has_next or submissions.has_previous %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <nav aria-label="Submission pages">
+                <ul class="pagination">
+                    {% if submissions.has_previous %}
+                        <li>
+                            <a href="{% url 'tags:view_tag' tag_slug=tag.slug page=submissions.previous_page_number %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled"><span aria-hidden="true">&laquo;</span></li>
+                    {% endif %}
+                    {% for page in submissions.paginator.page_range %}
+                        {% if submissions.number == page %}
+                            <li class="active"><a href="{% url 'tags:view_tag' tag_slug=tag.slug page=page %}">{{ page }} <span class="sr-only">(current)</span></a></li>
+                        {% else %}
+                            <li><a href="{% url 'tags:view_tag' tag_slug=tag.slug page=page %}">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if submissions.has_next %}
+                        <li>
+                            <a href="{% url 'tags:view_tag' tag_slug=tag.slug page=submissions.next_page_number %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled"><span aria-hidden="true">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.db.models import Q
 
 
-def filters_for_authenticated_user(reader, author):
+def filters_for_authenticated_user(reader):
     # Start with hidden status
     query = Q(hidden=False)
 

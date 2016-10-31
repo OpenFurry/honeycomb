@@ -328,7 +328,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
         response = self.client.get(reverse(
             'submissions:list_user_favorites', kwargs={
                 'username': 'bar',
-                'page': 2
+                'page': 50,
             }))
         self.assertContains(response,
                             '2 <span class="sr-only">(current)</span>')
@@ -426,7 +426,8 @@ class TestLoggedOutViewSubmissionView(SubmissionsViewsBaseTestCase):
                                        'submission_slug': 'submission-1',
                                    }))
         self.assertContains(response, 'Content for submission 1')
-        self.assertContains(response, 'Views: 1')
+        self.assertContains(response, '<dt>Views</dt>')
+        self.assertContains(response, '<dd>1</dd>')
 
     def test_view_submission_redirects_to_complete_url(self):
         response = self.client.get(reverse('submissions:view_submission',
@@ -636,10 +637,13 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
             {
                 'title': 'Wow, a new title!',
                 'content_raw': 'A whole new story!',
+                'tags': 'foo,bar',
             },
             follow=True)
         self.assertContains(response, 'Wow, a new title!')
         self.assertContains(response, 'A whole new story!')
+        self.assertTrue('foo' in [
+            tag.name for tag in self.submission1.tags.all()])
         self.assertNotEqual(self.submission1.ctime, self.submission1.mtime)
 
     def test_can_add_to_folders(self):
@@ -659,7 +663,8 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
             {
                 'title': 'Wow, a new title!',
                 'content_raw': 'A whole new story!',
-                'folders': [folder.id]
+                'folders': [folder.id],
+                'tags': 'foo,bar',
             },
             follow=True)
         self.assertContains(response, 'Wow, a new title!')
@@ -688,6 +693,7 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
                 'title': 'Wow, a new title!',
                 'content_raw': 'A whole new story!',
                 'folders': [],
+                'tags': 'foo,bar',
             },
             follow=True)
         self.assertContains(response, 'Wow, a new title!')
@@ -707,7 +713,8 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
             {
                 'title': 'Wow, a new title!',
                 'content_raw': 'A whole new story!',
-                'allowed_groups': [self.group.id]
+                'allowed_groups': [self.group.id],
+                'tags': 'foo,bar',
             },
             follow=True)
         self.assertContains(response, 'Wow, a new title!')
@@ -729,6 +736,7 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
                 'title': 'Wow, a new title!',
                 'content_raw': 'A whole new story!',
                 'folders': [],
+                'tags': 'foo,bar',
             },
             follow=True)
         self.assertContains(response, 'Wow, a new title!')
@@ -796,19 +804,22 @@ class TestSubmitView(SubmissionsViewsBaseTestCase):
             'Update submission</button>')
 
     def test_submission_created(self):
-        folder = Folder(
+        self.folder = Folder(
             owner=self.foo,
             name='Folder 1')
-        folder.save()
+        self.folder.save()
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.post(reverse('submissions:submit'),
                                     {
                                         'title': 'Reasons foxes are great',
                                         'content_raw': 'There are too many.',
-                                        'folders': [1],
+                                        'folders': [self.folder.id],
                                         'allowed_groups': [self.group.id],
+                                        'tags': 'foo, bar',
                                     }, follow=True)
         self.assertContains(response, 'Reasons foxes are great')
-        self.assertEqual(folder.submissions.count(), 1)
+        self.assertContains(response, '<a href="{}">foo</a>'.format(
+            reverse('tags:view_tag', kwargs={'tag_slug': 'foo'})))
+        self.assertEqual(self.folder.submissions.count(), 1)
         self.assertEqual(self.group.submission_set.count(), 1)

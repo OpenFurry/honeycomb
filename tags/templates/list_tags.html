@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load tag_extras %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2 tag-cloud">
+        {% get_weighted_tags tags as weighted_tags %}
+        {% for tag in weighted_tags %}
+            <a href="{% url 'tags:view_tag' tag_slug=tag.slug %}" style="font-size:calc(14px * {{ tag.weight }});">{{ tag }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

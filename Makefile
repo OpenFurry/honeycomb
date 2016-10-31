@@ -1,4 +1,4 @@
-APPLICATIONS := activitystream administration core promotion publishers social submissions usermgmt
+APPLICATIONS := activitystream administration core promotion publishers social submissions tags usermgmt
 APPLICATIONS_COMMA := $(shell echo $(APPLICATIONS) | tr ' ' ',')
 
 .PHONY: run

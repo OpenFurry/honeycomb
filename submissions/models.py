@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.html import strip_tags
+from taggit.managers import TaggableManager
 
 from honeycomb_markdown import HoneycombMarkdown
 from usermgmt.group_models import FriendGroup
@@ -58,6 +59,7 @@ class Submission(models.Model):
     rating_average = models.DecimalField(max_digits=3, decimal_places=2,
                                          default=0.0)
     rating_count = models.PositiveIntegerField(default=0)
+    tags = TaggableManager()
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
