@@ -85,12 +85,12 @@ class Submission(models.Model):
             return {'stars': '', 'average': 0, 'count': 0}
 
     def __str__(self):
-        return '{} by {} (id:{})'.format(self.title, self.owner.username,
-                                         self.id)
+        return '{} by ~{} (id:{})'.format(self.title, self.owner.username,
+                                          self.id)
 
     def __unicode__(self):
-        return '{} by {} (id:{})'.format(self.title, self.owner.username,
-                                         self.id)
+        return '{} by ~{} (id:{})'.format(self.title, self.owner.username,
+                                          self.id)
 
 
 class Folder(models.Model):

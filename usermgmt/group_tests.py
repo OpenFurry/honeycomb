@@ -6,6 +6,18 @@ from .models import Profile
 from .group_models import FriendGroup
 
 
+class TestFriendGroupModel(TestCase):
+    def test_str(self):
+        group = FriendGroup(name='foo')
+        group.save()
+        self.assertEqual(group.__str__(), 'foo')
+
+    def test_unicode(self):
+        group = FriendGroup(name='foo')
+        group.save()
+        self.assertEqual(group.__unicode__(), 'foo')
+
+
 class BaseGroupViewsTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -160,6 +172,7 @@ class TestEditGroupView(BaseGroupViewsTestCase):
     def test_can_save_form_remove_members(self):
         self.client.login(username='foo',
                           password='a good password')
+        self.group.users.add(self.bar)
         response = self.client.post(reverse(
             'usermgmt:edit_group', kwargs={
                 'username': 'foo',

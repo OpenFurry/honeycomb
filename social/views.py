@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.paginator import (
     EmptyPage,
-    PageNotAnInteger,
     Paginator,
 )
 from django.core.urlresolvers import reverse
@@ -15,6 +14,7 @@ from django.shortcuts import (
 from django.views.decorators.http import require_POST
 
 from .models import Rating
+from activitystream.models import Activity
 from submissions.models import Submission
 from usermgmt.models import Notification
 
@@ -37,6 +37,7 @@ def watch_user(request, username):
             source=request.user,
             notification_type=Notification.WATCH)
         notification.save()
+        Activity.create('social', 'watch', request.user)
     return redirect(reverse('usermgmt:view_profile', args=(user.username,)))
 
 
@@ -54,6 +55,14 @@ def unwatch_user(request, username):
         messages.success(request,
                          "You are no longer watching {}.".format(
                              user.username))
+        possible_notifications = Notification.objects.filter(
+                target=user,
+                source=request.user,
+                notification_type=Notification.WATCH)
+        if len(possible_notifications) > 0:
+            for notification in possible_notifications:
+                notification.delete()
+        Activity.create('social', 'unwatch', request.user)
     return redirect(reverse('usermgmt:view_profile', args=(user.username,)))
 
 
@@ -72,6 +81,7 @@ def block_user(request, username):
             request,
             ("You are now blocking {} from viewing your profile and "
              "submissions!").format(user.username))
+        Activity.create('social', 'block', request.user)
     return redirect(reverse('usermgmt:view_profile', args=(user.username,)))
 
 
@@ -90,6 +100,7 @@ def unblock_user(request, username):
                 request,
                 ("You are no longer blocking {} from viewing your profile and "
                  "submissions.").format(user.username))
+            Activity.create('social', 'unblock', request.user)
         else:
             return render(request, 'confirm_unblock_user.html',
                           {'blocked_user': user})
@@ -137,6 +148,7 @@ def favorite_submission(request, username=None, submission_id=None,
         notification_type=Notification.FAVORITE,
         subject=submission)
     notification.save()
+    Activity.create('social', 'favorite', submission)
     return redirect(reverse('submissions:view_submission',
                     kwargs={
                         'username': username,
@@ -184,6 +196,7 @@ def unfavorite_submission(request, username=None, submission_id=None,
     if len(possible_notifications) > 0:
         for notification in possible_notifications:
             notification.delete()
+    Activity.create('social', 'unfavorite', submission)
     return redirect(reverse('submissions:view_submission',
                     kwargs={
                         'username': username,
@@ -250,6 +263,7 @@ def rate_submission(request, username=None, submission_id=None,
     submission.rating_average = ratings['average']
     submission.rating_count = ratings['count']
     submission.save()
+    Activity.create('social', 'rate', submission)
     return redirect(reverse('submissions:view_submission',
                     kwargs={
                         'username': username,
@@ -296,6 +310,7 @@ def enjoy_submission(request, username=None, submission_id=None,
         notification_type=Notification.ENJOY,
         subject=submission)
     notification.save()
+    Activity.create('social', 'enjoy', submission)
     return redirect(reverse('submissions:view_submission',
                     kwargs={
                         'username': username,
@@ -323,8 +338,6 @@ def view_notifications_timeline(request, page=1):
     paginator = Paginator(request.user.notification_set.all(), 50)
     try:
         notifications = paginator.page(page)
-    except PageNotAnInteger:
-        notifications = paginator.page(1)
     except EmptyPage:
         notifications = paginator.page(paginator.num_pages)
     return render(request, 'notifications_timeline.html', {

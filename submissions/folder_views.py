@@ -20,6 +20,7 @@ from .models import (
     FolderItem,
     Submission,
 )
+from activitystream.models import Activity
 from core.templatetags.gravatar import gravatar
 
 
@@ -91,6 +92,7 @@ def view_folder(request, username=None, folder_id=None, folder_slug=None,
         curr = curr.parent
     breadcrumbs.reverse()
     path = '/'.join(breadcrumbs)
+    Activity.create('folder', 'view', folder)
     return render(request, 'list_submissions.html', {
         'author': folder.owner,
         'submissions': submissions,
@@ -201,6 +203,7 @@ def update_submission_order_in_folder(request, username=None, folder_id=None,
             item.save()
             position += 1
         messages.success(request, 'Submissions sorted successfully.')
+        Activity.create('folder', 'sort', folder)
     breadcrumbs = ['<em>{}</em>'.format(folder.name)]
     curr = folder.parent
     while curr is not None:

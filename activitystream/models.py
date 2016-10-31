@@ -32,6 +32,7 @@ class Activity(models.Model):
         ('social:unwatch', 'social: unwatch user'),
         ('social:block', 'social: block user'),
         ('social:unblock', 'social: unblock user'),
+        ('social:message', 'social: message user'),
         ('social:favorite', 'social: favorite submission'),
         ('social:unfavorite', 'social: unfavorite submission'),
         ('social:rate', 'social: rate submission'),
