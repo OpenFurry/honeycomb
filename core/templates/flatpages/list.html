@@ -4,10 +4,16 @@
 {% block content %}
 {% get_flatpages prefix as flatpages %}
 <div class="row">
-    <ul class="list-group col-md-8 col-md-offset-2">
-        {% for page in flatpages %}
-            <li class="list-group-item striped-item"><a href="{{ page.url }}">{{ page.title| safe}}</a></li>
-        {% endfor %}
-    </ul>
+    <div class="col-md-8 col-md-offset-2">
+        <p>Here are all of the flat pages contained under the prefix <code>{{ prefix }}</code> (including in nested directories).</p>
+        <ul class="list-group">
+            {% for page in flatpages %}
+                <li class="list-group-item striped-item">
+                    <a href="{{ page.url }}">{{ page.title|safe}}</a>
+                    <p>{{ page.content|striptags|truncatewords:'50' }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endblock %}

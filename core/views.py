@@ -55,6 +55,14 @@ def flatpage_list(request):
     })
 
 
+@cache_page(60 * 60 * 24)
+def helppage_list(request):
+    return render(request, 'flatpages/list.html', {
+        'title': 'Help',
+        'prefix': reverse('core:helppage_list'),
+    })
+
+
 class BasicSearchView(SearchView):
     template_name = 'search/search.html'
     form_class = SearchForm
