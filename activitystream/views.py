@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from django.contrib.auth.models import (
@@ -5,7 +6,7 @@ from django.contrib.auth.models import (
     User,
 )
 from django.contrib.contenttypes.models import ContentType
-from django.http import (HttpResponse)
+from django.http import HttpResponse
 from django.views.decorators.cache import cache_page
 from taggit.models import (
     Tag,
@@ -67,9 +68,10 @@ def get_stream(request, models=None, object_id=None):
         content_type='application/json')
 
 
-@cache_page(60 * 60)
-def sitewide_data(request):
-    data = {
+def _get_sitewide_data():
+    active_promotions = Promotion.objects.filter(
+        promotion_end_date__date__gte=datetime.datetime.now())
+    return {
         'version': git_revno(),
         'users': {
             'all': User.objects.count(),
@@ -83,38 +85,44 @@ def sitewide_data(request):
         'friendgroups': FriendGroup.objects.count(),
         'ratings': {
             'total': Rating.objects.count(),
-            '1-star': Rating.objects.filter(rating=1).count(),
-            '2-star': Rating.objects.filter(rating=2).count(),
-            '3-star': Rating.objects.filter(rating=3).count(),
-            '4-star': Rating.objects.filter(rating=4).count(),
-            '5-star': Rating.objects.filter(rating=5).count(),
+            '1star': Rating.objects.filter(rating=1).count(),
+            '2star': Rating.objects.filter(rating=2).count(),
+            '3star': Rating.objects.filter(rating=3).count(),
+            '4star': Rating.objects.filter(rating=4).count(),
+            '5star': Rating.objects.filter(rating=5).count(),
         },
         'favorites':
             Activity.objects.filter(activity_type='SOCIAL_FAVORITE').count() -
             Activity.objects.filter(activity_type='SOCIAL_UNFAVORITE').count(),
         'enjoys': EnjoyItem.objects.count(),
         'comments': Comment.objects.count(),
+        'tags': {
+            'tags': Tag.objects.count(),
+            'taggeditems': TaggedItem.objects.count(),
+        },
         'publishers': PublisherPage.objects.count(),
         'promotions': {
+            'all_active': active_promotions.count(),
             'promotions':
-                Promotion.objects.filter(
+                active_promotions.filter(
                     promotion_type=Promotion.PROMOTION).count(),
             'paid_promotions':
-                Promotion.objects.filter(
+                active_promotions.filter(
                     promotion_type=Promotion.PAID_PROMOTION).count(),
-            'highlight': Promotion.objects.filter(
+            'highlight': active_promotions.filter(
                 promotion_type=Promotion.HIGHLIGHT).count(),
         },
         'ads': {
             'total': Ad.objects.count(),
             'live': AdLifecycle.objects.filter(live=True).count(),
         },
-        'tags': {
-            'tags': Tag.objects.count(),
-            'taggeditems': TaggedItem.objects.count(),
-        },
         'adminflags': Flag.objects.count(),
     }
+
+
+@cache_page(60 * 60)
+def sitewide_data(request):
+    data = _get_sitewide_data()
     return HttpResponse(
         json.dumps(data, separators=[',', ':']),
         content_type='application/json')

@@ -263,7 +263,7 @@ def rate_submission(request, username=None, submission_id=None,
     submission.rating_average = ratings['average']
     submission.rating_count = ratings['count']
     submission.save()
-    Activity.create('social', 'rate', submission)
+    Activity.create('social', 'rate', rating_object)
     return redirect(reverse('submissions:view_submission',
                     kwargs={
                         'username': username,

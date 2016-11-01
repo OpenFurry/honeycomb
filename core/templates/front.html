@@ -1,15 +1,107 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if user.is_authenticated %}
+    <header class="page-header">
+        <h1>Welcome, {{ user.profile.get_display_name }}! <small>{{ greetings|random }}</small></h1>
+    </header>
+{% else %}
+    <div class="row">
+        <div class="jumbotron col-md-12">
+            <h1>Welcome{% if user.is_authenticated %}, {{ user.username }}{% endif %}!</h1>
+            <p>&#x2394; Honeycomb is a site designed specifically for the written word, aiming to provide the best experience for both authors and readers.</p>
+            <p>Looking for more information?  Check out the <a href="{% url 'core:flatpage_list' %}">about pages</a>.
+        </div>
+    </div>
+{% endif %}
 <div class="row">
-    <div class="jumbotron col-md-12">
-        <h1>Welcome{% if user.is_authenticated %}, {{ user.username }}{% endif %}!</h1>
-        <p>&#x2394; Honeycomb is a site designed specifically for the written word, aiming to provide the best experience for both authors and readers.</p>
+    <div class="col-md-8">
+        <h2>Recent submissions</h2>
+        {% for submission in recent_submissions %}
+            <div class="row striped-item">
+                <div class="col-md-12">
+                    {% include 'submission-list-snippet.html' with author=submission.owner %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="col-md-4">
+        <h2>Recent activity</h2>
+        <ul class="list-group">
+            {% for activity in static_stream %}
+                {% include 'activity-snippet.html' %}
+            {% endfor %}
+        </ul>
     </div>
 </div>
-<div>
-    <div class="col-md-6">{% lorem %}</div>
-
-    <div class="text-block col-md-6">{% lorem %}</div>
+<div class="row">
+    <div class="col-md-12">
+        <h2>Site-wide data</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <dl class="dl-indent">
+                    <dt>Users</dt>
+                    <dd><strong>Total</strong> {{ static_sitewide_data.users.all }}<br />
+                        <strong>Staff</strong> {{ static_sitewide_data.users.staff }}<br />
+                        <strong>Superusers</strong> {{ static_sitewide_data.users.superusers }}
+                    </dd>
+                    <dt>Groups</dt>
+                    <dd>{% for group, count in static_sitewide_data.groups.items %}
+                        <strong>{{ group }}</strong> {{ count }}{% if not forloop.last %}<br />{% endif %}
+                        {% empty %}0
+                    {%endfor %}</dd>
+                    <dt>Friend groups</dt>
+                    <dd>{{ static_sitewide_data.friendgroups }}</dd>
+                </dl>
+            </div>
+            <div class="col-md-3">
+                <dl class="dl-indent">
+                    <dt>Submissions</dt>
+                    <dd>{{ static_sitewide_data.submissions }}</dd>
+                    <dt>Folders</dt>
+                    <dd>{{ static_sitewide_data.folders }}</dd>
+                    <dt>Comments</dt>
+                    <dd>{{ static_sitewide_data.comments }}</dd>
+                    <dt>Publishers</dt>
+                    <dd>{{ static_sitewide_data.publishers }}</dd>
+                </dl>
+            </div>
+            <div class="col-md-3">
+                <dl class="dl-indent">
+                    <dt>Favorites</dt>
+                    <dd>{{ static_sitewide_data.favorites }}</dd>
+                    <dt>Enjoy votes</dt>
+                    <dd>{{ static_sitewide_data.enjoys }}</dd>
+                    <dt>Tags</dt>
+                    <dd>{{ static_sitewide_data.tags.tags }} used {{ static_sitewide_data.tags.taggeditems }} times</dd>
+                    <dt>Ratings</dt>
+                    <dd><strong>Total</strong> {{ static_sitewide_data.ratings.total }}<br />
+                        <strong>5 star</strong>
+                        {{ static_sitewide_data.ratings.5star }}<br />
+                        <strong>4 star</strong>
+                        {{ static_sitewide_data.ratings.4star }}<br />
+                        <strong>3 star</strong>
+                        {{ static_sitewide_data.ratings.3star }}<br />
+                        <strong>2 star</strong>
+                        {{ static_sitewide_data.ratings.2star }}<br />
+                        <strong>1 star</strong>
+                        {{ static_sitewide_data.ratings.1star }}<br />
+                    </dd>
+                </dl>
+            </div>
+            <div class="col-md-3">
+                <dl class="dl-indent">
+                    <dt>Active promotions</dt>
+                    <dd><strong>Total</strong> {{ static_sitewide_data.promotions.all_active }}<br />
+                        <strong>Automatic</strong> {{ static_sitewide_data.promotions.promotions }}<br />
+                        <strong>Paid</strong> {{ static_sitewide_data.promotions.paid }}<br />
+                        <strong>Staff highlights</strong> {{ static_sitewide_data.promotions.highlight }}
+                    </dd>
+                    <dt>Live ads</dt>
+                    <dd>{{ static_sitewide_data.ads.live }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
