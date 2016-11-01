@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import markdown
+from PIL import Image
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -9,6 +10,27 @@ from taggit.managers import TaggableManager
 
 from honeycomb_markdown import HoneycombMarkdown
 from usermgmt.group_models import FriendGroup
+
+
+def content_path(instance, filename):
+    return 'uploads/user-{}/content-files/{}'.format(
+        instance.owner.id,
+        '{}.{}'.format(
+            slugify(instance.title), filename.split('.')[-1]))
+
+
+def icon_path(instance, filename):
+    return 'uploads/user-{}/icons/{}'.format(
+        instance.owner.id,
+        '{}-icon.{}'.format(
+            slugify(instance.title), filename.split('.')[-1]))
+
+
+def cover_path(instance, filename):
+    return 'uploads/user-{}/covers/{}'.format(
+        instance.owner.id,
+        '{}-cover.{}'.format(
+            slugify(instance.title), filename.split('.')[-1]))
 
 
 class Submission(models.Model):
@@ -24,11 +46,11 @@ class Submission(models.Model):
     description_rendered = models.TextField(blank=True)
     content_raw = models.TextField(blank=True, verbose_name="submission")
     content_rendered = models.TextField()
-    content_file = models.FileField(blank=True)
+    content_file = models.FileField(blank=True, upload_to=content_path)
 
     # Associated images
-    icon = models.ImageField(blank=True)
-    cover = models.ImageField(blank=True)
+    icon = models.ImageField(blank=True, upload_to=icon_path)
+    cover = models.ImageField(blank=True, upload_to=cover_path)
 
     # Flags
     can_comment = models.BooleanField(
@@ -62,6 +84,7 @@ class Submission(models.Model):
     tags = TaggableManager()
 
     def save(self, *args, **kwargs):
+        # Modify text fields before saving
         self.slug = slugify(self.title)
         self.description_rendered = markdown.markdown(
             strip_tags(self.description_raw),
@@ -70,6 +93,18 @@ class Submission(models.Model):
             strip_tags(self.content_raw),
             extensions=['pymdownx.extra'])
         super(Submission, self).save(*args, **kwargs)
+
+        # Resize icon
+        if self.icon:
+            icon = Image.open(self.icon)
+            icon.thumbnail((100, 100), Image.ANTIALIAS)
+            icon.save(self.icon.path)
+
+        # Resize cover
+        if self.cover:
+            cover = Image.open(self.cover)
+            cover.thumbnail((2048, 2048), Image.ANTIALIAS)
+            cover.save(self.cover.path)
 
     def get_average_rating(self):
         total = count = 0

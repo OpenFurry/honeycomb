@@ -27,7 +27,20 @@ class Promotion(models.Model):
     promoter = models.ForeignKey(User)
 
     # The date the promotion ends
-    promotion_end_date = models.DateTimeField(null=True)
+    promotion_end_date = models.DateField(null=True)
+
+
+class Event(models.Model):
+    announce_date = models.DateField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    title = models.CharField(max_length=100)
+    slug = models.SlugField()
+    cover = models.ImageField()
+    banner = models.ImageField()
+    description_raw = models.TextField()
+    description_rendered = models.TextField()
+    featured_tag = models.CharField(max_length=100)
 
 
 class Ad(models.Model):
@@ -48,8 +61,8 @@ class AdLifecycle(models.Model):
     cost = models.DecimalField(max_digits=5, decimal_places=2)
     paid = models.BooleanField(default=False)
     live = models.BooleanField(default=False)
-    start_date = models.DateTimeField(null=True, blank=True)
-    end_date = models.DateTimeField(null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
 
     # Information about the ad's activity
     impressions = models.PositiveIntegerField(default=0)

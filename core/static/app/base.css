@@ -54,6 +54,16 @@ body {
 
 }
 
+.submission-icon {
+    display: block;
+    margin: 0 auto;
+}
+
+.submission-cover {
+    max-width: 100%;
+    padding-bottom: 1em;
+}
+
 .profile-tabs {
     padding-bottom: 1em;
 }

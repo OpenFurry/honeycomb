@@ -14,6 +14,7 @@ urlpatterns = [
     url('^', include('social.urls')),
     url('^', include('core.urls')),
     url('^', include('submissions.urls')),
-    url('^tags/', include('tags.urls')),
+    url('^', include('tags.urls')),
     url('^activity/', include('activitystream.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

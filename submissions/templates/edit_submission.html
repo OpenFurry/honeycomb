@@ -2,7 +2,7 @@
 {% load form_extras %}
 
 {% block content %}
-<form enctype="multipart/form-data" method="post">
+<form enctype="multipart/form-data" method="post" class="submission-form">
     {% csrf_token %}
     {% for hidden in form.hidden_fields %}
         {{ hidden }}
@@ -139,4 +139,22 @@
         <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Update submission</button>
     </div>
 </form>
+<script type="text/javascript">
+    $('.submission-form').on('submit', function() {
+        var max_upload_size = {{ max_upload_size }};
+        var files_ok = true;
+        $('input[type=file]').each(function() {
+            if (this.files.length > 0 && this.files[0].size > max_upload_size) {
+                var name = $(this.parentNode)
+                    .find('label')
+                    .first()
+                    .text()
+                    .replace(':', '')
+                alert(name + " may not be larger than " + max_upload_size / (1024 * 1024) + "MB")
+                files_ok = false;
+            }
+        });
+        return files_ok;
+    });
+</script>
 {% endblock %}
