@@ -119,7 +119,7 @@ footer img {
 @media (min-width: 992px) {
     .submission-description {
         float: left;
-        width: 65%;
+        width: 60%;
         padding-bottom: 2em;
     }
     .text-block {
@@ -130,9 +130,8 @@ footer img {
     }
     .submission-details {
         float: right;
-        width: 33%;
-        padding: 0 0 1em 1em;
-        margin-right: 1em;
+        width: 35%;
+        margin: 0 1em 1em 1em;
     }
     .tag-cloud a {
         display: inline-block;

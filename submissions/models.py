@@ -68,7 +68,7 @@ class Submission(models.Model):
             extensions=['pymdownx.extra', HoneycombMarkdown()])
         self.content_rendered = markdown.markdown(
             strip_tags(self.content_raw),
-            extensions=['pymdownx.extra', HoneycombMarkdown()])
+            extensions=['pymdownx.extra'])
         super(Submission, self).save(*args, **kwargs)
 
     def get_average_rating(self):

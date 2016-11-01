@@ -197,3 +197,4 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
 }
+MAX_UPLOAD_SIZE = 1024 * 1024 * 10

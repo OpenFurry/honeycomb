@@ -69,8 +69,21 @@ clean:
 	find . -name *.py[co] -exec rm {} \;
 
 .PHONY: deps
-deps: venv
+deps: check-sysdeps venv
 	venv/bin/pip install -r requirements.txt
+
+.PHONY: check-sysdeps
+check-sysdeps:
+	@printf "\e[31mChecking for tox...\e[0m"
+	@tox --version
+	@printf "\e[32m- tox found\e[0m\n\n"
+	@printf "\e[31mChecking for virtualenv...\e[0m"
+	@virtualenv --version
+	@printf "\e[32m- virtualenv found\e[0m\n\n"
+	@printf "\e[31mChecking for pandoc...\e[0m"
+	@pandoc --version
+	@printf "\e[32m- pandoc found\e[0m\n"
+	@printf "\e[32mSysdeps met\e[0m\n"
 
 venv:
 	virtualenv venv
