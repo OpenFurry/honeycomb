@@ -70,7 +70,7 @@ def get_stream(request, models=None, object_id=None):
 
 def _get_sitewide_data():
     active_promotions = Promotion.objects.filter(
-        promotion_end_date__date__gte=datetime.datetime.now())
+        promotion_end_date__gte=datetime.date.today())
     return {
         'version': git_revno(),
         'users': {
