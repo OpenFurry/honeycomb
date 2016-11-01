@@ -21,6 +21,18 @@ fixtures: venv/bin/django-admin
 generatefixtures: venv/bin/django-admin
 	venv/bin/python manage.py dumpdata flatpages -o core/fixtures/flatpages.json
 
+.PHONY: update-flatpages
+update-flatpages: venv/bin/django-admin
+	venv/bin/python manage.py update_flatpages
+
+.PHONY: collectstatic
+collectstatic:
+	venv/bin/python manage.py collectstatic
+
+.PHONY: check-deploy
+check-deploy:
+	venv/bin/python manage.py check --deploy
+
 .PHONY: reestdb
 resetdb:
 	- rm db.sqlite3
