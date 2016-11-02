@@ -1,7 +1,10 @@
 from PIL import Image
 import pypandoc
 import mock
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import tempfile
 
 from django.contrib.auth.models import User
