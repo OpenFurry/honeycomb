@@ -2,117 +2,159 @@
 {% load form_extras %}
 
 {% block content %}
-<form method="post">
+<form enctype="multipart/form-data" method="post" class="submission-form">
     {% csrf_token %}
     {% for hidden in form.hidden_fields %}
         {{ hidden }}
     {% endfor %}
     <div class="row">
         <div class="col-md-8">
-            <div class="form-group">
-                {{ form.title.label_tag }}
-                {{ form.title|append_form_control }}
-                {% if form.title.help_text %}
-                    <p class="help-block">{{ form.title.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.description_raw.label_tag }}
-                {{ form.description_raw|append_form_control }}
-                {% if form.description_raw.help_text %}
-                    <p class="help-block">{{ form.description_raw.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.content_raw.label_tag }}
-                {{ form.content_raw|append_form_control }}
-                {% if form.content_raw.help_text %}
-                    <p class="help-block">{{ form.content_raw.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.tags.label_tag }}
-                {{ form.tags|append_form_control }}
-                {% if form.tags.help_text %}
-                    <p class="help-block">{{ form.tags.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.content_file.label_tag }}
-                {{ form.content_file|append_form_control }}
-                {% if form.content_file.help_text %}
-                    <p class="help-block">{{ form.content_file.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.icon.label_tag }}
-                {{ form.icon|append_form_control }}
-                {% if form.icon.help_text %}
-                    <p class="help-block">{{ form.icon.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.cover.label_tag }}
-                {{ form.cover|append_form_control }}
-                {% if form.cover.help_text %}
-                    <p class="help-block">{{ form.cover.help_text|safe }}</p>
-                {% endif %}
-            </div>
+            <fieldset>
+                <legend>Submission basics</legend>
+                <div class="form-group">
+                    {{ form.title.errors }}
+                    {{ form.title.label_tag }}
+                    {{ form.title|append_form_control }}
+                    {% if form.title.help_text %}
+                        <p class="help-block">{{ form.title.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.description_raw.errors }}
+                    {{ form.description_raw.label_tag }}
+                    {{ form.description_raw|append_form_control }}
+                    {% if form.description_raw.help_text %}
+                        <p class="help-block">{{ form.description_raw.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.content_raw.errors }}
+                    {{ form.content_raw.label_tag }}
+                    {{ form.content_raw|append_form_control }}
+                    {% if form.content_raw.help_text %}
+                        <p class="help-block">{{ form.content_raw.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                <div class="text-center">
+                    <strong>- OR -</strong>
+                </div>
+                <div class="form-group">
+                    {{ form.content_file.errors }}
+                    {{ form.content_file.label_tag }}
+                    {{ form.content_file|append_form_control }}
+                    <p class="help-block">Accepted file formats: commonmark, docbook, docx, epub, haddock, html, json, latex, <a href="{% url 'core:helppage_list' %}markdown/">markdown</a> (minus user references), mediawiki, native, odt, opml, org, rst, t2t, textile, twiki.  Uploading a file will take precedence over any content specified above.  For more help, see <a href="{% url 'core:helppage_list' %}submissions/">submission help</a>.</p>
+                </div>
+                <div class="form-group">
+                    {{ form.tags.errors }}
+                    {{ form.tags.label_tag }}
+                    {{ form.tags|append_form_control }}
+                    {% if form.tags.help_text %}
+                        <p class="help-block">{{ form.tags.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Submission extras</legend>
+                <div class="form-group">
+                    {{ form.icon.errors }}
+                    {{ form.icon.label_tag }}
+                    {{ form.icon|append_form_control }}
+                    {% if form.icon.help_text %}
+                        <p class="help-block">{{ form.icon.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.cover.errors }}
+                    {{ form.cover.label_tag }}
+                    {{ form.cover|append_form_control }}
+                    {% if form.cover.help_text %}
+                        <p class="help-block">{{ form.cover.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            </fieldset>
         </div>
         <div class="col-md-4">
-            <div class="form-group">
-                {{ form.adult_rating.label_tag }}
-                {{ form.adult_rating|append_form_control }}
-                {% if form.adult_rating.help_text %}
-                    <p class="help-block">{{ form.adult_rating.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.can_comment.label_tag }}
-                {{ form.can_comment|append_form_control }}
-                {% if form.can_comment.help_text %}
-                    <p class="help-block">{{ form.can_comment.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.can_enjoy.label_tag }}
-                {{ form.can_enjoy|append_form_control }}
-                {% if form.can_enjoy.help_text %}
-                    <p class="help-block">{{ form.can_enjoy.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.hidden.label_tag }}
-                {{ form.hidden|append_form_control }}
-                {% if form.hidden.help_text %}
-                    <p class="help-block">{{ form.hidden.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.restricted_to_groups.label_tag }}
-                {{ form.restricted_to_groups|append_form_control }}
-                {% if form.restricted_to_groups.help_text %}
-                    <p class="help-block">{{ form.restricted_to_groups.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.allowed_groups.label_tag }}
-                {{ form.allowed_groups|append_form_control }}
-                {% if form.allowed_groups.help_text %}
-                    <p class="help-block">{{ form.allowed_groups.help_text|safe }}</p>
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.folders.label_tag }}
-                {{ form.folders|append_form_control }}
-                {% if form.folders.help_text %}
-                    <p class="help-block">{{ form.folders.help_text|safe }}</p>
-                {% endif %}
-            </div>
+            <fieldset>
+                <legend>Submission permissions</legend>
+                <div class="form-group">
+                    {{ form.adult_rating.errors }}
+                    {{ form.adult_rating.label_tag }}
+                    {{ form.adult_rating|append_form_control }}
+                    {% if form.adult_rating.help_text %}
+                        <p class="help-block">{{ form.adult_rating.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.can_comment.errors }}
+                    {{ form.can_comment.label_tag }}
+                    {{ form.can_comment|append_form_control }}
+                    {% if form.can_comment.help_text %}
+                        <p class="help-block">{{ form.can_comment.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.can_enjoy.errors }}
+                    {{ form.can_enjoy.label_tag }}
+                    {{ form.can_enjoy|append_form_control }}
+                    {% if form.can_enjoy.help_text %}
+                        <p class="help-block">{{ form.can_enjoy.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.hidden.errors }}
+                    {{ form.hidden.label_tag }}
+                    {{ form.hidden|append_form_control }}
+                    {% if form.hidden.help_text %}
+                        <p class="help-block">{{ form.hidden.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.restricted_to_groups.errors }}
+                    {{ form.restricted_to_groups.label_tag }}
+                    {{ form.restricted_to_groups|append_form_control }}
+                    {% if form.restricted_to_groups.help_text %}
+                        <p class="help-block">{{ form.restricted_to_groups.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.allowed_groups.errors }}
+                    {{ form.allowed_groups.label_tag }}
+                    {{ form.allowed_groups|append_form_control }}
+                    {% if form.allowed_groups.help_text %}
+                        <p class="help-block">{{ form.allowed_groups.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.folders.errors }}
+                    {{ form.folders.label_tag }}
+                    {{ form.folders|append_form_control }}
+                    {% if form.folders.help_text %}
+                        <p class="help-block">{{ form.folders.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            </fieldset>
         </div>
     </div>
     <div class="text-center">
         <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Update submission</button>
     </div>
 </form>
+<script type="text/javascript">
+    $('.submission-form').on('submit', function() {
+        var max_upload_size = {{ max_upload_size }};
+        var files_ok = true;
+        $('input[type=file]').each(function() {
+            if (this.files.length > 0 && this.files[0].size > max_upload_size) {
+                var name = $(this.parentNode)
+                    .find('label')
+                    .first()
+                    .text()
+                    .replace(':', '')
+                alert(name + " may not be larger than " + max_upload_size / (1024 * 1024) + "MB")
+                files_ok = false;
+            }
+        });
+        return files_ok;
+    });
+</script>
 {% endblock %}

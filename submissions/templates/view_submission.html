@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if submission.cover %}
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2 text-center">
+            <img src="{{ MEDIA_ROOT }}{{ submission.cover.url }}" class="submission-cover" />
+        </div>
+    </div>
+{% endif %}
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
         {% if submission.description_rendered %}
@@ -11,7 +18,14 @@
         {% endif %}
         <div class="panel panel-default submission-details">
             <div class="panel-body">
+                {% if submission.icon %}
+                    <img src="{{ MEDIA_ROOT }}{{ submission.icon.url }}" class="submission-icon" />
+                {% endif %}
                 <dl>
+                    {% if submission.content_file %}
+                        <dt>Submission file</dt>
+                        <dd><a href="{{ MEDIA_ROOT }}{{ submission.content_file.url }}">Download</a></dd>
+                    {% endif %}
                     <dt>Views</dt>
                     <dd>{{ submission.views }}</dd>
                     <dt>Rating</dt>
@@ -25,7 +39,7 @@
                     <dt>Tags</dt>
                     <dd>
                         {% for tag in submission.tags.all %}
-                            <a href="{% url 'tags:view_tag' tag_slug=tag.slug %}">{{ tag }}</a>{% if not forloop.last %},{% endif%}
+                            <a href="{% url 'tags:view_tag' tag_slug=tag.slug %}">{{ tag }}</a>{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     </dd>
                 </dl>

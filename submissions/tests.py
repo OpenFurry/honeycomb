@@ -1,11 +1,28 @@
+from PIL import Image
+import pypandoc
+import mock
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+import tempfile
+
 from django.contrib.auth.models import User
+from django.core.files import File
+from django.core.files.storage import Storage
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import (
+    TestCase,
+    override_settings,
+)
 
 from .models import (
     Folder,
     FolderItem,
     Submission,
+    content_path,
+    cover_path,
+    icon_path,
 )
 from social.models import Rating
 from usermgmt.group_models import FriendGroup
@@ -24,13 +41,23 @@ class ModelTest(TestCase):
             owner=cls.foo,
             title='Submission 1',
             description_raw='Description for submission 1',
-            content_raw='Content for submission 1',
-        )
-        cls.submission1.save()
+            content_raw='Content for submission 1')
+        cls.submission1.save(update_content=True)
         cls.folder = Folder(
             owner=cls.foo,
             name='Folder 1')
         cls.folder.save()
+
+        cls.content_file_mock = mock.Mock(spec=File, name='ContentFileMock',
+                                          wraps=StringIO('test'))
+        cls.content_file_mock.name = 'foo.md'
+        cls.image_file_mock = mock.Mock(spec=File, name='ImageFileMock')
+        cls.image_file_mock.name = 'foo.jpg'
+        cls.storage_mock = mock.MagicMock(spec=Storage, name='StorageMock')
+        cls.storage_mock.url = mock.MagicMock(name='url')
+        cls.storage_mock.url.return_value = '/tmp/test1.jpg'
+        cls.wrappedfn = 'django.core.files.storage.default_storage._wrapped'
+        Image.init()
 
 
 class TestSubmissionModel(ModelTest):
@@ -63,6 +90,60 @@ class TestSubmissionModel(ModelTest):
     def test_unicode(self):
         self.assertEqual(self.submission1.__unicode__(),
                          'Submission 1 by ~foo (id:1)')
+
+    def test_content_path(self):
+        ctime = self.submission1.ctime.strftime('%Y-%m-%d-%H%M%S')
+        self.assertEqual(
+            content_path(self.submission1, 'foo.md'),
+            'uploads/user-1/content-files/{}-submission-1.md'.format(ctime))
+
+    def test_icon_path(self):
+        ctime = self.submission1.ctime.strftime('%Y-%m-%d-%H%M%S')
+        self.assertEqual(
+            icon_path(self.submission1, 'foo.jpg'),
+            'uploads/user-1/icons/{}-submission-1.jpg'.format(ctime))
+
+    def test_cover_path(self):
+        ctime = self.submission1.ctime.strftime('%Y-%m-%d-%H%M%S')
+        self.assertEqual(
+            cover_path(self.submission1, 'foo.jpg'),
+            'uploads/user-1/covers/{}-submission-1.jpg'.format(ctime))
+
+    @mock.patch.object(tempfile, 'NamedTemporaryFile')
+    @mock.patch.object(pypandoc, 'convert_file')
+    def test_content_file_rendered(self, convert_mock, temp_mock):
+        convert_mock.return_value = 'asdf'
+        self.storage_mock.save.return_value = self.content_file_mock
+        with mock.patch(self.wrappedfn, self.storage_mock):
+            self.submission1.content_file = self.content_file_mock
+            self.submission1.save(update_content=True)
+        self.assertEqual(self.submission1.content_rendered, '<p>asdf</p>')
+        self.assertTrue(convert_mock.called)
+        # XXX This shouldn't be infecting other tests, and yet here we are.
+        self.submission1.content_file = None
+        self.submission1.save()
+
+    @mock.patch.object(Image, 'open')
+    def test_thumbnail_cover(self, mock_image):
+        self.storage_mock.save.return_value = self.image_file_mock
+        opened_image = mock_image.return_value
+        with mock.patch(self.wrappedfn, self.storage_mock):
+            self.submission1.cover = self.image_file_mock
+            self.submission1.save(update_content=True)
+        self.assertTrue(mock_image.called)
+        self.assertTrue(opened_image.thumbnail.called)
+        self.assertTrue(opened_image.save.called)
+
+    @mock.patch.object(Image, 'open')
+    def test_thumbnail_icon(self, mock_image):
+        self.storage_mock.save.return_value = self.image_file_mock
+        opened_image = mock_image.return_value
+        with mock.patch(self.wrappedfn, self.storage_mock):
+            self.submission1.icon = self.image_file_mock
+            self.submission1.save(update_content=True)
+        self.assertTrue(mock_image.called)
+        self.assertTrue(opened_image.thumbnail.called)
+        self.assertTrue(opened_image.save.called)
 
 
 class TestFolderModel(ModelTest):
@@ -99,14 +180,14 @@ class SubmissionsViewsBaseTestCase(TestCase):
             description_raw='Description for submission 1',
             content_raw='Content for submission 1',
         )
-        cls.submission1.save()
+        cls.submission1.save(update_content=True)
         cls.submission2 = Submission(
             owner=cls.foo,
             title='Submission 2',
             description_raw='Description for submission 2',
             content_raw='Content for submission 2',
         )
-        cls.submission2.save()
+        cls.submission2.save(update_content=True)
         cls.bar.profile.favorited_submissions.add(cls.submission1)
         cls.bar.profile.favorited_submissions.add(cls.submission2)
         cls.bar.profile.save()
@@ -121,7 +202,7 @@ class TestLoggedOutListUserSubmissionsView(SubmissionsViewsBaseTestCase):
 
     def test_one_marked_hidden(self):
         self.submission2.hidden = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:list_user_submissions', kwargs={'username': 'foo'}))
         self.assertContains(response, 'Submission 1')
@@ -129,7 +210,7 @@ class TestLoggedOutListUserSubmissionsView(SubmissionsViewsBaseTestCase):
 
     def test_one_marked_adult(self):
         self.submission2.adult_rating = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:list_user_submissions', kwargs={'username': 'foo'}))
         self.assertContains(response, 'Submission 1')
@@ -137,7 +218,7 @@ class TestLoggedOutListUserSubmissionsView(SubmissionsViewsBaseTestCase):
 
     def test_one_restricted_to_groups(self):
         self.submission2.restricted_to_groups = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:list_user_submissions', kwargs={'username': 'foo'}))
         self.assertContains(response, 'Submission 1')
@@ -151,7 +232,7 @@ class TestLoggedOutListUserSubmissionsView(SubmissionsViewsBaseTestCase):
                 description_raw='Description',
                 content_raw='Content',
             )
-            submission.save()
+            submission.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:list_user_submissions', kwargs={'username': 'foo'}))
         self.assertContains(response, '<a href="{}">2</a>'.format(
@@ -168,7 +249,7 @@ class TestLoggedOutListUserSubmissionsView(SubmissionsViewsBaseTestCase):
                 description_raw='Description',
                 content_raw='Content',
             )
-            submission.save()
+            submission.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:list_user_submissions', kwargs={
                 'username': 'foo',
@@ -190,7 +271,7 @@ class TestLoggedInListUserSubmissionsView(SubmissionsViewsBaseTestCase):
 
     def test_author_can_view_own_hidden_submissions(self):
         self.submission2.hidden = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse(
@@ -200,7 +281,7 @@ class TestLoggedInListUserSubmissionsView(SubmissionsViewsBaseTestCase):
 
     def test_author_can_see_own_adult_submissions(self):
         self.submission2.adult_rating = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         self.foo.profile.can_see_adult_submissions = False
         self.client.login(username='foo',
                           password='a good password')
@@ -226,7 +307,7 @@ class TestLoggedInListUserSubmissionsView(SubmissionsViewsBaseTestCase):
 
     def test_group_locked_submission_without_matching_group_not_shown(self):
         self.submission2.restricted_to_groups = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         self.submission2.allowed_groups.add(self.group)
         self.client.login(username='bar',
                           password='another good password')
@@ -243,7 +324,7 @@ class TestLoggedInListUserSubmissionsView(SubmissionsViewsBaseTestCase):
         self.submission2.restricted_to_groups = True
         self.submission2.hidden = False
         self.submission2.allowed_groups.add(self.group)
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         self.client.login(username='bar',
                           password='another good password')
         response = self.client.get(reverse(
@@ -253,7 +334,7 @@ class TestLoggedInListUserSubmissionsView(SubmissionsViewsBaseTestCase):
 
     def test_author_can_see_own_group_locked_submissions(self):
         self.submission2.restricted_to_groups = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         self.submission2.allowed_groups.add(self.group)
         self.client.login(username='foo',
                           password='a good password')
@@ -272,7 +353,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
 
     def test_one_marked_hidden(self):
         self.submission2.hidden = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:list_user_favorites', kwargs={'username': 'bar'}))
         self.assertContains(response, 'Submission 1')
@@ -280,7 +361,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
 
     def test_one_marked_adult(self):
         self.submission2.adult_rating = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:list_user_favorites', kwargs={'username': 'bar'}))
         self.assertContains(response, 'Submission 1')
@@ -288,7 +369,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
 
     def test_one_restricted_to_groups(self):
         self.submission2.restricted_to_groups = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:list_user_favorites', kwargs={'username': 'bar'}))
         self.assertContains(response, 'Submission 1')
@@ -302,7 +383,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
                 description_raw='Description',
                 content_raw='Content',
             )
-            submission.save()
+            submission.save(update_content=True)
             self.bar.profile.favorited_submissions.add(submission)
         self.bar.save()
         response = self.client.get(reverse(
@@ -322,7 +403,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
                 description_raw='Description',
                 content_raw='Content',
             )
-            submission.save()
+            submission.save(update_content=True)
             self.bar.profile.favorited_submissions.add(submission)
         self.bar.profile.save()
         response = self.client.get(reverse(
@@ -346,7 +427,7 @@ class TestLoggedInListUserFavoritesView(SubmissionsViewsBaseTestCase):
 
     def test_author_can_view_own_hidden_submissions(self):
         self.submission2.hidden = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse(
@@ -356,7 +437,7 @@ class TestLoggedInListUserFavoritesView(SubmissionsViewsBaseTestCase):
 
     def test_author_can_see_own_adult_submissions(self):
         self.submission2.adult_rating = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         self.foo.profile.can_see_adult_submissions = False
         self.client.login(username='foo',
                           password='a good password')
@@ -382,7 +463,7 @@ class TestLoggedInListUserFavoritesView(SubmissionsViewsBaseTestCase):
 
     def test_group_locked_submission_without_matching_group_not_shown(self):
         self.submission2.restricted_to_groups = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         self.submission2.allowed_groups.add(self.group)
         self.client.login(username='baz',
                           password='wow a good password')
@@ -397,7 +478,7 @@ class TestLoggedInListUserFavoritesView(SubmissionsViewsBaseTestCase):
         self.submission2.restricted_to_groups = True
         self.submission2.hidden = False
         self.submission2.allowed_groups.add(self.group)
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         self.client.login(username='baz',
                           password='wow a good password')
         response = self.client.get(reverse(
@@ -407,7 +488,7 @@ class TestLoggedInListUserFavoritesView(SubmissionsViewsBaseTestCase):
 
     def test_author_can_see_own_group_locked_submissions(self):
         self.submission2.restricted_to_groups = True
-        self.submission2.save()
+        self.submission2.save(update_content=True)
         self.submission2.allowed_groups.add(self.group)
         self.client.login(username='foo',
                           password='a good password')
@@ -442,7 +523,7 @@ class TestLoggedOutViewSubmissionView(SubmissionsViewsBaseTestCase):
 
     def test_submission_marked_adult_forbidden(self):
         self.submission1.adult_rating = True
-        self.submission1.save()
+        self.submission1.save(update_content=True)
         response = self.client.get(reverse('submissions:view_submission',
                                    kwargs={
                                        'username': 'foo',
@@ -453,7 +534,7 @@ class TestLoggedOutViewSubmissionView(SubmissionsViewsBaseTestCase):
 
     def test_submission_marked_hidden_forbidden(self):
         self.submission1.hidden = True
-        self.submission1.save()
+        self.submission1.save(update_content=True)
         response = self.client.get(reverse('submissions:view_submission',
                                    kwargs={
                                        'username': 'foo',
@@ -464,7 +545,7 @@ class TestLoggedOutViewSubmissionView(SubmissionsViewsBaseTestCase):
 
     def test_submission_restricted_to_groups_forbidden(self):
         self.submission1.restricted_to_groups = True
-        self.submission1.save()
+        self.submission1.save(update_content=True)
         response = self.client.get(reverse('submissions:view_submission',
                                    kwargs={
                                        'username': 'foo',
@@ -490,7 +571,7 @@ class TestLoggedInViewSubmissionView(SubmissionsViewsBaseTestCase):
 
     def test_submission_marked_adult_forbidden(self):
         self.submission1.adult_rating = True
-        self.submission1.save()
+        self.submission1.save(update_content=True)
         self.bar.profile.can_see_adult_submissions = False
         self.bar.profile.save()
         self.client.login(username='bar',
@@ -505,7 +586,7 @@ class TestLoggedInViewSubmissionView(SubmissionsViewsBaseTestCase):
 
     def test_submission_marked_hidden_forbidden(self):
         self.submission1.hidden = True
-        self.submission1.save()
+        self.submission1.save(update_content=True)
         self.client.login(username='bar',
                           password='another good password')
         response = self.client.get(reverse('submissions:view_submission',
@@ -518,7 +599,7 @@ class TestLoggedInViewSubmissionView(SubmissionsViewsBaseTestCase):
 
     def test_author_can_see_own_adult_submission(self):
         self.submission1.adult_rating = True
-        self.submission1.save()
+        self.submission1.save(update_content=True)
         self.foo.profile.can_see_adult_submissions = False
         self.foo.profile.save()
         self.client.login(username='foo',
@@ -533,7 +614,7 @@ class TestLoggedInViewSubmissionView(SubmissionsViewsBaseTestCase):
 
     def test_author_can_view_own_hidden_submission(self):
         self.submission1.hidden = True
-        self.submission1.save()
+        self.submission1.save(update_content=True)
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse('submissions:view_submission',
@@ -546,7 +627,7 @@ class TestLoggedInViewSubmissionView(SubmissionsViewsBaseTestCase):
 
     def test_group_locked_submission_without_matching_group_not_shown(self):
         self.submission1.restricted_to_groups = True
-        self.submission1.save()
+        self.submission1.save(update_content=True)
         self.submission1.allowed_groups.add(self.group)
         self.client.login(username='baz',
                           password='wow a good password')
@@ -564,7 +645,7 @@ class TestLoggedInViewSubmissionView(SubmissionsViewsBaseTestCase):
         self.submission1.restricted_to_groups = True
         self.submission1.hidden = False
         self.submission1.allowed_groups.add(self.group)
-        self.submission1.save()
+        self.submission1.save(update_content=True)
         self.client.login(username='baz',
                           password='wow a good password')
         response = self.client.get(reverse('submissions:view_submission',
@@ -577,7 +658,7 @@ class TestLoggedInViewSubmissionView(SubmissionsViewsBaseTestCase):
 
     def test_author_can_see_own_group_locked_submissions(self):
         self.submission1.restricted_to_groups = True
-        self.submission1.save()
+        self.submission1.save(update_content=True)
         self.submission1.allowed_groups.add(self.group)
         self.client.login(username='foo',
                           password='a good password')
@@ -645,6 +726,24 @@ class TestEditSubmissionView(SubmissionsViewsBaseTestCase):
         self.assertTrue('foo' in [
             tag.name for tag in self.submission1.tags.all()])
         self.assertNotEqual(self.submission1.ctime, self.submission1.mtime)
+
+    @override_settings(MAX_UPLOAD_SIZE=1)
+    def test_filesize_check(self):
+        with open('README.md') as f:
+            self.client.login(username='foo',
+                              password='a good password')
+            response = self.client.post(
+                reverse('submissions:edit_submission',
+                        kwargs={
+                            'username': 'foo',
+                            'submission_id': 1,
+                            'submission_slug': 'submission-1',
+                        }),
+                {
+                    'content_file': f,
+                },
+                follow=True)
+            self.assertContains(response, 'Uploads must be less than 0MB')
 
     def test_can_add_to_folders(self):
         folder = Folder(
@@ -823,3 +922,18 @@ class TestSubmitView(SubmissionsViewsBaseTestCase):
             reverse('tags:view_tag', kwargs={'tag_slug': 'foo'})))
         self.assertEqual(self.folder.submissions.count(), 1)
         self.assertEqual(self.group.submission_set.count(), 1)
+
+    @override_settings(MAX_UPLOAD_SIZE=1)
+    def test_filesize_check(self):
+        with open('README.md') as f:
+            self.client.login(username='foo',
+                              password='a good password')
+            response = self.client.post(
+                reverse('submissions:submit'),
+                {
+                    'title': 'Reasons foxes are great',
+                    'content_raw': 'There are too many.',
+                    'tags': 'foo, bar',
+                    'content_file': f,
+                }, follow=True)
+            self.assertContains(response, 'Uploads must be less than 0MB')

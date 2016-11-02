@@ -53,7 +53,7 @@ class TestViewRootLevelFoldersView(SubmissionsFolderViewsBaseTestCase):
         submission = Submission(
             owner=self.foo,
             title='wahooo')
-        submission.save()
+        submission.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:view_root_level_folders', kwargs={
                 'username': 'foo',
@@ -66,7 +66,7 @@ class TestViewRootLevelFoldersView(SubmissionsFolderViewsBaseTestCase):
         for i in range(1, 30):
             Submission(
                 owner=self.foo,
-                title='Submission {}'.format(i)).save()
+                title='Submission {}'.format(i)).save(update_content=True)
         response = self.client.get(reverse(
             'submissions:view_root_level_folders', kwargs={
                 'username': 'foo',
@@ -81,7 +81,7 @@ class TestViewRootLevelFoldersView(SubmissionsFolderViewsBaseTestCase):
         for i in range(1, 30):
             Submission(
                 owner=self.foo,
-                title='Submission {}'.format(i)).save()
+                title='Submission {}'.format(i)).save(update_content=True)
         self.bar.profile.results_per_page = 10
         self.bar.profile.save()
         self.client.login(username='bar',
@@ -100,7 +100,7 @@ class TestViewRootLevelFoldersView(SubmissionsFolderViewsBaseTestCase):
         for i in range(1, 30):
             Submission(
                 owner=self.foo,
-                title='Submission {}'.format(i)).save()
+                title='Submission {}'.format(i)).save(update_content=True)
         response = self.client.get(reverse(
             'submissions:view_root_level_folders', kwargs={
                 'username': 'foo',
@@ -194,7 +194,7 @@ class TestViewFolderView(SubmissionsFolderViewsBaseTestCase):
             submission = Submission(
                 owner=self.foo,
                 title='Submission {}'.format(i))
-            submission.save()
+            submission.save(update_content=True)
             FolderItem(
                 folder=self.folderB,
                 submission=submission,
@@ -218,7 +218,7 @@ class TestViewFolderView(SubmissionsFolderViewsBaseTestCase):
             submission = Submission(
                 owner=self.foo,
                 title='Submission {}'.format(i))
-            submission.save()
+            submission.save(update_content=True)
             FolderItem(
                 folder=self.folderB,
                 submission=submission,
@@ -246,7 +246,7 @@ class TestViewFolderView(SubmissionsFolderViewsBaseTestCase):
             submission = Submission(
                 owner=self.foo,
                 title='Submission {}'.format(i))
-            submission.save()
+            submission.save(update_content=True)
             FolderItem(
                 folder=self.folderB,
                 submission=submission,

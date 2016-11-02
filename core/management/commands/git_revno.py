@@ -1,5 +1,5 @@
 import os
-from subprocess import check_output
+import subprocess
 
 from django.core.management.base import BaseCommand
 
@@ -10,7 +10,7 @@ class Command(BaseCommand):
                             default='pre-release')
 
     def handle(self, *args, **kwargs):
-        revno = check_output(
+        revno = subprocess.check_output(
             ['git', 'rev-parse', '--verify', 'HEAD']).strip()
 
         with open(os.sep.join(['honeycomb', 'revno.py']), 'w') as f:

@@ -190,7 +190,7 @@ class BaseSocialSubmissionViewTestCase(BaseSocialViewTestCase):
             title="Submission",
             description_raw="Description",
             content_raw="Content")
-        cls.submission.save()
+        cls.submission.save(update_content=True)
 
 
 class TestFavoriteSubmissionView(BaseSocialSubmissionViewTestCase):
@@ -405,7 +405,7 @@ class TestEnjoySubmissionView(BaseSocialSubmissionViewTestCase):
 
     def test_cant_enjoy_submission_if_disallowed(self):
         self.submission.can_enjoy = False
-        self.submission.save()
+        self.submission.save(update_content=True)
         self.client.login(username='bar',
                           password='another good password')
         response = self.client.post(reverse(

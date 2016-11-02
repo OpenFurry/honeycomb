@@ -15,9 +15,16 @@ tag_views = [
     url('^block/', views.block_tag, name='block_tag'),
     url('^unblock/', views.block_tag, name='block_tag'),
 ]
-urlpatterns = [
+tags_views = [
     url('^$', views.list_tags, name='list_tags'),
     url('^favorites/$', views.list_submissions_with_favorite_tags,
         name='list_submissions_with_favorite_tags'),
     url('^tag/(?P<tag_slug>[-\w]+)/', include(tag_views)),
+]
+categories_views = [
+    url('^$', views.list_tags, name='XXX-changeme')
+]
+urlpatterns = [
+    url('^tags/', include(tags_views)),
+    url('^categories/', include(categories_views)),
 ]

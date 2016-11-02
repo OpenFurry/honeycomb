@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -137,11 +138,17 @@ def edit_submission(request, username=None, submission_id=None,
         }, status=403)
     form = SubmissionForm(instance=submission)
     if request.method == 'POST':
-        form = SubmissionForm(request.POST, instance=submission)
+        form = SubmissionForm(request.POST, request.FILES,
+                              instance=submission)
+        for f in request.FILES.values():
+            if f.size > settings.MAX_UPLOAD_SIZE:
+                form.add_error(
+                    'content_file', 'Uploads must be less than {}MB'.format(
+                        int(settings.MAX_UPLOAD_SIZE / (1024 * 1024))))
         if form.is_valid():
             submission = form.save(commit=False)
             submission.mtime = timezone.now()
-            submission.save()
+            submission.save(update_content=True)
             for folder in form.cleaned_data['folders']:
                 if folder.owner == request.user:
                     try:
@@ -177,6 +184,7 @@ def edit_submission(request, username=None, submission_id=None,
     return render(request, 'edit_submission.html', {
         'title': 'Edit submission',
         'form': form,
+        'max_upload_size': settings.MAX_UPLOAD_SIZE,
     })
 
 
@@ -204,11 +212,16 @@ def delete_submission(request, username=None, submission_id=None,
 def submit(request):
     form = SubmissionForm()
     if request.method == 'POST':
-        form = SubmissionForm(request.POST)
+        form = SubmissionForm(request.POST, request.FILES)
+        for f in request.FILES.values():
+            if f.size > settings.MAX_UPLOAD_SIZE:
+                form.add_error(
+                    'content_file', 'Uploads must be less than {}MB'.format(
+                        int(settings.MAX_UPLOAD_SIZE / (1024 * 1024))))
         if form.is_valid():
             submission = form.save(commit=False)
             submission.owner = request.user
-            submission.save()
+            submission.save(update_content=True)
             for folder in form.cleaned_data['folders']:
                 if folder.owner == request.user:
                     item = FolderItem(
@@ -233,4 +246,5 @@ def submit(request):
     return render(request, 'edit_submission.html', {
         'title': 'Create submission',
         'form': form,
+        'max_upload_size': settings.MAX_UPLOAD_SIZE,
     })
