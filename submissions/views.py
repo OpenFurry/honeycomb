@@ -144,7 +144,7 @@ def edit_submission(request, username=None, submission_id=None,
             if f.size > settings.MAX_UPLOAD_SIZE:
                 form.add_error(
                     'content_file', 'Uploads must be less than {}MB'.format(
-                        settings.MAX_UPLOAD_SIZE / (1024 * 1024)))
+                        int(settings.MAX_UPLOAD_SIZE / (1024 * 1024))))
         if form.is_valid():
             submission = form.save(commit=False)
             submission.mtime = timezone.now()
@@ -217,7 +217,7 @@ def submit(request):
             if f.size > settings.MAX_UPLOAD_SIZE:
                 form.add_error(
                     'content_file', 'Uploads must be less than {}MB'.format(
-                        settings.MAX_UPLOAD_SIZE / (1024 * 1024)))
+                        int(settings.MAX_UPLOAD_SIZE / (1024 * 1024))))
         if form.is_valid():
             submission = form.save(commit=False)
             submission.owner = request.user
