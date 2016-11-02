@@ -13,7 +13,7 @@ class TestGitRevnoCommand(TestCase):
     def test_set_revno(self, mock_check_output):
         mock_check_output.return_value = 'qwer'
         with mock.patch(openstr, create=True) as mock_open:
-            mock_open.return_value = mock.MagicMock(spec=file)
+            mock_open.return_value = mock.MagicMock()
             cmd = Command()
             cmd.handle(tag='asdf')
         self.assertTrue(mock_open.called)
