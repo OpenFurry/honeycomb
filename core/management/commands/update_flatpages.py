@@ -1,3 +1,4 @@
+from __future__ import print_function
 import markdown
 import os
 
@@ -6,6 +7,10 @@ from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 
 from honeycomb_markdown import HoneycombMarkdown
+
+
+def mockable_print(val):
+    print(val)
 
 
 class Command(BaseCommand):
@@ -39,19 +44,21 @@ class Command(BaseCommand):
                 flatpage = FlatPage.objects.get(url=page_name)
                 flatpage.content = rendered_content
                 flatpage.save()
-                print('{} updated.'.format(page_name))
+                mockable_print('{} updated.'.format(page_name))
             except FlatPage.DoesNotExist:
                 if kwargs['create_missing']:
-                    print('{} does not exist, creating.'.format(page_name))
+                    mockable_print('{} does not exist, '
+                                   'creating.'.format(page_name))
                     flatpage = FlatPage(
                         url=page_name,
                         title=page,
                         content=rendered_content)
                     flatpage.save()
                     flatpage.sites = Site.objects.all()
-                    print((u'- {} created (you should probably update the '
-                           u'title).').format(page_name))
+                    mockable_print((u'- {} created (you should probably '
+                                    u'update the title).').format(page_name))
                 else:
-                    print('{} does not exist, ignoring.'.format(page_name))
-        print("\nIf there haven't been any errors, you should now run:\n\n"
-              "  make generatefixtures")
+                    mockable_print('{} does not exist, '
+                                   'ignoring.'.format(page_name))
+        mockable_print("\nIf there haven't been any errors, you should now "
+                       "run:\n\n  make generatefixtures")

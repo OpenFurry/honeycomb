@@ -18,12 +18,12 @@ class BaseTagViewsTestCase(TestCase):
             owner=cls.foo,
             title='Submission 1',
             content_raw='Whoa, a submission')
-        cls.submission1.save()
+        cls.submission1.save(update_content=True)
         cls.submission2 = Submission(
             owner=cls.foo,
             title='Submission 2',
             content_raw='Whoa, another submission')
-        cls.submission2.save()
+        cls.submission2.save(update_content=True)
 
 
 class TestListTagsView(BaseTagViewsTestCase):
@@ -72,7 +72,7 @@ class TestViewTagView(BaseTagViewsTestCase):
                 owner=self.foo,
                 title='Submission #{}'.format(i),
                 content_raw='Submission #{}'.format(i))
-            submission.save()
+            submission.save(update_content=True)
             submission.tags.add('red')
         response = self.client.get(reverse('tags:view_tag', kwargs={
             'tag_slug': 'red'
@@ -88,7 +88,7 @@ class TestViewTagView(BaseTagViewsTestCase):
                 owner=self.foo,
                 title='Submission #{}'.format(i),
                 content_raw='Submission #{}'.format(i))
-            submission.save()
+            submission.save(update_content=True)
             submission.tags.add('red')
         response = self.client.get(reverse('tags:view_tag', kwargs={
             'tag_slug': 'red',
@@ -105,7 +105,7 @@ class TestViewTagView(BaseTagViewsTestCase):
                 owner=self.foo,
                 title='Submission #{}'.format(i),
                 content_raw='Submission #{}'.format(i))
-            submission.save()
+            submission.save(update_content=True)
             submission.tags.add('red')
         self.foo.profile.results_per_page = 10
         self.foo.profile.save()

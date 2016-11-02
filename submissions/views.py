@@ -1,6 +1,3 @@
-import pypandoc
-import tempfile
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -141,29 +138,17 @@ def edit_submission(request, username=None, submission_id=None,
         }, status=403)
     form = SubmissionForm(instance=submission)
     if request.method == 'POST':
-        form = SubmissionForm(request.POST, request.FILES, instance=submission)
-        uploaded_data = None
+        form = SubmissionForm(request.POST, request.FILES,
+                              instance=submission)
         for f in request.FILES.values():
             if f.size > settings.MAX_UPLOAD_SIZE:
                 form.add_error(
                     'content_file', 'Uploads must be less than {}MB'.format(
                         settings.MAX_UPLOAD_SIZE / (1024 * 1024)))
-        if ('content_file' in request.FILES
-                and 'content_file' not in form.errors):
-            f = request.FILES['content_file']
-            with tempfile.NamedTemporaryFile(suffix='.{}'.format(
-                    f.name.split('.')[-1])) as temp:
-                for chunk in f.chunks():
-                    temp.write(chunk)
-                temp.flush()
-                uploaded_data = pypandoc.convert_file(
-                    temp.name, 'md')
         if form.is_valid():
             submission = form.save(commit=False)
             submission.mtime = timezone.now()
-            if uploaded_data is not None:
-                submission.content_raw = uploaded_data
-            submission.save()
+            submission.save(update_content=True)
             for folder in form.cleaned_data['folders']:
                 if folder.owner == request.user:
                     try:
@@ -228,27 +213,15 @@ def submit(request):
     form = SubmissionForm()
     if request.method == 'POST':
         form = SubmissionForm(request.POST, request.FILES)
-        uploaded_data = None
         for f in request.FILES.values():
             if f.size > settings.MAX_UPLOAD_SIZE:
                 form.add_error(
                     'content_file', 'Uploads must be less than {}MB'.format(
                         settings.MAX_UPLOAD_SIZE / (1024 * 1024)))
-        if 'content_file' in request.FILES:
-            f = request.FILES['content_file']
-            with tempfile.NamedTemporaryFile(suffix='.{}'.format(
-                    f.name.split('.')[-1])) as temp:
-                for chunk in f.chunks():
-                    temp.write(chunk)
-                temp.flush()
-                uploaded_data = pypandoc.convert_file(
-                    temp.name, 'md')
         if form.is_valid():
             submission = form.save(commit=False)
             submission.owner = request.user
-            if uploaded_data is not None:
-                submission.content_raw = uploaded_data
-            submission.save()
+            submission.save(update_content=True)
             for folder in form.cleaned_data['folders']:
                 if folder.owner == request.user:
                     item = FolderItem(
