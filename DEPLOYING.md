@@ -1,5 +1,11 @@
 # Deploying Honeycomb
 
+Once the django charm is updated, the canonical (hah) way to deploy Honeycomb will be through juju.  The deployment will look as follows:
+
+![The eventual bundle](deployment.png)
+
+Until then, you can get up and running with:
+
 * Get `honeycomb/settings.py` set up to your requirements
 * Run `make deps migrate`
 * Edit files in flatpage-defaults (look for 'Site owner' and make any changes necessary)

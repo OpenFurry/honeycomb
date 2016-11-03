@@ -1,6 +1,10 @@
 Contributing
 ------------
 
+## Issues
+
+File them :)
+
 ## Process
 
 1. Fork the code to your own repository and clone it to your local machine.

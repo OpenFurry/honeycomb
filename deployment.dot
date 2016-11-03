@@ -1,0 +1,11 @@
+graph HoneycombDeployment {
+    Gunicorn [shape=box];
+
+    Apache -- Honeycomb [label="website:balancer"];
+    { rank=same;
+        Honeycomb -- Gunicorn [label="wsgi:wsgi"];
+    }
+    Honeycomb -- Memcached [label="cache:cache"];
+    Honeycomb -- Postgres [label="pgsql:pgsql"];
+    Honeycomb -- ElasticSearch [label="client:elasticsearch"];
+}
