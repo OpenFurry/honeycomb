@@ -13,7 +13,11 @@ from django.shortcuts import (
 )
 from django.views.decorators.http import require_POST
 
-from .models import Rating
+from .forms import CommentForm
+from .models import (
+    Comment,
+    Rating,
+)
 from activitystream.models import Activity
 from submissions.models import Submission
 from usermgmt.models import Notification
@@ -317,6 +321,42 @@ def enjoy_submission(request, username=None, submission_id=None,
                         'submission_id': submission_id,
                         'submission_slug': submission_slug,
                     }))
+
+
+@login_required
+@require_POST
+def post_comment(request):
+    form = CommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.owner = request.user
+        comment.target_object_owner = comment.object_model.owner
+        comment.save()
+        form.save_m2m()
+        return redirect(comment.get_absolute_url())
+    else:
+        messages.error(request, "There was an error posting that comment")
+        return redirect(request.META['HTTP_REFERER'])
+
+
+@login_required
+@require_POST
+def delete_comment(request):
+    comment = get_object_or_404(Comment, id=request.POST.get('comment_id'))
+    if request.user == comment.owner:
+        comment.deleted = True
+        comment.deleted_by_object_owner = False
+        comment.save()
+        messages.success(request, "Comment deleted.")
+    elif request.user == comment.target_object_owner:
+        comment.deleted = True
+        comment.deleted_by_object_owner = True
+        comment.save()
+        messages.success(request, "Comment deleted.")
+    else:
+        messages.error(request, "You may only delete a comment if you are the "
+                      "poster or the page owner.")
+    return redirect(comment.object_model.get_absolute_url())
 
 
 @login_required

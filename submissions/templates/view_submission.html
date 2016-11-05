@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% load form_extras %}
+{% load humanize %}
+{% load gravatar %}
 
 {% block content %}
 {% if submission.cover %}
@@ -21,15 +24,21 @@
                 {% if submission.icon %}
                     <img src="{{ MEDIA_ROOT }}{{ submission.icon.url }}" class="submission-icon" />
                 {% endif %}
-                <dl>
+                <dl class="dl-indent">
                     {% if submission.content_file %}
                         <dt>Submission file</dt>
                         <dd><a href="{{ MEDIA_ROOT }}{{ submission.content_file.url }}">Download</a></dd>
                     {% endif %}
+                    <dt>Submitted</dt>
+                    <dd><abbr data-toggle="tooltip" data-placement="bottom" title="{{ submission.ctime|date:'r' }}">{{ submission.ctime|naturaltime }}</abbr></dd>
+                    {% if submission.mtime %}
+                        <dt>Updated</dt>
+                        <dd><abbr data-toggle="tooltip" data-placement="bottom" title="{{ submission.mtime|date:'r' }}">{{ submission.mtime|naturaltime }}</abbr></dd>
+                    {% endif %}
                     <dt>Views</dt>
                     <dd>{{ submission.views }}</dd>
                     <dt>Rating</dt>
-                    <dd><span data-toggle="tooltip" data-placement="bottom" title="{{ submission.rating_average|floatformat }} average out of {{ submission.rating_count }} ratings">{{ submission.rating_stars|safe }}</span></dd>
+                    <dd><abbr data-toggle="tooltip" data-placement="bottom" title="{{ submission.rating_average|floatformat }} average out of {{ submission.rating_count }} ratings">{{ submission.rating_stars|safe }}</abbr></dd>
                     <dt>Favorites</dt>
                     <dd>{{ submission.favorited_by.count }}</dd>
                     {% if submission.can_enjoy %}
@@ -59,6 +68,9 @@
                         </ul>
                     </div>
                 {% endif %}
+                <div class="small text-center permalink">
+                    <a href="{% url 'submissions:view_submission' submission_id=submission.id %}"><span class="glyphicon glyphicon-link"></span> Submission permalink</a>
+                </div>
             </div>
         </div>
         <div class="text-block{% if not submission.description_rendered %} less-top-margin{% endif %}">
@@ -113,15 +125,32 @@
 {% if not submission.can_comment %}
     <div class="alert alert-info">Comments disabled for this submission</div>
 {% endif %}
-Comments: TODO
-{% if submission.can_comment %}
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            Comment
-        </div>
-        <div class="panel-body">
-            Comment form: TODO
+<div class="row">
+    <div class="col-md-12">
+        {% include 'subcomments-snippet.html' with comments=root_level_comments can_reply=submission.can_comment %}
+    </div>
+</div>
+{% if submission.can_comment and user.is_authenticated %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Add comment
+            </div>
+            <div class="panel-body">
+                <form action="{% url 'social:post_comment' %}" method="post">
+                    {% csrf_token %}
+                    {{ comment_form.content_type }}
+                    {{ comment_form.object_id }}
+                    <div class="form-group">
+                        {{ comment_form.body_raw.label }}
+                        {{ comment_form.body_raw|append_form_control }}
+                    </div>
+                    <button class="btn btn-primary" type="submit">Post comment</button>
+                </form>
+            </div>
         </div>
     </div>
+</div>
 {% endif %}
 {% endblock %}

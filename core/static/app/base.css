@@ -64,6 +64,10 @@ body {
     padding-bottom: 1em;
 }
 
+.submission-details .permalink {
+    padding-top: 1em;
+}
+
 .profile-tabs {
     padding-bottom: 1em;
 }
@@ -86,6 +90,27 @@ body {
 
 .dl-indent dd {
     margin-left: 1em;
+}
+
+.comment-reply {
+    border-left: 0.5em solid #f8f8f8;
+    padding-left: 2%;
+}
+
+.comment-header {
+    font-size: 85%;
+    border-bottom: 1px dotted #ccc;
+    padding-bottom: 0.5ex;
+    height: 35px;
+}
+
+.comment-body {
+    margin-top: 1.5em;
+    margin-left: 0.5em;
+}
+
+.comment-reply-form-wrapper {
+    margin-top: 1em;
 }
 
 .notifications {
@@ -151,6 +176,9 @@ footer img {
 @media (max-width: 992px) {
     .submission-details {
         width: 100%;
+    }
+    .comment-reply {
+        border-left-width: 0.35em;
     }
     footer div {
         text-align: right;

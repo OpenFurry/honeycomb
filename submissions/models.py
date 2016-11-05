@@ -6,6 +6,7 @@ import pypandoc
 import tempfile
 
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.html import strip_tags
@@ -60,6 +61,7 @@ class Submission(models.Model):
     # Associated images
     icon = models.ImageField(blank=True, upload_to=icon_path)
     cover = models.ImageField(blank=True, upload_to=cover_path)
+    cover_attribution = models.CharField(max_length=1000, blank=True)
 
     # Flags
     can_comment = models.BooleanField(
@@ -149,6 +151,13 @@ class Submission(models.Model):
             }
         else:
             return {'stars': '', 'average': 0, 'count': 0}
+
+    def get_absolute_url(self):
+        return reverse('submissions:view_submission', kwargs={
+            'username': self.owner.username,
+            'submission_id': self.id,
+            'submission_slug': self.slug,
+        })
 
     def __str__(self):
         return '{} by ~{} (id:{})'.format(self.title, self.owner.username,
