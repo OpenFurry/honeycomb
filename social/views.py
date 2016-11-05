@@ -355,7 +355,7 @@ def delete_comment(request):
         messages.success(request, "Comment deleted.")
     else:
         messages.error(request, "You may only delete a comment if you are the "
-                      "poster or the page owner.")
+                       "poster or the page owner.")
     return redirect(comment.object_model.get_absolute_url())
 
 
