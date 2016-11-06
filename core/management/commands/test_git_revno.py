@@ -12,6 +12,8 @@ class TestGitRevnoCommand(TestCase):
     @mock.patch('subprocess.check_output')
     def test_set_revno(self, mock_check_output):
         mock_check_output.return_value = 'qwer'
+
+        # Mock the open call so that we do not actually modify the file
         with mock.patch(openstr, create=True) as mock_open:
             mock_open.return_value = mock.MagicMock()
             cmd = Command()

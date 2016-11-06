@@ -29,7 +29,7 @@ class Promotion(models.Model):
     submission = models.ForeignKey(Submission)
 
     # The user promoting the submission
-    promoter = models.ForeignKey(User)
+    promoter = models.ForeignKey(User, blank=True, null=True)
 
     # The date the promotion ends
     promotion_end_date = models.DateField(null=True)

@@ -16,7 +16,7 @@ def list_groups(request, username=None):
     """View for listing a user's groups.
 
     Args:
-        username: the user whose groups to list
+        username: the user whose groups to list (ignored)
     """
     return render(request, 'list_groups.html', {
         'title': 'Groups',
@@ -33,14 +33,17 @@ def create_group(request, username=None):
         username: the owner of the group (ignored)
     """
     form = GroupForm()
-    form.fields['members'].queryset = request.user.profile.watched_users
+
+    # Set the members queryset to watched users
+    form.fields['users'].queryset = request.user.profile.watched_users
+
+    # Save the group if data was POSTed
     if request.method == 'POST':
         form = GroupForm(request.POST)
         if form.is_valid():
             group = form.save(commit=False)
             group.save()
-            for user in form.cleaned_data['members']:
-                group.users.add(user)
+            form.save_m2m()
             request.user.profile.friend_groups.add(group)
             messages.success(request, 'Group created.')
             return redirect(reverse('usermgmt:view_group', kwargs={
@@ -63,6 +66,8 @@ def view_group(request, username=None, group_id=None):
         group_id: the id of the group
     """
     group = get_object_or_404(FriendGroup, id=group_id)
+
+    # Make sure the user can view the group
     if group not in request.user.profile.friend_groups.all():
         messages.error(request, 'You may not view the groups of others')
         return render(request, 'permission_denied.html', {
@@ -84,23 +89,25 @@ def edit_group(request, username=None, group_id=None):
         group_id: the id of the group
     """
     group = get_object_or_404(FriendGroup, id=group_id)
+
+    # Make sure the user can edit the group
     if group not in request.user.profile.friend_groups.all():
         messages.error(request, 'You may not edit the groups of others')
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
         }, status=403)
     form = GroupForm(instance=group)
-    form.fields['members'].queryset = request.user.profile.watched_users
+
+    # Set the queryset for available members
+    form.fields['users'].queryset = request.user.profile.watched_users
+
+    # Update the group if data was POSTed
     if request.method == 'POST':
         form = GroupForm(request.POST, instance=group)
         if form.is_valid():
-            group = form.save()
-            for user in form.cleaned_data['members']:
-                if user not in group.users.all():
-                    group.users.add(user)
-            for user in group.users.all():
-                if user not in form.cleaned_data['members']:
-                    group.users.remove(user)
+            group = form.save(commit=False)
+            group.save()
+            form.save_m2m()
             messages.success(request, 'Group modified.')
             return redirect(reverse('usermgmt:view_group', kwargs={
                 'username': request.user.username,
@@ -122,11 +129,15 @@ def delete_group(request, username=None, group_id=None):
         group_id: the id of the group
     """
     group = get_object_or_404(FriendGroup, id=group_id)
+
+    # Make sure that the user can delete the group
     if group not in request.user.profile.friend_groups.all():
         messages.error(request, 'You may not delete the groups of others')
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
         }, status=403)
+
+    # Confirm deleting the group
     if request.method == 'POST':
         group.delete()
         messages.success(request, 'Group deleted.')

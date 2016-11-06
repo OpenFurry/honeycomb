@@ -106,7 +106,7 @@ class Activity(models.Model):
         """
         item_type = "{}:{}".format(app.lower(), action.lower())
         if item_type not in dict(Activity.ACTIVITY_TYPES):
-            return None  # XXX should we fail silently?
+            return None
         activity = cls(activity_type=item_type)
         activity.object_model = object_model
         activity.save()

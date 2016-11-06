@@ -40,6 +40,8 @@ def log_base_create_or_update(sender, **kwargs):
     """
     try:
         name = {
+            'Ban': 'ban',
+            'Comment': 'comment',
             'Flag': 'flag',
             'Folder': 'folder',
             'FriendGroup': 'group',
@@ -52,6 +54,7 @@ def log_base_create_or_update(sender, **kwargs):
         return
     if name == 'profile' and kwargs['created']:
         return
+    print(name, kwargs['created'])
     Activity.create(
         name,
         'create' if kwargs['created'] else 'update',

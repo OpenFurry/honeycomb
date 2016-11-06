@@ -40,12 +40,6 @@ class UpdateProfileForm(forms.ModelForm):
 
 class GroupForm(forms.ModelForm):
     """A form for creating/updating a user group."""
-    members = forms.ModelMultipleChoiceField(
-        queryset=User.objects.all(),
-        label='Group members',
-        required=False,
-        help_text="Select the members of the group.")
-
     class Meta:
         model = FriendGroup
-        fields = ('name',)
+        fields = ('name', 'users')

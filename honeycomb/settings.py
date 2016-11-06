@@ -33,19 +33,9 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'core',
-    'usermgmt',
-    'submissions',
-    'social',
-    'publishers',
-    'promotion',
-    'activitystream',
-    'administration',
-    'tags',
-    'taggit',
-    'haystack',
     'django_nose',
     'django.contrib.admin',
+    'django.contrib.admindocs',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.flatpages',
@@ -76,10 +66,7 @@ ROOT_URLCONF = 'honeycomb.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            'app/templates',
-            'usermgmt/templates',
-        ],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -154,6 +141,31 @@ MEDIA_ROOT = os.path.join(STATIC_ROOT, 'uploads')
 
 
 # Additional configuration for Honeycomb
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.10/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = os.path.join(STATIC_ROOT, 'uploads')
+
+# Installed applications for Honeycomb
+INSTALLED_APPS += [
+    'core',
+    'usermgmt',
+    'submissions',
+    'social',
+    'publishers',
+    'promotion',
+    'activitystream',
+    'administration',
+    'tags',
+    'taggit',
+    'haystack',
+]
+
+# Caching mechanisms
 CACHES = {
     # Enable this backend for no caching.
     'default': {
@@ -170,6 +182,8 @@ CACHES = {
     #     'LOCATION': '127.0.0.1:11211',
     # }
 }
+
+# Search engine connections
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
@@ -183,12 +197,22 @@ HAYSTACK_CONNECTIONS = {
     #     'INDEX_NAME': 'haystack',  # Changeme
     # },
 }
+
+# Make tags case insensitive
 TAGGIT_CASE_INSENSITIVE = True
+
+# Base URL pattern for submissions
 SUBMISSION_BASE = ('^~(?P<username>[^/]+)/(?P<submission_id>\d+)-'
                    '(?P<submission_slug>[-\w]+)/')
+
+# How often to run various commands through cron
 ACTIVITYSTREAM_ROTATION = 1  # Rotation period in days
+
+# Login conventions
 LOGIN_URL = '/login/'
 LOGOUT_REDIRECT_URL = LOGIN_URL
+
+# Reset message tags to work with bootstrap
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',
     messages.INFO: 'info',
@@ -196,9 +220,17 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+
+# Run tests using nose
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Additional logging settings
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
 }
+
+# Maximum file upload size
+# NB you should also set this up on the server through apache/nginx config;
+# this is only intended to be a backup
 MAX_UPLOAD_SIZE = 1024 * 1024 * 10

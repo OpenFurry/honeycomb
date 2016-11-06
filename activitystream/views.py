@@ -50,6 +50,7 @@ def generate_stream_entry(activity):
         'type': activity.activity_type,
     }
     if activity.content_type:
+        # Just get the string representation of the object.
         entry['instance'] = "{}: {}".format(
             activity.content_type.name, str(activity.object_model))
     return entry
@@ -74,15 +75,21 @@ def get_stream(request, models=None, object_id=None):
         A JSON object containing the stream.
     """
     stream = Activity.objects.select_related('content_type')
+
+    # Filter on certain content types if provided.
     if models:
         expanded = [model.split(':') for model in models.split(',')]
         ctypes = ContentType.objects.filter(
             app_label__in=[i[0] for i in expanded],
             model__in=[i[1] for i in expanded])
         stream = stream.filter(content_type__in=ctypes)
+
+    # Filter for certain objects if provided.
     if object_id:
         if ',' not in models:
             stream = stream.filter(object_id=object_id)
+
+    # Filter on certain activity types if provided.
     if request.GET.get('type') is not None:
         stream = stream.filter(
             activity_type__in=request.GET['type'].split(','))
@@ -95,7 +102,11 @@ def get_stream(request, models=None, object_id=None):
 
 
 def _get_sitewide_data():
-    """Builds a dict of data surrounding the site"""
+    """Builds a dict of data surrounding the site
+
+    This function is fairly expensive and should be wrapped in a view or
+    template that caches the results.
+    """
     active_promotions = Promotion.objects.filter(
         promotion_end_date__gte=datetime.date.today())
     return {

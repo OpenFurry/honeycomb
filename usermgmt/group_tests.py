@@ -77,7 +77,7 @@ class TestCreateGroupView(BaseGroupViewsTestCase):
                 'username': 'foo',
             }), {
                 'name': 'Group 2',
-                'members': [],
+                'users': [],
             }, follow=True)
         self.assertContains(response, 'Group 2')
 
@@ -89,7 +89,7 @@ class TestCreateGroupView(BaseGroupViewsTestCase):
                 'username': 'foo',
             }), {
                 'name': 'Group 2',
-                'members': [self.bar.id],
+                'users': [self.bar.id],
             }, follow=True)
         self.assertContains(response, 'Group 2')
         self.assertContains(response, 'Bad Wolf')
@@ -151,7 +151,7 @@ class TestEditGroupView(BaseGroupViewsTestCase):
                 'group_id': self.group.id,
             }), {
                 'name': 'Group 2',
-                'members': [],
+                'users': [],
             }, follow=True)
         self.assertContains(response, 'Group 2')
 
@@ -164,7 +164,7 @@ class TestEditGroupView(BaseGroupViewsTestCase):
                 'group_id': self.group.id,
             }), {
                 'name': 'Group 2',
-                'members': [self.bar.id],
+                'users': [self.bar.id],
             }, follow=True)
         self.assertContains(response, 'Group 2')
         self.assertContains(response, 'Bad Wolf')
@@ -179,7 +179,7 @@ class TestEditGroupView(BaseGroupViewsTestCase):
                 'group_id': self.group.id,
             }), {
                 'name': 'Group 2',
-                'members': [],
+                'users': [],
             }, follow=True)
         self.assertContains(response, 'Group 2')
         self.assertNotContains(response, 'Bad Wolf')

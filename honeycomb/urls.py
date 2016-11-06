@@ -8,8 +8,12 @@ from django.contrib import admin
 
 
 urlpatterns = [
+    # Django app urls
+    url(r'^_admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^_admin/', admin.site.urls),
     url('^', include('django.contrib.auth.urls')),
+
+    # Honeycomb app urls
     url('^', include('usermgmt.urls')),
     url('^', include('social.urls')),
     url('^', include('core.urls')),

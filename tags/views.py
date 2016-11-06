@@ -33,6 +33,8 @@ def view_tag(request, tag_slug=None, page=1):
         page: the current page for pagination
     """
     tag = get_object_or_404(Tag, slug=tag_slug)
+
+    # Filter submissions visible to the reader
     filters = filters_for_authenticated_user(request.user) if \
         request.user.is_authenticated else filters_for_anonymous_user()
     results = Submission.objects.filter(
@@ -52,24 +54,34 @@ def view_tag(request, tag_slug=None, page=1):
 
 @login_required
 def favorite_tag(request, tag_slug=None):
+    # TODO
+    # @makyo 2016-11-06 #61
     pass
 
 
 @login_required
 def unfavorite_tag(request, tag_slug=None):
+    # TODO
+    # @makyo 2016-11-06 #61
     pass
 
 
 @login_required
 def list_submissions_with_favorite_tags(request):
+    # TODO
+    # @makyo 2016-11-06 #61
     pass
 
 
 @login_required
 def block_tag(request, tag_slug=None):
+    # TODO
+    # @makyo 2016-11-06 #61
     pass
 
 
 @login_required
 def unblock_tag(request, tag_slug=None):
+    # TODO
+    # @makyo 2016-11-06 #61
     pass

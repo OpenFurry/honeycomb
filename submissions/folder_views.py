@@ -27,8 +27,14 @@ def view_root_level_folders(request, username=None, page=1):
     """View for listing folders at the root level, as well as submissions not
     placed in any folders.
     """
+    # TODO Filter submission visibility
+    # @makyo 2016-11-06 #60
     user = get_object_or_404(User, username=username)
+
+    # Get all folders with no parents
     folders = user.folder_set.filter(parent=None)
+
+    # Get all submissions with no attached folder items
     members = Submission.objects.filter(owner=user) \
         .annotate(Count('folderitem')) \
         .filter(folderitem__count=0)
@@ -63,6 +69,10 @@ def view_folder(request, username=None, folder_id=None, folder_slug=None,
         folder_id: the id of the folder
         folder_slug: the slug of the folder
     """
+    # TODO Filter submission visibility
+    # @makyo 2016-11-06 #60
+
+    # Expand short urls
     folder = get_object_or_404(Folder, id=folder_id)
     if username != folder.owner.username or folder_slug != folder.slug:
         return redirect(reverse('submissions:view_folder', kwargs={
@@ -70,8 +80,12 @@ def view_folder(request, username=None, folder_id=None, folder_slug=None,
             'folder_id': folder.id,
             'folder_slug': folder.slug,
         }))
-    all_folders = folder.owner.folder_set.all()
-    sub_folders = filter(lambda x: x.parent == folder, all_folders)
+
+    # Get subfolders
+    subfolders = folder.owner.folder_set.filter(parent=folder)
+
+    # Get submissions in this folder
+    # (See above TODO)
     members = [item.submission for item in
                FolderItem.objects.filter(folder=folder)]
     paginator = Paginator(members, request.user.profile.results_per_page if
@@ -83,6 +97,8 @@ def view_folder(request, username=None, folder_id=None, folder_slug=None,
     title = "{} {}'s folders".format(
         gravatar(folder.owner.email, size=80),
         folder.owner.profile.get_display_name())
+
+    # Build breadcrumbs for this folder
     breadcrumbs = ['<em>{}</em>'.format(folder.name)]
     curr = folder.parent
     while curr is not None:
@@ -101,7 +117,7 @@ def view_folder(request, username=None, folder_id=None, folder_slug=None,
     return render(request, 'list_submissions.html', {
         'author': folder.owner,
         'submissions': submissions,
-        'folders': sub_folders,
+        'folders': subfolders,
         'folder': folder,
         'title': title,
         'tab': 'folders',
@@ -123,6 +139,8 @@ def create_folder(request, username=None):
     """
     folders = request.user.folder_set.all()
     form = FolderForm()
+
+    # Create the folder if data was POSTed
     if request.method == 'POST':
         form = FolderForm(request.POST)
         folder = form.save(commit=False)
@@ -150,13 +168,19 @@ def update_folder(request, username=None, folder_id=None, folder_slug=None):
         folder_slug: the slug of the folder
     """
     folder = get_object_or_404(Folder, id=folder_id)
+
+    # Ensure that the user can update the folder
     if request.user != folder.owner:
         messages.error(request, "You can't update a folder that isn't yours")
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied'
         }, status=403)
+
+    # Get all other folders for the user for setting as the parent
     folders = request.user.folder_set.exclude(id=folder.id)
     form = FolderForm(instance=folder)
+
+    # Update the folder if data was POSTed
     if request.method == 'POST':
         form = FolderForm(request.POST, instance=folder)
         folder = form.save(commit=False)
@@ -184,12 +208,17 @@ def delete_folder(request, username=None, folder_id=None, folder_slug=None):
         folder_slug: the slug of the folder
     """
     folder = get_object_or_404(Folder, id=folder_id)
+
+    # Make sure the user can delete the folder
     if request.user != folder.owner:
         messages.error(request, "You can't delete a folder that isn't yours")
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied'
         }, status=403)
+
+    # Confirm deleting the folder
     if request.method == 'POST':
+        # Pick a valid redirect URL based on the current folder's parent
         if folder.parent:
             next_url = reverse('submissions:view_folder', kwargs={
                 'username': request.user.username,
@@ -220,14 +249,19 @@ def update_submission_order_in_folder(request, username=None, folder_id=None,
         folder_slug: the slug of the folder
     """
     folder = get_object_or_404(Folder, id=folder_id)
+
+    # Make sure the user can update the folder
     if request.user != folder.owner:
         messages.error(request, "You can't sort a folder that isn't yours")
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied'
         }, status=403)
+
+    # Save the updated order if data was POSTed
     if request.method == 'POST':
         position = 1
         items = FolderItem.objects.filter(folder=folder)
+        # Update the folder items' positions based on input
         for id in request.GET.getlist('ids', []):
             item = items.get(pk=id)
             item.position = position
@@ -235,6 +269,8 @@ def update_submission_order_in_folder(request, username=None, folder_id=None,
             position += 1
         messages.success(request, 'Submissions sorted successfully.')
         Activity.create('folder', 'sort', folder)
+
+    # Generate breadcrumbs for the folder
     breadcrumbs = ['<em>{}</em>'.format(folder.name)]
     curr = folder.parent
     while curr is not None:
