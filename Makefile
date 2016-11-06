@@ -82,6 +82,10 @@ test-travis: ## Test target for travis-ci use.
 		manage.py test --verbosity=2
 	coverage report -m --skip-covered
 
+.PHONY: sloccount
+sloccount: ## run sloccount on all apps to get the source lines of code for apps and project. Must have sloccount installed.
+	sloccount --wide $(APPLICATIONS)
+
 .PHONY: clean
 clean: ## Remove virtualenv and tox environments, along with compiled/optimized python files.
 	rm -rf venv .tox
