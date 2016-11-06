@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import (
     EmptyPage,
     Paginator,
@@ -26,6 +27,8 @@ from .utils import (
 )
 from activitystream.models import Activity
 from core.templatetags.gravatar import gravatar
+from social.forms import CommentForm
+from social.models import Comment
 
 
 def list_user_submissions(request, username=None, page=1):
@@ -120,10 +123,18 @@ def view_submission(request, username=None, submission_id=None,
     display_name = '{} {}'.format(
         gravatar(author.email, size=40),
         author.profile.get_display_name())
+    ctype = ContentType.objects.get_for_model(Submission)
     return render(request, 'view_submission.html', {
         'title': submission.title,
         'subtitle': 'by {}'.format(display_name),
         'submission': submission,
+        'comment_form': CommentForm(instance=Comment(
+            content_type=ctype,
+            object_id=submission.id)),
+        'root_level_comments': Comment.objects.filter(
+            content_type=ctype,
+            object_id=submission.id,
+            parent=None)
     })
 
 
@@ -220,6 +231,7 @@ def submit(request):
                         int(settings.MAX_UPLOAD_SIZE / (1024 * 1024))))
         if form.is_valid():
             submission = form.save(commit=False)
+            submission.ctime = timezone.now()
             submission.owner = request.user
             submission.save(update_content=True)
             for folder in form.cleaned_data['folders']:

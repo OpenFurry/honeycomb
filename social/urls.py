@@ -32,9 +32,14 @@ submission_urls = [
     url('^rate/$', views.rate_submission, name='rate_submission'),
     url('^enjoy/$', views.enjoy_submission, name='enjoy_submission'),
 ]
+comment_urls = [
+    url('^post/$', views.post_comment, name='post_comment'),
+    url('^delete/$', views.delete_comment, name='delete_comment'),
+]
 
 urlpatterns = [
     url('^~([^/]+)/', include(user_urls)),
     url('^notifications/', include(notification_urls)),
+    url('^comment/', include(comment_urls)),
     url(settings.SUBMISSION_BASE, include(submission_urls)),
 ]

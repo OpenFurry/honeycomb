@@ -1,6 +1,7 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import (
     EmptyPage,
     Paginator,
@@ -13,7 +14,11 @@ from django.shortcuts import (
 )
 from django.views.decorators.http import require_POST
 
-from .models import Rating
+from .forms import CommentForm
+from .models import (
+    Comment,
+    Rating,
+)
 from activitystream.models import Activity
 from submissions.models import Submission
 from usermgmt.models import Notification
@@ -317,6 +322,82 @@ def enjoy_submission(request, username=None, submission_id=None,
                         'submission_id': submission_id,
                         'submission_slug': submission_slug,
                     }))
+
+
+@login_required
+@require_POST
+def post_comment(request):
+    form = CommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        if comment.object_model.can_comment:
+            comment.owner = request.user
+            comment.target_object_owner = comment.object_model.owner
+            comment.save()
+            form.save_m2m()
+
+            # Notify the object owner that their object has received
+            # a comment if it's not them making the comment.
+            if (isinstance(comment.object_model, Submission)
+                    and request.user != comment.object_model.owner):
+                Notification(
+                    notification_type=Notification.SUBMISSION_COMMENT,
+                    target=comment.target_object_owner,
+                    source=request.user,
+                    subject=comment).save()
+
+            # If the comment is a reply to another comment, notify all parent
+            # comments that their comment has received a comment reply, so
+            # long as the parent comment owner is not the one making the reply.
+            if comment.parent:
+                c = comment
+                while c.parent is not None:
+                    if request.user != c.parent.owner:
+                        Notification(
+                            notification_type=Notification.COMMENT_REPLY,
+                            target=c.parent.owner,
+                            source=request.user,
+                            subject=comment).save()
+                    c = c.parent
+            return redirect(comment.get_absolute_url())
+    messages.error(request, "There was an error posting that comment")
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+@require_POST
+def delete_comment(request):
+    # TODO: deleting should wipe content, flagging should leave it.
+    # @makyo 2016-11-05 #57
+    comment = get_object_or_404(Comment, id=request.POST.get('comment_id'))
+    if not comment.deleted:
+        if request.user == comment.owner:
+            comment.deleted = True
+            comment.deleted_by_object_owner = False
+            comment.save()
+            messages.success(request, "Comment deleted.")
+        elif request.user == comment.target_object_owner:
+            comment.deleted = True
+            comment.deleted_by_object_owner = True
+            comment.save()
+            messages.success(request, "Comment deleted.")
+        else:
+            messages.error(request, "You may only delete a comment if you are "
+                           "the poster or the page owner.")
+
+    # Delete any outstanding notifications
+    if comment.deleted:
+        ctype = ContentType.objects.get(app_label='social', model='comment')
+        possible_notifications = Notification.objects.filter(
+            subject_content_type=ctype,
+            subject_id=comment.id)
+        for notification in possible_notifications:
+            notification.delete()
+
+        # As we don't rely on existing signals, create our own activity stream
+        # item refering to this comment.
+        Activity.create('comment', 'delete', comment)
+    return redirect(comment.object_model.get_absolute_url())
 
 
 @login_required

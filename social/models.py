@@ -15,18 +15,21 @@ class Comment(models.Model):
     # Related users
     owner = models.ForeignKey(User)
     target_object_owner = models.ForeignKey(
-        User, related_name='comments_by_others')
+        User, blank=True, null=True, related_name='comments_by_others')
 
-    # Related object
+    # Related object (submission, publisher page)
+    parent = models.ForeignKey('Comment', blank=True, null=True,
+                               related_name='children')
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     object_model = GenericForeignKey('content_type', 'object_id')
 
     # Comment body
     ctime = models.DateTimeField(auto_now_add=True)
-    body_raw = models.TextField()
+    body_raw = models.TextField(verbose_name='Comment')
     body_rendered = models.TextField()
     deleted = models.BooleanField(default=False)
+    deleted_by_object_owner = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         self.body_rendered = markdown.markdown(
@@ -34,8 +37,10 @@ class Comment(models.Model):
             extensions=['pymdownx.extra', HoneycombMarkdown()])
         super(Comment, self).save(*args, **kwargs)
 
-    def url(self):
-        pass
+    def get_absolute_url(self):
+        return '{}#comment-{}'.format(
+            self.object_model.get_absolute_url(),
+            self.id)
 
 
 class Rating(models.Model):

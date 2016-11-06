@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils import timezone
 
 from submissions.models import Submission
 from usermgmt.models import Profile
@@ -15,11 +16,13 @@ class BaseTagViewsTestCase(TestCase):
                                   display_name='Mx Foo Bar')
         cls.foo.profile.save()
         cls.submission1 = Submission(
+            ctime=timezone.now(),
             owner=cls.foo,
             title='Submission 1',
             content_raw='Whoa, a submission')
         cls.submission1.save(update_content=True)
         cls.submission2 = Submission(
+            ctime=timezone.now(),
             owner=cls.foo,
             title='Submission 2',
             content_raw='Whoa, another submission')
@@ -69,6 +72,7 @@ class TestViewTagView(BaseTagViewsTestCase):
     def test_paginates_submissions(self):
         for i in range(1, 30):
             submission = Submission(
+                ctime=timezone.now(),
                 owner=self.foo,
                 title='Submission #{}'.format(i),
                 content_raw='Submission #{}'.format(i))
@@ -85,6 +89,7 @@ class TestViewTagView(BaseTagViewsTestCase):
     def test_defaults_to_last_page(self):
         for i in range(1, 30):
             submission = Submission(
+                ctime=timezone.now(),
                 owner=self.foo,
                 title='Submission #{}'.format(i),
                 content_raw='Submission #{}'.format(i))
@@ -102,6 +107,7 @@ class TestViewTagView(BaseTagViewsTestCase):
     def test_resects_users_requests_per_page(self):
         for i in range(1, 30):
             submission = Submission(
+                ctime=timezone.now(),
                 owner=self.foo,
                 title='Submission #{}'.format(i),
                 content_raw='Submission #{}'.format(i))

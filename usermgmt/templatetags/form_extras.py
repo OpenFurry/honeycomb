@@ -8,9 +8,9 @@ register = template.Library()
 @stringfilter
 def append_form_control(value):
     return value.replace(
-            'input', 'input class="form-control"'
+            '<input', '<input class="form-control"'
         ).replace(
-            'textarea', 'textarea class="form-control"'
+            '<textarea', '<textarea class="form-control"'
         ).replace(
             '<select', '<select class="form-control"'
         )

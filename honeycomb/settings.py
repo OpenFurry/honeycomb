@@ -187,7 +187,8 @@ TAGGIT_CASE_INSENSITIVE = True
 SUBMISSION_BASE = ('^~(?P<username>[^/]+)/(?P<submission_id>\d+)-'
                    '(?P<submission_slug>[-\w]+)/')
 ACTIVITYSTREAM_ROTATION = 1  # Rotation period in days
-LOGOUT_REDIRECT_URL = "/login/"
+LOGIN_URL = '/login/'
+LOGOUT_REDIRECT_URL = LOGIN_URL
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',
     messages.INFO: 'info',

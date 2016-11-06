@@ -57,7 +57,6 @@ class Activity(models.Model):
 
         # Comments
         ('comment:create', 'comment: created'),
-        ('comment:update', 'comment: updated'),
         ('comment:delete', 'comment: deleted'),
 
         # Promotions

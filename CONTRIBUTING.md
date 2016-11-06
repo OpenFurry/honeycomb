@@ -31,17 +31,21 @@ File them :)
   with `@unittest.skipIf` or `@unittest.skipUnless` with a provided reason
   explaining why.
 * Testing is done through tox and can take some time due to the multiple
-  environments involved.  To that end, there is a `make testone` target which
-  will only run in one environment (py35, in this case).
+  environments involved.  To that end, tests are run in parallel if possible, with as many threads as your computer has cores.  There are [some limitations](https://docs.djangoproject.com/en/1.10/ref/django-admin/#cmdoption-test--parallel) around this, but tests *should* Just Work all the same.
+* Additionally, the default `test` make target runs tests only on py3.5.  `testall` will run tests on all environments.
 * Tests are run with the `django-nose` testrunner, so you can use any nose
   options with the test command. `venv/bin/python manage.py test --help` for
-  more information.
+  more information.  `--nologcapture` is suggested, as Markdown.py is rather chatty.
+
+  For example, you may run just one test suite with `venv/bin/python manage.py test --nologcapture social.tests` or just one case with `venv/bin/python manage.py test --nologcapture social.tests:TestPostCommentView`.
 
 ## Style
 
 Python:
 
 * flake8 (PRs will be linted, running `make test` will also lint)
+* All `TODO` style comments should be followed on the next line with a comment: `# @<github username> YYYY-MM-DD #<github issue number>`.
+* All `XXX` style comments should come with adequate justification, and a link if possible.
 
 Templates:
 
@@ -57,51 +61,3 @@ Markdown:
 * Continued lines in lists indented so that the first character is vertically
   in line with the first character (not list item signifier) on previous
   line.  See the source of this doc for examples.
-
-## Caveats
-
-Do not commit `db.sqlite3` unless you really mean to (i.e: you've made a db
-change resulting in a migration).  This is to help new developers get started
-easily so that there's not garbage data in the dev database.  To help keep
-yourself from doing this, you can set a pre-commit hook to warn you.
-
-I.e: set `.git/hooks/pre-commit` to:
-
-```shell
-#!/bin/sh
-
-if git rev-parse --verify HEAD >/dev/null 2>&1
-then
-        against=HEAD
-else
-        # Initial commit: diff against an empty tree object
-        against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
-fi
-
-# Redirect output to stderr.
-exec 1>&2
-
-if [ "$UPDATEDB" != "true" ] &&
-    [ "$(git status -s db.sqlite3)" != "" ]
-then
-        cat <<\EOF
-Error: Attempting to commit the dev database without the UPDATEDB flag.
-
-If you have made changes to the development database schema that need to
-be committed with your branch, please reset the database and commit with
-the UPDATEDB flag set
-
-  make resetdb
-  UPDATEDB=true git config hooks.allownonascii true
-
-If you don't need to commit your changes, consider unstaging the DB with:
-
-  git reset db.sqlite3
-
-and possibly reverting it:
-
-  git checkout -- db.sqlite3
-EOF
-        exit 1
-fi
-```
