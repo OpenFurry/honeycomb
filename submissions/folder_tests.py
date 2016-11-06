@@ -1,4 +1,5 @@
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 
 from .models import (
     Folder,
@@ -52,7 +53,8 @@ class TestViewRootLevelFoldersView(SubmissionsFolderViewsBaseTestCase):
     def test_retrieves_folderless_submissions(self):
         submission = Submission(
             owner=self.foo,
-            title='wahooo')
+            title='wahooo',
+            ctime=timezone.now())
         submission.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:view_root_level_folders', kwargs={
@@ -65,6 +67,7 @@ class TestViewRootLevelFoldersView(SubmissionsFolderViewsBaseTestCase):
     def test_paginates_submissions(self):
         for i in range(1, 30):
             Submission(
+                ctime=timezone.now(),
                 owner=self.foo,
                 title='Submission {}'.format(i)).save(update_content=True)
         response = self.client.get(reverse(
@@ -80,6 +83,7 @@ class TestViewRootLevelFoldersView(SubmissionsFolderViewsBaseTestCase):
     def test_paginates_submissions_respecting_user_settings(self):
         for i in range(1, 30):
             Submission(
+                ctime=timezone.now(),
                 owner=self.foo,
                 title='Submission {}'.format(i)).save(update_content=True)
         self.bar.profile.results_per_page = 10
@@ -99,6 +103,7 @@ class TestViewRootLevelFoldersView(SubmissionsFolderViewsBaseTestCase):
     def test_paginates_submissions_resets_to_last_page(self):
         for i in range(1, 30):
             Submission(
+                ctime=timezone.now(),
                 owner=self.foo,
                 title='Submission {}'.format(i)).save(update_content=True)
         response = self.client.get(reverse(
@@ -192,6 +197,7 @@ class TestViewFolderView(SubmissionsFolderViewsBaseTestCase):
     def test_paginates_submissions(self):
         for i in range(1, 30):
             submission = Submission(
+                ctime=timezone.now(),
                 owner=self.foo,
                 title='Submission {}'.format(i))
             submission.save(update_content=True)
@@ -216,6 +222,7 @@ class TestViewFolderView(SubmissionsFolderViewsBaseTestCase):
     def test_paginates_submissions_respecting_user_settings(self):
         for i in range(1, 30):
             submission = Submission(
+                ctime=timezone.now(),
                 owner=self.foo,
                 title='Submission {}'.format(i))
             submission.save(update_content=True)
@@ -244,6 +251,7 @@ class TestViewFolderView(SubmissionsFolderViewsBaseTestCase):
     def test_paginates_submissions_resets_to_last_page(self):
         for i in range(1, 30):
             submission = Submission(
+                ctime=timezone.now(),
                 owner=self.foo,
                 title='Submission {}'.format(i))
             submission.save(update_content=True)

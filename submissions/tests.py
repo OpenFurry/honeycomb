@@ -15,6 +15,7 @@ from django.test import (
     TestCase,
     override_settings,
 )
+from django.utils import timezone
 
 from .models import (
     Folder,
@@ -41,7 +42,8 @@ class ModelTest(TestCase):
             owner=cls.foo,
             title='Submission 1',
             description_raw='Description for submission 1',
-            content_raw='Content for submission 1')
+            content_raw='Content for submission 1',
+            ctime=timezone.now())
         cls.submission1.save(update_content=True)
         cls.folder = Folder(
             owner=cls.foo,
@@ -179,14 +181,14 @@ class SubmissionsViewsBaseTestCase(TestCase):
             title='Submission 1',
             description_raw='Description for submission 1',
             content_raw='Content for submission 1',
-        )
+            ctime=timezone.now())
         cls.submission1.save(update_content=True)
         cls.submission2 = Submission(
             owner=cls.foo,
             title='Submission 2',
             description_raw='Description for submission 2',
             content_raw='Content for submission 2',
-        )
+            ctime=timezone.now())
         cls.submission2.save(update_content=True)
         cls.bar.profile.favorited_submissions.add(cls.submission1)
         cls.bar.profile.favorited_submissions.add(cls.submission2)
@@ -231,7 +233,7 @@ class TestLoggedOutListUserSubmissionsView(SubmissionsViewsBaseTestCase):
                 title='Submission {}'.format(i),
                 description_raw='Description',
                 content_raw='Content',
-            )
+                ctime=timezone.now())
             submission.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:list_user_submissions', kwargs={'username': 'foo'}))
@@ -248,7 +250,7 @@ class TestLoggedOutListUserSubmissionsView(SubmissionsViewsBaseTestCase):
                 title='Submission {}'.format(i),
                 description_raw='Description',
                 content_raw='Content',
-            )
+                ctime=timezone.now())
             submission.save(update_content=True)
         response = self.client.get(reverse(
             'submissions:list_user_submissions', kwargs={
@@ -382,7 +384,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
                 title='Submission {}'.format(i),
                 description_raw='Description',
                 content_raw='Content',
-            )
+                ctime=timezone.now())
             submission.save(update_content=True)
             self.bar.profile.favorited_submissions.add(submission)
         self.bar.save()
@@ -402,7 +404,7 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
                 title='Submission {}'.format(i),
                 description_raw='Description',
                 content_raw='Content',
-            )
+                ctime=timezone.now())
             submission.save(update_content=True)
             self.bar.profile.favorited_submissions.add(submission)
         self.bar.profile.save()

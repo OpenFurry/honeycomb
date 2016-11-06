@@ -231,6 +231,7 @@ def submit(request):
                         int(settings.MAX_UPLOAD_SIZE / (1024 * 1024))))
         if form.is_valid():
             submission = form.save(commit=False)
+            submission.ctime = timezone.now()
             submission.owner = request.user
             submission.save(update_content=True)
             for folder in form.cleaned_data['folders']:

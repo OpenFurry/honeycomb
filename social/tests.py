@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils import timezone
 
 from .models import (
     Comment,
@@ -189,8 +191,15 @@ class BaseSocialSubmissionViewTestCase(BaseSocialViewTestCase):
             owner=cls.foo,
             title="Submission",
             description_raw="Description",
-            content_raw="Content")
+            content_raw="Content",
+            ctime=timezone.now())
         cls.submission.save(update_content=True)
+        cls.comment = Comment(
+            owner=cls.bar,
+            target_object_owner=cls.foo,
+            object_model=cls.submission,
+            body_raw="Comment")
+        cls.comment.save()
 
 
 class TestFavoriteSubmissionView(BaseSocialSubmissionViewTestCase):
@@ -443,6 +452,226 @@ class TestEnjoySubmissionView(BaseSocialSubmissionViewTestCase):
         self.assertContains(response, 'You cannot add enjoy votes to this '
                             'submission, as you have been blocked by the '
                             'author.', status_code=403)
+
+
+class TestPostCommentView(BaseSocialSubmissionViewTestCase):
+    def test_form_renders_if_logged_in(self):
+        self.client.login(username='bar',
+                          password='another good password')
+        response = self.client.get(self.submission.get_absolute_url())
+        self.assertContains(
+            response,
+            '<input type="hidden" name="parent" value="{}" />'.format(
+                self.comment.id))
+        self.assertContains(
+            response,
+            '<input id="id_object_id" name="object_id" type="hidden" '
+            'value="{}" />'.format(self.submission.id),
+            2)
+
+    def test_form_not_present_if_logged_out(self):
+        response = self.client.get(self.submission.get_absolute_url())
+        self.assertNotContains(
+            response,
+            'Post reply')
+        self.assertNotContains(
+            response,
+            'Add comment')
+
+    def test_respects_can_comment_flag(self):
+        self.submission.can_comment = False
+        self.submission.save()
+        self.client.login(username='bar',
+                          password='another good password')
+        response = self.client.get(self.submission.get_absolute_url())
+        self.assertNotContains(
+            response,
+            'Post reply')
+        self.assertNotContains(
+            response,
+            'Add comment')
+
+    def test_post_comment(self):
+        self.client.login(username='bar',
+                          password='another good password')
+        ctype = ContentType.objects.get(app_label='submissions',
+                                        model='submission')
+        response = self.client.post(reverse('social:post_comment'),
+                                    {
+                                        'content_type': ctype.id,
+                                        'object_id': self.submission.id,
+                                        'body_raw': 'A Second Comment',
+                                    }, follow=True)
+        self.assertEqual(Comment.objects.count(), 2)
+        self.assertContains(response, 'A Second Comment')
+
+    def test_nest_comment(self):
+        self.client.login(username='bar',
+                          password='another good password')
+        ctype = ContentType.objects.get(app_label='submissions',
+                                        model='submission')
+        response = self.client.post(reverse('social:post_comment'),
+                                    {
+                                        'content_type': ctype.id,
+                                        'object_id': self.submission.id,
+                                        'body_raw': 'A Second Comment',
+                                        'parent': self.comment.id,
+                                    }, follow=True)
+        self.assertEqual(Comment.objects.count(), 2)
+        self.assertContains(response, 'A Second Comment')
+        self.assertContains(response, '<div class="comment-reply">')
+
+    def test_notifications(self):
+        baz = User.objects.create_user('baz', 'baz@example.com',
+                                       'another good password')
+        baz.profile = Profile(profile_raw='Bazzo', display_name='Bad Wolf')
+        baz.profile.save()
+        self.client.login(username='baz',
+                          password='another good password')
+        ctype = ContentType.objects.get(app_label='submissions',
+                                        model='submission')
+        self.client.post(reverse('social:post_comment'),
+                         {
+                             'content_type': ctype.id,
+                             'object_id': self.submission.id,
+                             'body_raw': 'A Second Comment',
+                             'parent': self.comment.id,
+                         }, follow=True)
+        self.assertEqual(Comment.objects.count(), 2)
+        self.assertEqual(
+            [x.notification_type for x in Notification.objects.all()],
+            [
+                Notification.COMMENT_REPLY,
+                Notification.SUBMISSION_COMMENT,
+            ])
+
+    def test_fail(self):
+        self.submission.can_comment = False
+        self.submission.save()
+        self.client.login(username='bar',
+                          password='another good password')
+        ctype = ContentType.objects.get(app_label='submissions',
+                                        model='submission')
+        response = self.client.post(reverse('social:post_comment'),
+                                    {
+                                        'content_type': ctype.id,
+                                        'object_id': self.submission.id,
+                                        'body_raw': 'A Second Comment',
+                                    }, follow=True)
+        self.assertContains(response, 'There was an error posting that '
+                            'comment')
+
+
+class TestDeleteCommentView(BaseSocialSubmissionViewTestCase):
+    def test_renders_form_if_applicable(self):
+        # Logged out users do not see
+        response = self.client.get(self.submission.get_absolute_url())
+        self.assertNotContains(
+            response,
+            'Delete comment')
+        # Unrelated users do not see
+        baz = User.objects.create_user('baz', 'baz@example.com',
+                                       'another good password')
+        baz.profile = Profile(profile_raw='Bazzo', display_name='Bad Wolf')
+        baz.profile.save()
+        self.client.login(username='baz',
+                          password='another good password')
+        response = self.client.get(self.submission.get_absolute_url())
+        self.assertNotContains(
+            response,
+            'Delete comment')
+        # Comment owner sees
+        self.client.logout()
+        self.client.login(username='bar',
+                          password='another good password')
+        response = self.client.get(self.submission.get_absolute_url())
+        self.assertContains(
+            response,
+            'Delete comment')
+        # Page owner sees
+        self.client.logout()
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.get(self.submission.get_absolute_url())
+        self.assertContains(
+            response,
+            'Delete comment')
+
+    def test_renders_deleted_comment(self):
+        self.comment.deleted = True
+        self.comment.save()
+        response = self.client.get(self.submission.get_absolute_url())
+        print(response.content)
+        self.assertContains(
+            response,
+            'This comment has been deleted by the commenter.')
+        self.comment.deleted_by_object_owner = True
+        self.comment.save()
+        response = self.client.get(self.submission.get_absolute_url())
+        self.assertContains(
+            response,
+            'This comment has been deleted by the page owner.')
+
+    def test_comment_owner_delete(self):
+        self.client.login(username='bar',
+                          password='another good password')
+        response = self.client.post(reverse('social:delete_comment'),
+                                    {
+                                        'comment_id': self.comment.id,
+                                    }, follow=True)
+        self.assertContains(
+            response,
+            'This comment has been deleted by the commenter.')
+
+    def test_target_owner_delete(self):
+        self.client.login(username='foo',
+                          password='a good password')
+        response = self.client.post(reverse('social:delete_comment'),
+                                    {
+                                        'comment_id': self.comment.id,
+                                    }, follow=True)
+        self.assertContains(
+            response,
+            'This comment has been deleted by the page owner.')
+
+    def test_notifications_wiped(self):
+        baz = User.objects.create_user('baz', 'baz@example.com',
+                                       'another good password')
+        baz.profile = Profile(profile_raw='Bazzo', display_name='Bad Wolf')
+        baz.profile.save()
+        self.client.login(username='baz',
+                          password='another good password')
+        ctype = ContentType.objects.get(app_label='submissions',
+                                        model='submission')
+        self.client.post(reverse('social:post_comment'),
+                         {
+                             'content_type': ctype.id,
+                             'object_id': self.submission.id,
+                             'body_raw': 'A Second Comment',
+                             'parent': self.comment.id,
+                         }, follow=True)
+        self.assertEqual(Notification.objects.count(), 2)
+        self.client.post(reverse('social:delete_comment'),
+                         {
+                             'comment_id': 2,
+                         }, follow=True)
+        self.assertEqual(Notification.objects.count(), 0)
+
+    def test_forbidden(self):
+        baz = User.objects.create_user('baz', 'baz@example.com',
+                                       'another good password')
+        baz.profile = Profile(profile_raw='Bazzo', display_name='Bad Wolf')
+        baz.profile.save()
+        self.client.login(username='baz',
+                          password='another good password')
+        response = self.client.post(reverse('social:delete_comment'),
+                                    {
+                                        'comment_id': self.comment.id,
+                                    }, follow=True)
+        self.assertContains(
+            response,
+            'You may only delete a comment if you are the poster or the page '
+            'owner')
 
 
 class TestNotificationBadges(BaseSocialSubmissionViewTestCase):

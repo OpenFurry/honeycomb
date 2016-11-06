@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-from datetime import datetime
 import markdown
 from PIL import Image
 import pypandoc
@@ -20,7 +19,7 @@ def content_path(instance, filename):
     return 'uploads/user-{}/content-files/{}'.format(
         instance.owner.id,
         '{}-{}.{}'.format(
-            datetime.now().strftime('%Y-%m-%d-%H%M%S'),
+            instance.ctime.strftime('%Y-%m-%d-%H%M%S'),
             slugify(instance.title),
             filename.split('.')[-1]))
 
@@ -29,7 +28,7 @@ def icon_path(instance, filename):
     return 'uploads/user-{}/icons/{}'.format(
         instance.owner.id,
         '{}-{}.{}'.format(
-            datetime.now().strftime('%Y-%m-%d-%H%M%S'),
+            instance.ctime.strftime('%Y-%m-%d-%H%M%S'),
             slugify(instance.title),
             filename.split('.')[-1]))
 
@@ -38,7 +37,7 @@ def cover_path(instance, filename):
     return 'uploads/user-{}/covers/{}'.format(
         instance.owner.id,
         '{}-{}.{}'.format(
-            datetime.now().strftime('%Y-%m-%d-%H%M%S'),
+            instance.ctime.strftime('%Y-%m-%d-%H%M%S'),
             slugify(instance.title),
             filename.split('.')[-1]))
 
@@ -84,7 +83,7 @@ class Submission(models.Model):
                                      blank=True)
 
     # Additional metadata
-    ctime = models.DateTimeField(auto_now_add=True)
+    ctime = models.DateTimeField()  # auto_now_add won't work here [0]
     mtime = models.DateTimeField(blank=True, null=True)
     views = models.PositiveIntegerField(default=0)
     enjoy_votes = models.PositiveIntegerField(default=0)
@@ -202,3 +201,8 @@ class FolderItem(models.Model):
 
     class Meta:
         ordering = ['position']
+
+
+# [0] - auto_now_add only sets ctime on save, and various implementations will
+# not have that during file path saving.  This must be set by
+# submissions:submit, *including in tests*.
