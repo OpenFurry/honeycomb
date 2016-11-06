@@ -20,6 +20,8 @@ class TestUpdateFlatpages(TestCase):
             content='Foo')
         tos.save()
         cmd = Command()
+
+        # Mock the open call to avoid extraneous FS access
         with mock.patch(openstr, create=True) as mock_open:
             cmd.handle(create_missing=False)
         self.assertTrue(mock_open.called)
@@ -37,6 +39,8 @@ class TestUpdateFlatpages(TestCase):
             content='Foo')
         tos.save()
         cmd = Command()
+
+        # Mock the open call to avoid extraneous FS access
         with mock.patch(openstr, create=True) as mock_open:
             cmd.handle(create_missing=True)
         self.assertTrue(mock_open.called)

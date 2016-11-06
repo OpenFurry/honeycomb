@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 
 
 class Activity(models.Model):
+    """Represents a single activity item in the stream of site activity."""
     ACTIVITY_TYPES = (
         # Users and profiles
         ('user:reg', 'user: registered'),
@@ -86,9 +87,26 @@ class Activity(models.Model):
 
     @classmethod
     def create(cls, app, action, object_model):
+        """Creates a new activity stream item in a simple fashion.
+
+        This classmethod attempts to create an activity by building the
+        activity_type from the app and action args.  If such an action doesn't
+        exist, it fails silently, to allow adding or removing actions to be
+        painless.
+
+        Args:
+            app: the application, model, or category portion of the
+                activity_type
+            action: the action portion of the activity type
+            object_model: an object for the activity to refer to, such as a
+            :model:`submissions.Submission`
+
+        Returns:
+            The generated :model:`activitystream.Activity`
+        """
         item_type = "{}:{}".format(app.lower(), action.lower())
         if item_type not in dict(Activity.ACTIVITY_TYPES):
-            return None  # XXX should we fail silently?
+            return None
         activity = cls(activity_type=item_type)
         activity.object_model = object_model
         activity.save()

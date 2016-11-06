@@ -5,6 +5,9 @@ from django.db import models
 
 
 class PublisherPage(models.Model):
+    """A page on the site representing a publisher, collecting submissions by
+    site members who are employed by or contracted under that publisher.
+    """
     # The name and slug of the page
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)

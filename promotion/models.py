@@ -7,6 +7,11 @@ from submissions.models import Submission
 
 
 class Promotion(models.Model):
+    """A promoted submission.
+
+    A submission may be promoted automatically, a promotion may be purchased
+    for a submission, or a content moderator may highlight a submission.
+    """
     PROMOTION = 'p'
     PAID_PROMOTION = '$'
     HIGHLIGHT = 'h'
@@ -24,13 +29,17 @@ class Promotion(models.Model):
     submission = models.ForeignKey(Submission)
 
     # The user promoting the submission
-    promoter = models.ForeignKey(User)
+    promoter = models.ForeignKey(User, blank=True, null=True)
 
     # The date the promotion ends
     promotion_end_date = models.DateField(null=True)
 
 
 class Event(models.Model):
+    """An event such as NaNoWriMo where tagged submissions are promoted to
+    the event's page.
+    """
+    owner = models.ForeignKey(User)
     announce_date = models.DateField()
     start_date = models.DateField()
     end_date = models.DateField()
@@ -44,6 +53,7 @@ class Event(models.Model):
 
 
 class Ad(models.Model):
+    """An advertisement submitted to be displayed on the site"""
     # The ad's owner
     owner = models.ForeignKey(User)
 
@@ -54,6 +64,10 @@ class Ad(models.Model):
 
 
 class AdLifecycle(models.Model):
+    """A lifecycle for a given ad."""
+    # The admin scheduling the ad
+    admin_contact = models.ForeignKey(User)
+
     # The ad to be shown
     ad = models.ForeignKey(Ad)
 

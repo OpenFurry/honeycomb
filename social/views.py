@@ -27,16 +27,26 @@ from usermgmt.models import Notification
 @login_required
 @require_POST
 def watch_user(request, username):
+    """View for watching a user.
+
+    Args:
+        username: the user to watch
+    """
     user = get_object_or_404(User, username=username)
+
+    # Ensure that the watch is valid
     if user.username == request.user.username:
         messages.warning(request, "You can't watch yourself.")
     elif user in request.user.profile.watched_users.all():
         messages.info(request, "You are already watching this user.")
     else:
+        # Watch the user
         request.user.profile.watched_users.add(user)
         request.user.profile.save()
         messages.success(request,
                          "You are now watching {}!".format(user.username))
+
+        # Add a notification for the watched user
         notification = Notification(
             target=user,
             source=request.user,
@@ -49,17 +59,28 @@ def watch_user(request, username):
 @login_required
 @require_POST
 def unwatch_user(request, username):
+    """View for unwatching a user.
+
+    Args:
+        username: the user to unwatch
+    """
     user = get_object_or_404(User, username=username)
+
+    # Make sure the unwatch is valid
     if user.username == request.user.username:
         messages.warning(request, "You can't unwatch yourself.")
     elif user not in request.user.profile.watched_users.all():
         messages.info(request, "You are not watching this user.")
     else:
+        # Unwatch the user
         request.user.profile.watched_users.remove(user)
         request.user.profile.save()
         messages.success(request,
                          "You are no longer watching {}.".format(
                              user.username))
+
+        # If there are outstanding notifications about having watched the user,
+        # remove them
         possible_notifications = Notification.objects.filter(
                 target=user,
                 source=request.user,
@@ -74,12 +95,20 @@ def unwatch_user(request, username):
 @login_required
 @require_POST
 def block_user(request, username):
+    """View for blocking a user.
+
+    Args:
+        username: the user to block
+    """
     user = get_object_or_404(User, username=username)
+
+    # Make sure the block is valid
     if user.username == request.user.username:
         messages.warning(request, "You can't block yourself.")
     elif user in request.user.profile.blocked_users.all():
         messages.info(request, "You are already blocking this user.")
     else:
+        # Block the user
         request.user.profile.blocked_users.add(user)
         request.user.profile.save()
         messages.success(
@@ -92,13 +121,22 @@ def block_user(request, username):
 
 @login_required
 def unblock_user(request, username):
+    """View to unblock a user.
+
+    Args:
+        username: the user to unblock
+    """
     user = get_object_or_404(User, username=username)
+
+    # Make sure the unblock is valid
     if user.username == request.user.username:
         messages.warning(request, "You can't unblock yourself.")
     elif user not in request.user.profile.blocked_users.all():
         messages.info(request, "You are not blocking this user.")
     else:
+        # Confirm unblocking the user
         if request.method == 'POST':
+            # Unblock the user
             request.user.profile.blocked_users.remove(user)
             request.user.profile.save()
             messages.success(
@@ -114,6 +152,9 @@ def unblock_user(request, username):
 
 @login_required
 def message_user(request, username):
+    """View to message a user."""
+    # TODO
+    # @makyo 2016-11-06 #62
     pass
 
 
@@ -121,9 +162,18 @@ def message_user(request, username):
 @require_POST
 def favorite_submission(request, username=None, submission_id=None,
                         submission_slug=None):
+    """View to favorite a submission.
+
+    Args:
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     submission = get_object_or_404(Submission, id=submission_id)
     reader = request.user
     author = submission.owner
+
+    # Make sure the favorite is valid
     if reader == author:
         messages.warning(request, "You cannot favorite your own submission.")
         return redirect(reverse('submissions:view_submission',
@@ -145,8 +195,12 @@ def favorite_submission(request, username=None, submission_id=None,
                             'submission_id': submission_id,
                             'submission_slug': submission_slug,
                         }))
+
+    # Favorite the submission
     reader.profile.favorited_submissions.add(submission)
     messages.success(request, "Submission favorited!")
+
+    # Notify the submission author
     notification = Notification(
         target=author,
         source=reader,
@@ -166,9 +220,18 @@ def favorite_submission(request, username=None, submission_id=None,
 @require_POST
 def unfavorite_submission(request, username=None, submission_id=None,
                           submission_slug=None):
+    """View to unfavorite a submission.
+
+    Args:
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     submission = get_object_or_404(Submission, id=submission_id)
     reader = request.user
     author = submission.owner
+
+    # Make sure the unfavorite is valid
     if reader == author:
         messages.warning(request, "You cannot unfavorite your own "
                          "submission.")
@@ -191,8 +254,13 @@ def unfavorite_submission(request, username=None, submission_id=None,
                             'submission_id': submission_id,
                             'submission_slug': submission_slug,
                         }))
+
+    # Unfavorite the submission
     reader.profile.favorited_submissions.remove(submission)
     messages.info(request, "Submission removed from favorites.")
+
+    # If there are outstanding notifications about having favorited the
+    # submission, remove them
     possible_notifications = Notification.objects.filter(
         target=author,
         source=reader,
@@ -214,9 +282,19 @@ def unfavorite_submission(request, username=None, submission_id=None,
 @require_POST
 def rate_submission(request, username=None, submission_id=None,
                     submission_slug=None):
+    """View to rate a submission.
+
+    Args:
+        request: Django request object; `rating` should be in request.POST
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     submission = get_object_or_404(Submission, id=submission_id)
     reader = request.user
     author = submission.owner
+
+    # MAke sure the rating is valid
     try:
         rating = int(request.POST.get('rating', 0))
     except ValueError:
@@ -241,6 +319,9 @@ def rate_submission(request, username=None, submission_id=None,
         messages.error(request, "You cannot rate this submission, as "
                        "you have been blocked by the author.")
         return render(request, 'permission_denied.html', {}, status=403)
+
+    # Try to update an existing rating; if one does not exist, create a new
+    # rating
     try:
         rating_object = Rating.objects.get(
             owner=reader,
@@ -257,12 +338,16 @@ def rate_submission(request, username=None, submission_id=None,
         )
         rating_object.save()
         messages.success(request, "Submission successfully rated.")
+
+    # Notify the submission's author
     notification = Notification(
         target=author,
         source=reader,
         notification_type=Notification.RATING,
         subject=rating_object)
     notification.save()
+
+    # Update cached submission rating information
     ratings = submission.get_average_rating()
     submission.rating_stars = ratings['stars']
     submission.rating_average = ratings['average']
@@ -281,9 +366,18 @@ def rate_submission(request, username=None, submission_id=None,
 @require_POST
 def enjoy_submission(request, username=None, submission_id=None,
                      submission_slug=None):
+    """View for adding an enjoy vote to a submission
+
+    Args:
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     submission = get_object_or_404(Submission, id=submission_id)
     reader = request.user
     author = submission.owner
+
+    # Ensure the enjoy vote is valid
     if reader == author:
         messages.warning(request, "You cannot add enjoy votes to your own "
                          "submission.")
@@ -306,9 +400,13 @@ def enjoy_submission(request, username=None, submission_id=None,
                             'submission_id': submission_id,
                             'submission_slug': submission_slug,
                         }))
+
+    # Add the enjoy vote to the submission
     submission.enjoy_votes += 1
     submission.save()
     messages.success(request, "Enjoy vote added to submission!")
+
+    # Notify the submission author
     notification = Notification(
         target=author,
         source=reader,
@@ -327,6 +425,7 @@ def enjoy_submission(request, username=None, submission_id=None,
 @login_required
 @require_POST
 def post_comment(request):
+    """View for posting a comment on a model."""
     form = CommentForm(request.POST)
     if form.is_valid():
         comment = form.save(commit=False)
@@ -367,6 +466,7 @@ def post_comment(request):
 @login_required
 @require_POST
 def delete_comment(request):
+    """View for deleting a comment."""
     # TODO: deleting should wipe content, flagging should leave it.
     # @makyo 2016-11-05 #57
     comment = get_object_or_404(Comment, id=request.POST.get('comment_id'))
@@ -402,12 +502,16 @@ def delete_comment(request):
 
 @login_required
 def view_notifications_ab(request):
+    """View for choosing whether a user sees timeline or category style
+    notifications based on the user's id
+    """
     view = 'categories' if request.user.id % 2 == 0 else 'timeline'
     return redirect(reverse('social:view_notifications_{}'.format(view)))
 
 
 @login_required
 def view_notifications_categories(request):
+    """View for seeing notifications in category style."""
     return render(request, 'notifications_categories.html', {
         'title': 'Notifications',
         'notifications': request.user.profile.get_notifications_sorted(),
@@ -416,6 +520,7 @@ def view_notifications_categories(request):
 
 @login_required
 def view_notifications_timeline(request, page=1):
+    """View for seeing notifications in timeline style."""
     paginator = Paginator(request.user.notification_set.all(), 50)
     try:
         notifications = paginator.page(page)
@@ -430,6 +535,7 @@ def view_notifications_timeline(request, page=1):
 @login_required
 @require_POST
 def remove_notifications(request):
+    """View for removing selected notifications."""
     for notification_id in request.POST.getlist('notification_id', []):
         try:
             notification = Notification.objects.get(pk=notification_id)
@@ -452,6 +558,7 @@ def remove_notifications(request):
 @login_required
 @require_POST
 def nuke_notifications(request):
+    """View for removing all notifications."""
     notifications = Notification.objects.filter(target=request.user)
     for notification in notifications:
         notification.delete()

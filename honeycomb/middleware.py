@@ -6,10 +6,10 @@ logger = logging.getLogger(__name__)
 
 
 class QueryCountDebugMiddleware(object):
-    """
-    This middleware will log the number of queries run
-    and the total time taken for each request (with a
-    status code of 200). It does not currently support
+    """Middleware for counting queries per page.
+
+    This middleware will log the number of queries run and the total time taken
+    for each request (with a status code of 200). It does not currently support
     multi-db setups.
     """
 

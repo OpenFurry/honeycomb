@@ -82,6 +82,15 @@ test-travis: ## Test target for travis-ci use.
 		manage.py test --verbosity=2
 	coverage report -m --skip-covered
 
+.PHONY: sloccount
+sloccount: ## Get sloc count from all Python, html, markdown, Makefile, and shell files.
+	git ls-files \
+		| grep -v static \
+		| grep -v manage.py \
+		| grep -v migrations \
+		| grep -E '(.py|.html|.md|Makefile|sh)' \
+		| xargs python sloc.py > sloc.tsv
+
 .PHONY: clean
 clean: ## Remove virtualenv and tox environments, along with compiled/optimized python files.
 	rm -rf venv .tox

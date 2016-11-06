@@ -13,6 +13,7 @@ from submissions.models import Submission
 
 
 class Profile(models.Model):
+    """A user profile."""
     # The user object this profile is tied to
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -91,6 +92,9 @@ class Profile(models.Model):
 
 
 class Notification(models.Model):
+    """A notification for a user of a pertinent event that has happened."""
+    # TODO Move notification to social applcation
+    # @makyo 2016-11-05 #58
     WATCH = 'W'
     FAVORITE = 'F'
     MESSAGE = 'M'

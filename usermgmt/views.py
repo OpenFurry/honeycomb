@@ -22,6 +22,7 @@ from core.templatetags.gravatar import gravatar
 
 
 class Register(FormView):
+    """View to register a new user."""
     template_name = 'registration/new.html'
     form_class = RegisterForm
 
@@ -46,7 +47,10 @@ class Register(FormView):
 
 @login_required
 def update_profile(request):
+    """View to update a user's profile."""
     form = UpdateProfileForm(instance=request.user.profile)
+
+    # Save profile if data was POSTed
     if request.method == 'POST':
         form = UpdateProfileForm(request.POST, instance=request.user.profile)
         form.save()
@@ -62,7 +66,14 @@ def update_profile(request):
 
 
 def view_profile(request, username):
+    """View to view a user's profile.
+
+    Args:
+        username: the user whose profile to display
+    """
     user = User.objects.get(username=username)
+
+    # See if user and reader have any interactions for setting the subtitle
     watched = blocked = blocked_by = False
     if request.user.is_authenticated:
         watched = user in request.user.profile.watched_users.all()

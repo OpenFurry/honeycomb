@@ -4,6 +4,7 @@ from .models import Comment
 
 
 class CommentForm(forms.ModelForm):
+    """A form for posting comments."""
     class Meta:
         model = Comment
         fields = (
