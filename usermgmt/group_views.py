@@ -13,6 +13,11 @@ from .models import FriendGroup
 
 @login_required
 def list_groups(request, username=None):
+    """View for listing a user's groups.
+
+    Args:
+        username: the user whose groups to list
+    """
     return render(request, 'list_groups.html', {
         'title': 'Groups',
         'groups': request.user.profile.friend_groups.all(),
@@ -22,6 +27,11 @@ def list_groups(request, username=None):
 
 @login_required
 def create_group(request, username=None):
+    """View for creating a new group.
+
+    Args:
+        username: the owner of the group (ignored)
+    """
     form = GroupForm()
     form.fields['members'].queryset = request.user.profile.watched_users
     if request.method == 'POST':
@@ -46,6 +56,12 @@ def create_group(request, username=None):
 
 @login_required
 def view_group(request, username=None, group_id=None):
+    """View for viewing a friend group.
+
+    Args:
+        username: the owner of the group (ignored)
+        group_id: the id of the group
+    """
     group = get_object_or_404(FriendGroup, id=group_id)
     if group not in request.user.profile.friend_groups.all():
         messages.error(request, 'You may not view the groups of others')
@@ -61,6 +77,12 @@ def view_group(request, username=None, group_id=None):
 
 @login_required
 def edit_group(request, username=None, group_id=None):
+    """View for editing a friend group.
+
+    Args:
+        username: the owner of the group (ignored)
+        group_id: the id of the group
+    """
     group = get_object_or_404(FriendGroup, id=group_id)
     if group not in request.user.profile.friend_groups.all():
         messages.error(request, 'You may not edit the groups of others')
@@ -93,6 +115,12 @@ def edit_group(request, username=None, group_id=None):
 
 @login_required
 def delete_group(request, username=None, group_id=None):
+    """View for deleting a friend group.
+
+    Args:
+        username: the owner of the group (ignored)
+        group_id: the id of the group
+    """
     group = get_object_or_404(FriendGroup, id=group_id)
     if group not in request.user.profile.friend_groups.all():
         messages.error(request, 'You may not delete the groups of others')

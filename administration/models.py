@@ -7,6 +7,7 @@ from django.db import models
 
 
 class Flag(models.Model):
+    """Represents an item flagged for administrative attention."""
     # The object being flagged
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()

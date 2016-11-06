@@ -21,16 +21,23 @@ def log_user_register(sender, **kwargs):
 
 @receiver(user_logged_in)
 def log_login(sender, **kwargs):
+    """Creates an activity when a user logs in."""
     Activity.create('user', 'login', kwargs['user'])
 
 
 @receiver(user_logged_out)
 def log_logout(sender, **kwargs):
+    """Creates an activity when a user logs out."""
     Activity.create('user', 'logout', kwargs['user'])
 
 
 @receiver(post_save)
 def log_base_create_or_update(sender, **kwargs):
+    """Attempts to create an activity whenever a model is saved.
+
+    If the model does not exist in the map of valid models, it exits without
+    creating anything.
+    """
     try:
         name = {
             'Flag': 'flag',
@@ -53,6 +60,11 @@ def log_base_create_or_update(sender, **kwargs):
 
 @receiver(post_delete)
 def log_base_delete(sender, **kwargs):
+    """Attempts to create an activity whenever a model is deleted.
+
+    If the model does not exist in the map of valid models, it exits without
+    creating anything.
+    """
     try:
         name = {
             'Flag': 'flag',
@@ -68,6 +80,7 @@ def log_base_delete(sender, **kwargs):
 
 @receiver(post_save, sender=TaggedItem)
 def log_tagged_item(sender, **kwargs):
+    """Creates an activity when a tag is saved."""
     Activity.create(
         'tag',
         'tag' if kwargs['created'] else 'update',

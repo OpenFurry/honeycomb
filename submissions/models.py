@@ -16,6 +16,16 @@ from usermgmt.group_models import FriendGroup
 
 
 def content_path(instance, filename):
+    """Generates a path for a submission's content file.
+
+    Args:
+        instance: the instance of :model:`submissions.Submission` to which the
+            file belongs
+        filename: the original name of the file (ignored)
+
+    Returns:
+        The generated path
+    """
     return 'uploads/user-{}/content-files/{}'.format(
         instance.owner.id,
         '{}-{}.{}'.format(
@@ -25,6 +35,16 @@ def content_path(instance, filename):
 
 
 def icon_path(instance, filename):
+    """Generates a path for a submission's icon file.
+
+    Args:
+        instance: the instance of :model:`submissions.Submission` to which the
+            file belongs
+        filename: the original name of the file (ignored)
+
+    Returns:
+        The generated path
+    """
     return 'uploads/user-{}/icons/{}'.format(
         instance.owner.id,
         '{}-{}.{}'.format(
@@ -34,6 +54,16 @@ def icon_path(instance, filename):
 
 
 def cover_path(instance, filename):
+    """Generates a path for a submission's cover file.
+
+    Args:
+        instance: the instance of :model:`submissions.Submission` to which the
+            file belongs
+        filename: the original name of the file (ignored)
+
+    Returns:
+        The generated path
+    """
     return 'uploads/user-{}/covers/{}'.format(
         instance.owner.id,
         '{}-{}.{}'.format(
@@ -43,6 +73,7 @@ def cover_path(instance, filename):
 
 
 class Submission(models.Model):
+    """A submission created on the site."""
     # Submission owner
     owner = models.ForeignKey(User)
 
@@ -94,6 +125,13 @@ class Submission(models.Model):
     tags = TaggableManager()
 
     def save(self, *args, **kwargs):
+        """Overridden save method.
+
+        If instructed through `update_content=True`, this method updates the
+        slug, renders the content from the description and submission from
+        markdown to HTML, and munges files (resizing images, converting content
+        files).
+        """
         update_content = (kwargs.pop('update_content')
                           if 'update_content' in kwargs else False)
         if update_content:
@@ -137,6 +175,7 @@ class Submission(models.Model):
                 cover.save(self.cover.path)
 
     def get_average_rating(self):
+        """Gets the average rating of the submission based on all ratings."""
         total = count = 0
         for rating in self.rating_set.all():
             total += rating.rating
@@ -152,6 +191,7 @@ class Submission(models.Model):
             return {'stars': '', 'average': 0, 'count': 0}
 
     def get_absolute_url(self):
+        """Gets the absolute URL of the image, reversed from patterns."""
         return reverse('submissions:view_submission', kwargs={
             'username': self.owner.username,
             'submission_id': self.id,
@@ -168,6 +208,7 @@ class Submission(models.Model):
 
 
 class Folder(models.Model):
+    """A folder for storing submissions."""
     # Folder owner
     owner = models.ForeignKey(User)
 
@@ -181,6 +222,7 @@ class Folder(models.Model):
     submissions = models.ManyToManyField(Submission, through='FolderItem')
 
     def save(self, *args, **kwargs):
+        """Overridden save method for generating folder slugs."""
         self.slug = slugify(self.name)
         super(Folder, self).save(*args, **kwargs)
 
@@ -192,6 +234,9 @@ class Folder(models.Model):
 
 
 class FolderItem(models.Model):
+    """A join item between submission and folder that stores the submission's
+    position in the folder.
+    """
     # Submission and folder relations
     submission = models.ForeignKey(Submission, on_delete=models.CASCADE)
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)

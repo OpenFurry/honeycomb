@@ -11,6 +11,9 @@ register = template.Library()
 @register.filter(is_safe=True)
 @stringfilter
 def render_attributes(value, autoescape=True):
+    """A filter for changing a list of user attributes into a list of links,
+    data, etc.
+    """
     if value == '':
         return 'No attributes'
     to_return = '<dl>'

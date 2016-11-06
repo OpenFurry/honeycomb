@@ -2,6 +2,14 @@ from django.db.models import Q
 
 
 def filters_for_authenticated_user(reader):
+    """Gets submission filters for an authenticated user.
+
+    Args:
+        reader: the user to consider when filtering submissions
+
+    Returns:
+        A query object to be used in `Submission.objects.filter`
+    """
     # Start with hidden status
     query = Q(hidden=False)
 
@@ -23,6 +31,11 @@ def filters_for_authenticated_user(reader):
 
 
 def filters_for_anonymous_user():
+    """Gets submission filters for an anonymous user.
+
+    Returns:
+        A query object to be used in `Submission.objects.filter`
+    """
     # Start with hidden status
     query = Q(hidden=False)
 

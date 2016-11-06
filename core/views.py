@@ -16,6 +16,7 @@ from submissions.utils import (
 
 @cache_page(60 * 5)
 def front(request):
+    """View for the front page of the site."""
     greetings = settings.GREETINGS if hasattr(settings, 'GREETINGS') else [
         'Good to see you out and about',
         'You look spectacular today',
@@ -49,6 +50,7 @@ def front(request):
 
 @cache_page(60 * 60 * 24)
 def flatpage_list(request):
+    """View for listing all flatpages in the site."""
     return render(request, 'flatpages/list.html', {
         'title': 'About',
         'prefix': reverse('core:flatpage_list'),
@@ -57,6 +59,7 @@ def flatpage_list(request):
 
 @cache_page(60 * 60 * 24)
 def helppage_list(request):
+    """View for listing only the help flatpages in the site."""
     return render(request, 'flatpages/list.html', {
         'title': 'Help',
         'prefix': reverse('core:helppage_list'),
@@ -64,11 +67,14 @@ def helppage_list(request):
 
 
 class BasicSearchView(SearchView):
+    """View for searching submissions on the site."""
     template_name = 'search/search.html'
     form_class = SearchForm
 
     def get(self, request, *args, **kwargs):
-        if request.GET.get('page') is None:
+        """Gets the search results and creates an activity if needed."""
+        if (request.GET.get('page') is None
+                and request.GET.get('q') is not None):
             Activity.create(
                 'search',
                 'basic_search',

@@ -9,6 +9,7 @@ from .models import (
 
 
 class RegisterForm(UserCreationForm):
+    """A form for registering as a new user"""
     email = forms.EmailField(
         label='Email address',
         required=True,
@@ -26,6 +27,7 @@ class RegisterForm(UserCreationForm):
 
 
 class UpdateProfileForm(forms.ModelForm):
+    """A form for updating one's profile."""
     class Meta:
         model = Profile
         fields = (
@@ -37,6 +39,7 @@ class UpdateProfileForm(forms.ModelForm):
 
 
 class GroupForm(forms.ModelForm):
+    """A form for creating/updating a user group."""
     members = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(),
         label='Group members',

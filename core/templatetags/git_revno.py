@@ -11,6 +11,11 @@ register = template.Library()
 
 @register.assignment_tag
 def git_revno():
+    """Provide the git revision information to the template.
+
+    If the site is in debug mode, get this information live.  Otherwise,
+    retrieve it from the settings.
+    """
     if settings.DEBUG:
         p = Popen(['git', 'rev-parse', '--verify', 'HEAD'], stdout=PIPE,
                   cwd=settings.BASE_DIR)

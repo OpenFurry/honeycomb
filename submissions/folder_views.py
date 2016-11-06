@@ -24,6 +24,9 @@ from core.templatetags.gravatar import gravatar
 
 
 def view_root_level_folders(request, username=None, page=1):
+    """View for listing folders at the root level, as well as submissions not
+    placed in any folders.
+    """
     user = get_object_or_404(User, username=username)
     folders = user.folder_set.filter(parent=None)
     members = Submission.objects.filter(owner=user) \
@@ -53,6 +56,13 @@ def view_root_level_folders(request, username=None, page=1):
 
 def view_folder(request, username=None, folder_id=None, folder_slug=None,
                 page=1):
+    """View for listing subfolders and submissions within a folder.
+
+    Args:
+        username: the owner of the folder
+        folder_id: the id of the folder
+        folder_slug: the slug of the folder
+    """
     folder = get_object_or_404(Folder, id=folder_id)
     if username != folder.owner.username or folder_slug != folder.slug:
         return redirect(reverse('submissions:view_folder', kwargs={
@@ -106,6 +116,11 @@ def view_folder(request, username=None, folder_id=None, folder_slug=None,
 
 @login_required
 def create_folder(request, username=None):
+    """View for creating a folder.
+
+    Args:
+        username: the owner of the folder (ignored)
+    """
     folders = request.user.folder_set.all()
     form = FolderForm()
     if request.method == 'POST':
@@ -127,6 +142,13 @@ def create_folder(request, username=None):
 
 @login_required
 def update_folder(request, username=None, folder_id=None, folder_slug=None):
+    """View for updating a folder.
+
+    Args:
+        username: the owner of the folder
+        folder_id: the id of the folder
+        folder_slug: the slug of the folder
+    """
     folder = get_object_or_404(Folder, id=folder_id)
     if request.user != folder.owner:
         messages.error(request, "You can't update a folder that isn't yours")
@@ -154,6 +176,13 @@ def update_folder(request, username=None, folder_id=None, folder_slug=None):
 
 @login_required
 def delete_folder(request, username=None, folder_id=None, folder_slug=None):
+    """View for deleting a folder.
+
+    Args:
+        username: the owner of the folder
+        folder_id: the id of the folder
+        folder_slug: the slug of the folder
+    """
     folder = get_object_or_404(Folder, id=folder_id)
     if request.user != folder.owner:
         messages.error(request, "You can't delete a folder that isn't yours")
@@ -183,6 +212,13 @@ def delete_folder(request, username=None, folder_id=None, folder_slug=None):
 @login_required
 def update_submission_order_in_folder(request, username=None, folder_id=None,
                                       folder_slug=None):
+    """View for re-ordering submissions in a folder.
+
+    Args:
+        username: the owner of the folder
+        folder_id: the id of the folder
+        folder_slug: the slug of the folder
+    """
     folder = get_object_or_404(Folder, id=folder_id)
     if request.user != folder.owner:
         messages.error(request, "You can't sort a folder that isn't yours")

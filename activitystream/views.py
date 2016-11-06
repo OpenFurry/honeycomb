@@ -35,6 +35,16 @@ from usermgmt.group_models import FriendGroup
 
 
 def generate_stream_entry(activity):
+    """Generates an entry in the JSON stream of activities.
+
+    This provides more readable results in the stream.
+
+    Args:
+        activity: the :model:`activitystream.Activity` object
+
+    Returns:
+        A dict containing more readable information
+    """
     entry = {
         'time': activity.activity_time.strftime('%Y-%m-%dT%H:%M:%S'),
         'type': activity.activity_type,
@@ -47,6 +57,22 @@ def generate_stream_entry(activity):
 
 @cache_page(60 * 15)
 def get_stream(request, models=None, object_id=None):
+    """View for retrieving the activity stream.
+
+    The stream may be limited to a model, a specific object, or potentially an
+    activity type.
+
+    Args:
+        request: the Django request object.  If `type` is in request.GET,
+            that is used on filtering the response by activity type
+        models: a comma separated list of models.  Each entry in the list is
+            a tuple in the form of app_label:model.
+        object_id: an object ID, such as a submission ID, to be passed with
+            models (e.g: models=submissions:submission, object_id=1)
+
+    Returns:
+        A JSON object containing the stream.
+    """
     stream = Activity.objects.select_related('content_type')
     if models:
         expanded = [model.split(':') for model in models.split(',')]
@@ -69,6 +95,7 @@ def get_stream(request, models=None, object_id=None):
 
 
 def _get_sitewide_data():
+    """Builds a dict of data surrounding the site"""
     active_promotions = Promotion.objects.filter(
         promotion_end_date__gte=datetime.date.today())
     return {
@@ -122,6 +149,7 @@ def _get_sitewide_data():
 
 @cache_page(60 * 60)
 def sitewide_data(request):
+    """View for retrieving the sitewide data."""
     data = _get_sitewide_data()
     return HttpResponse(
         json.dumps(data, separators=[',', ':']),

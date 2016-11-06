@@ -32,6 +32,12 @@ from social.models import Comment
 
 
 def list_user_submissions(request, username=None, page=1):
+    """View for listing all of a user's submissions.
+
+    Args:
+        username: the user whose submissions to list
+        page: the current page for pagination
+    """
     reader = request.user
     author = get_object_or_404(User, username=username)
     if reader.is_authenticated and reader in \
@@ -63,6 +69,12 @@ def list_user_submissions(request, username=None, page=1):
 
 
 def list_user_favorites(request, username=None, page=1):
+    """View for listing all of a user's favorited submissions.
+
+    Args:
+        username: the user whose favorited submissions to list
+        page: the current page for pagination
+    """
     reader = request.user
     author = get_object_or_404(User, username=username)
     if reader.is_authenticated and reader in \
@@ -95,6 +107,13 @@ def list_user_favorites(request, username=None, page=1):
 
 def view_submission(request, username=None, submission_id=None,
                     submission_slug=None):
+    """View for displaying a submission.
+
+    Args:
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     # Expand short URLs.
     submission = get_object_or_404(Submission, id=submission_id)
     if username != submission.owner.username or submission_slug != \
@@ -141,6 +160,13 @@ def view_submission(request, username=None, submission_id=None,
 @login_required
 def edit_submission(request, username=None, submission_id=None,
                     submission_slug=None):
+    """View for editing an existing submission.
+
+    Args:
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     submission = get_object_or_404(Submission, id=submission_id)
     if submission.owner.username != request.user.username:
         messages.error(request, 'You can only edit your own submissions')
@@ -202,6 +228,13 @@ def edit_submission(request, username=None, submission_id=None,
 @login_required
 def delete_submission(request, username=None, submission_id=None,
                       submission_slug=None):
+    """View for deleting a submission.
+
+    Args:
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     submission = get_object_or_404(Submission, id=submission_id)
     if submission.owner.username != request.user.username:
         messages.error(request, 'You can only delete your own submissions')
@@ -221,6 +254,7 @@ def delete_submission(request, username=None, submission_id=None,
 
 @login_required
 def submit(request):
+    """View for submitting a new submission."""
     form = SubmissionForm()
     if request.method == 'POST':
         form = SubmissionForm(request.POST, request.FILES)

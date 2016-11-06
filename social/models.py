@@ -12,6 +12,14 @@ from submissions.models import Submission
 
 
 class Comment(models.Model):
+    """A comment posted on a page on the site.
+
+    Comments may be posted on pages for:
+
+    - :model:`submissions.Submission`
+    - :model:`promotions.Event`
+    - :model:`publishers.Publisher`
+    """
     # Related users
     owner = models.ForeignKey(User)
     target_object_owner = models.ForeignKey(

@@ -12,6 +12,17 @@ TAG_MIN = getattr(settings, 'TAGCLOUD_MIN', 1.0)
 
 
 def get_weight_closure(tag_min, tag_max, count_min, count_max):
+    """Gets a closure for generating the weight of the tag.
+
+    Args:
+        tag_min: the minimum weight to use for a tag
+        tag_max: the maximum weight to use for a tag
+        count_min: the minimum number a tag is used
+        count_max: the maximum number a tag is used
+
+    Returns:
+        A closure to be used for calculating tag weights
+    """
     def weight_closure(count, tag_min=tag_min, tag_max=tag_max,
                        count_min=count_min, count_max=count_max):
         # Prevent a division by zero here, found to occur under some
@@ -27,6 +38,14 @@ def get_weight_closure(tag_min, tag_max, count_min, count_max):
 
 @register.assignment_tag
 def get_weighted_tags(tags):
+    """Annotates a list of tags with the weight of the tag based on use.
+
+    Args:
+        tags: the list of tags to annotate
+
+    Returns:
+        The tag list annotated with weights
+    """
     use_count = tags.annotate(use_count=Count('taggit_taggeditem_items'))
     if len(use_count) == 0:
         return tags

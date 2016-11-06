@@ -7,6 +7,7 @@ from .models import (
 
 
 class SubmissionForm(forms.ModelForm):
+    """Form for submitting/editing a submission."""
     class Meta:
         model = Submission
         fields = (
@@ -28,6 +29,7 @@ class SubmissionForm(forms.ModelForm):
 
 
 class FolderForm(forms.ModelForm):
+    """Form for creating/editing a folder."""
     class Meta:
         model = Folder
         fields = (

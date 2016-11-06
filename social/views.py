@@ -27,6 +27,11 @@ from usermgmt.models import Notification
 @login_required
 @require_POST
 def watch_user(request, username):
+    """View for watching a user.
+
+    Args:
+        username: the user to watch
+    """
     user = get_object_or_404(User, username=username)
     if user.username == request.user.username:
         messages.warning(request, "You can't watch yourself.")
@@ -49,6 +54,11 @@ def watch_user(request, username):
 @login_required
 @require_POST
 def unwatch_user(request, username):
+    """View for unwatching a user.
+
+    Args:
+        username: the user to unwatch
+    """
     user = get_object_or_404(User, username=username)
     if user.username == request.user.username:
         messages.warning(request, "You can't unwatch yourself.")
@@ -74,6 +84,11 @@ def unwatch_user(request, username):
 @login_required
 @require_POST
 def block_user(request, username):
+    """View for blocking a user.
+
+    Args:
+        username: the user to block
+    """
     user = get_object_or_404(User, username=username)
     if user.username == request.user.username:
         messages.warning(request, "You can't block yourself.")
@@ -92,6 +107,11 @@ def block_user(request, username):
 
 @login_required
 def unblock_user(request, username):
+    """View to unblock a user.
+
+    Args:
+        username: the user to unblock
+    """
     user = get_object_or_404(User, username=username)
     if user.username == request.user.username:
         messages.warning(request, "You can't unblock yourself.")
@@ -114,6 +134,7 @@ def unblock_user(request, username):
 
 @login_required
 def message_user(request, username):
+    """View to message a user."""
     pass
 
 
@@ -121,6 +142,13 @@ def message_user(request, username):
 @require_POST
 def favorite_submission(request, username=None, submission_id=None,
                         submission_slug=None):
+    """View to favorite a submission.
+
+    Args:
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     submission = get_object_or_404(Submission, id=submission_id)
     reader = request.user
     author = submission.owner
@@ -166,6 +194,13 @@ def favorite_submission(request, username=None, submission_id=None,
 @require_POST
 def unfavorite_submission(request, username=None, submission_id=None,
                           submission_slug=None):
+    """View to unfavorite a submission.
+
+    Args:
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     submission = get_object_or_404(Submission, id=submission_id)
     reader = request.user
     author = submission.owner
@@ -214,6 +249,14 @@ def unfavorite_submission(request, username=None, submission_id=None,
 @require_POST
 def rate_submission(request, username=None, submission_id=None,
                     submission_slug=None):
+    """View to rate a submission.
+
+    Args:
+        request: Django request object; `rating` should be in request.POST
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     submission = get_object_or_404(Submission, id=submission_id)
     reader = request.user
     author = submission.owner
@@ -281,6 +324,13 @@ def rate_submission(request, username=None, submission_id=None,
 @require_POST
 def enjoy_submission(request, username=None, submission_id=None,
                      submission_slug=None):
+    """View for adding an enjoy vote to a submission
+
+    Args:
+        username: the owner of the submission
+        submission_id: the id of the submission
+        submission_slug: the slug of the submission
+    """
     submission = get_object_or_404(Submission, id=submission_id)
     reader = request.user
     author = submission.owner
@@ -327,6 +377,7 @@ def enjoy_submission(request, username=None, submission_id=None,
 @login_required
 @require_POST
 def post_comment(request):
+    """View for posting a comment on a model."""
     form = CommentForm(request.POST)
     if form.is_valid():
         comment = form.save(commit=False)
@@ -367,6 +418,7 @@ def post_comment(request):
 @login_required
 @require_POST
 def delete_comment(request):
+    """View for deleting a comment."""
     # TODO: deleting should wipe content, flagging should leave it.
     # @makyo 2016-11-05 #57
     comment = get_object_or_404(Comment, id=request.POST.get('comment_id'))
@@ -402,12 +454,16 @@ def delete_comment(request):
 
 @login_required
 def view_notifications_ab(request):
+    """View for choosing whether a user sees timeline or category style
+    notifications
+    """
     view = 'categories' if request.user.id % 2 == 0 else 'timeline'
     return redirect(reverse('social:view_notifications_{}'.format(view)))
 
 
 @login_required
 def view_notifications_categories(request):
+    """View for seeing notifications in category style."""
     return render(request, 'notifications_categories.html', {
         'title': 'Notifications',
         'notifications': request.user.profile.get_notifications_sorted(),
@@ -416,6 +472,7 @@ def view_notifications_categories(request):
 
 @login_required
 def view_notifications_timeline(request, page=1):
+    """View for seeing notifications in timeline style."""
     paginator = Paginator(request.user.notification_set.all(), 50)
     try:
         notifications = paginator.page(page)
@@ -430,6 +487,7 @@ def view_notifications_timeline(request, page=1):
 @login_required
 @require_POST
 def remove_notifications(request):
+    """View for removing selected notifications."""
     for notification_id in request.POST.getlist('notification_id', []):
         try:
             notification = Notification.objects.get(pk=notification_id)
@@ -452,6 +510,7 @@ def remove_notifications(request):
 @login_required
 @require_POST
 def nuke_notifications(request):
+    """View for removing all notifications."""
     notifications = Notification.objects.filter(target=request.user)
     for notification in notifications:
         notification.delete()
