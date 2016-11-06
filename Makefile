@@ -83,8 +83,13 @@ test-travis: ## Test target for travis-ci use.
 	coverage report -m --skip-covered
 
 .PHONY: sloccount
-sloccount: ## run sloccount on all apps to get the source lines of code for apps and project. Must have sloccount installed.
-	sloccount --wide $(APPLICATIONS)
+sloccount: ## Get sloc count from all Python, html, markdown, Makefile, and shell files.
+	git ls-files \
+		| grep -v static \
+		| grep -v manage.py \
+		| grep -v migrations \
+		| grep -E '(.py|.html|.md|Makefile|sh)' \
+		| xargs python sloc.py > sloc.tsv
 
 .PHONY: clean
 clean: ## Remove virtualenv and tox environments, along with compiled/optimized python files.
