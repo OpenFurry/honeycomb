@@ -44,13 +44,13 @@
             <h2 class="admin">Administration notifications</h2>
             <div class="notifications no-bottom-border">
 
-                {% if notifications.Application_claimed|length > 0 %}
-                    <h3>Applications claimed</h3>
+                {% if notifications.Application_resolved|length > 0 %}
+                    <h3>Application resolutions</h3>
                     <div class="notifications">
                         <form action="{% url 'social:remove_notifications' %}" method="post">
                             {% csrf_token %}
                             <ul class="list-unstyled">
-                                {% for notification in notifications.Application_claimed %}
+                                {% for notification in notifications.Application_resolved %}
                                     <li class="striped-item"><label>
                                         <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
                                     </label></li>
@@ -63,13 +63,13 @@
                     </div>
                 {% endif %}
 
-                {% if notifications.Application_resolved|length > 0 %}
-                    <h3>Applications resolved</h3>
+                {% if notifications.Application_claimed|length > 0 %}
+                    <h3>Application claims</h3>
                     <div class="notifications">
                         <form action="{% url 'social:remove_notifications' %}" method="post">
                             {% csrf_token %}
                             <ul class="list-unstyled">
-                                {% for notification in notifications.Application_resolved %}
+                                {% for notification in notifications.Application_claimed %}
                                     <li class="striped-item"><label>
                                         <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
                                     </label></li>

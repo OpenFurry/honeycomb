@@ -15,14 +15,14 @@
                 <li>
                     <a href="{% url 'administration:list_participating_applications' %}">
                         <span class="glyphicon glyphicon-list"></span>
-                        List my applications
+                        My applications
                     </a>
                 </li>
                 {% if perms.administration.can_list_social_applications and perms.can_list_content_applications %}
                     <li>
                         <a href="{% url 'administration:list_all_applications' %}">
                             <span class="glyphicon glyphicon-list"></span>
-                            List all applications
+                            All applications
                         </a>
                     </li>
                 {% endif %}
@@ -30,7 +30,7 @@
                     <li>
                         <a href="{% url 'administration:list_social_applications' %}">
                             <span class="glyphicon glyphicon-list"></span>
-                            List social applications
+                            Social applications
                         </a>
                     </li>
                 {% endif %}
@@ -38,7 +38,7 @@
                     <li>
                         <a href="{% url 'administration:list_content_applications' %}">
                             <span class="glyphicon glyphicon-list"></span>
-                            List Content applications
+                            Content applications
                         </a>
                     </li>
                 {% endif %}
@@ -52,14 +52,14 @@
                 <li>
                     <a href="{% url 'administration:list_participating_flags' %}">
                         <span class="glyphicon glyphicon-list"></span>
-                        List my flags
+                        My flags
                     </a>
                 </li>
                 {% if perms.administration.can_list_social_flags and perms.can_list_content_flags %}
                     <li>
                         <a href="{% url 'administration:list_all_flags' %}">
                             <span class="glyphicon glyphicon-list"></span>
-                            List all flags
+                            All flags
                         </a>
                     </li>
                 {% endif %}
@@ -67,7 +67,7 @@
                     <li>
                         <a href="{% url 'administration:list_social_flags' %}">
                             <span class="glyphicon glyphicon-list"></span>
-                            List social flags
+                            Social flags
                         </a>
                     </li>
                 {% endif %}
@@ -75,7 +75,7 @@
                     <li>
                         <a href="{% url 'administration:list_content_flags' %}">
                             <span class="glyphicon glyphicon-list"></span>
-                            List Content flags
+                            Content flags
                         </a>
                     </li>
                 {% endif %}
@@ -98,13 +98,13 @@
                     <li>
                         <a href="{% url 'administration:list_participating_bans' %}">
                             <span class="glyphicon glyphicon-list"></span>
-                            List my bans
+                            My bans
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'administration:list_bans' %}">
                             <span class="glyphicon glyphicon-list"></span>
-                            List all bans
+                            All bans
                         </a>
                     </li>
                 </ul>

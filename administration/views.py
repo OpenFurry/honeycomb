@@ -14,21 +14,32 @@ from django.views.decorators.http import require_POST
 
 from .forms import (
     ApplicationForm,
-    BanForm,
-    FlagForm,
+    # BanForm,
+    # FlagForm,
 )
 from .models import (
     Application,
-    Ban,
-    Flag,
+    # Ban,
+    # Flag,
 )
 from usermgmt.models import Notification
 
+
 @login_required
 def dashboard(request):
+    """View for displaying a dashboard of administrative objects."""
+    query = Q(resolution='')
+    if request.user.has_perm('administration.can_list_social_applications'):
+        query &= Q(application_type__in=Application.SOCIAL_TYPES)
+    if request.user.has_perm('administration.can_list_content_applications'):
+        query &= Q(application_type__in=Application.CONTENT_TYPES)
+    applications = Application.objects.filter(query)
     return render(request, 'dashboard.html', {
         'tab': 'dashboard',
         'title': 'Administration Dashboard',
+        'applications': applications,
+        'flags': [],
+        'bans': [],
     })
 
 
@@ -37,6 +48,7 @@ def dashboard(request):
 @permission_required('administration.can_list_social_applications')
 @permission_required('administration.can_list_content_applications')
 def list_all_applications(request):
+    """View for listing all applications."""
     applications = Application.objects.all()
     return render(request, 'list_applications.html', {
         'title': 'All applications',
@@ -48,6 +60,7 @@ def list_all_applications(request):
 @staff_member_required
 @permission_required('administration.can_list_social_applications')
 def list_social_applications(request):
+    """View for listing only applications for social moderators."""
     applications = Application.objects.filter(
         application_type__in=Application.SOCIAL_TYPES)
     return render(request, 'list_applications.html', {
@@ -60,6 +73,7 @@ def list_social_applications(request):
 @staff_member_required
 @permission_required('administration.can_list_content_applications')
 def list_content_applications(request):
+    """View for only listing applications for content moderators."""
     applications = Application.objects.filter(
         application_type__in=Application.CONTENT_TYPES)
     return render(request, 'list_applications.html', {
@@ -71,6 +85,7 @@ def list_content_applications(request):
 
 @login_required
 def create_application(request):
+    """View for creating a new application."""
     form = ApplicationForm()
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
@@ -88,19 +103,45 @@ def create_application(request):
 
 @login_required
 def view_application(request, application_id=None):
+    """View for viewing a single application."""
     application = get_object_or_404(Application, pk=application_id)
-    print(application.applicant.profile.get_display_name())
+
+    # Ensure the user can view the application
+    application_type = ('social' if application.application_type in
+                        Application.SOCIAL_TYPES else 'content')
+    pertinent_permission = 'administration.can_view_{}_applications'.format(
+        application_type)
+    if (not request.user == application.applicant or not
+            request.user.has_perm(pertinent_permission)):
+        return render(request, 'permission_denied.html', {
+            'title': 'Permission denied',
+            'additional_error': (
+                'Only the owner or moderators who can see {} '
+                'applications can see this application.'.format(
+                    application_type))
+            }, status=403)
+
+    # Display the application
+    title = ("<span class=\"glyphicon glyphicon-{}\"></span> {}'s "
+             "application to {}").format(
+        ({
+            'a': 'ok',
+            'r': 'remove',
+        }[application.resolution] if application.resolution else 'time'),
+        application.applicant.profile.get_display_name(),
+        application.get_application_type_display().lower())
     return render(request, 'view_application.html', {
         'application': application,
         'tab': 'applications',
-        'title': "{}'s application to {}".format(
-            application.applicant.profile.get_display_name(),
-            application.get_application_type_display().lower())
+        'title': title,
+        'subtitle': (application.get_resolution_display() if
+                     application.resolution else 'pending')
     })
 
 
 @login_required
 def list_participating_applications(request):
+    """View for listing applications one is participing in."""
     applications = Application.objects.filter(Q(applicant=request.user) |
                                               Q(admin_contact=request.user))
     return render(request, 'list_applications.html', {
@@ -114,15 +155,17 @@ def list_participating_applications(request):
 @permission_required('administration.can_resolve_applications')
 @require_POST
 def claim_application(request, application_id=None):
+    """View for allowing a moderator to claim an application."""
     application = get_object_or_404(Application, pk=application_id)
-    can_claim = (
-        application.application_type in Application.SOCIAL_TYPES and
-        request.user.has_perms(
-            ['administration.can_list_social_applications'])) or (
-        application.application_type in Application.CONTENT_TYPES and
-        request.user.has_perms(
-            ['administration.can_list_content_applications']))
-    if can_claim:
+
+    # Ensure the user can claim the application
+    application_type = ('social' if application.application_type in
+                        Application.SOCIAL_TYPES else 'content')
+    pertinent_permission = ('administration.can_resolve_{}_'
+                            'applications').format(
+        application_type)
+    if request.user.has_perm(pertinent_permission):
+        # Mark the application as claimed
         application.admin_contact = request.user
         application.save()
         messages.success(request, 'Application claimed.')
@@ -141,8 +184,47 @@ def claim_application(request, application_id=None):
 @permission_required('administration.can_resolve_applications')
 @require_POST
 def resolve_application(request, application_id=None):
+    """View for allowing the moderator in charge of the application to resolve
+    it as accepted or rejected.
+    """
     application = get_object_or_404(Application, pk=application_id)
-    pass
+
+    # Ensure the user can resolve the application
+    if request.user != application.admin_contact:
+        messages.error(request, 'Only the admin contact may resolve this '
+                       'application.')
+        return redirect(application.get_absolute_url())
+    application_type = ('social' if application.application_type in
+                        Application.SOCIAL_TYPES else 'content')
+    pertinent_permission = ('administration.can_resolve_{}_'
+                            'applications').format(
+        application_type)
+    if not request.user.has_perm(pertinent_permission):
+        return render(request, 'permission_denied', {
+            'title': 'Permission denied',
+            'additional_error': (
+                'Only moderators who can resolve {} applications may '
+                'resolve this application.')
+            }, status=403)
+
+    # Mark the application as resolved
+    resolution = request.POST.get('resolution')
+    valid_types = [t[0] for t in Application.RESOLUTION_TYPES]
+    if resolution not in valid_types:
+        messages.error(request, 'Received invalid resolution type')
+        return redirect(application.get_absolute_url())
+    application.resolution = resolution
+    application.save()
+    Notification(
+        notification_type=Notification.APPLICATION_RESOLVED,
+        source=request.user,
+        target=application.applicant,
+        subject=application).save()
+    messages.success(request, 'The application has been resolved.  Your next '
+                     'step <em>must</em> be to take the appropriate action.')
+    # TODO redirect to the appropriate page for taking the necessary action.
+    # @makyo 2016-11-07 #66
+    return redirect(application.get_absolute_url())
 
 
 # Flag views
@@ -172,7 +254,7 @@ def create_flag(request):
 
 @login_required
 def view_flag(request, flag_id=None):
-    flag = get_object_or_404(Flag, pk=flag_id)
+    # flag = get_object_or_404(Flag, pk=flag_id)
     pass
 
 
@@ -184,14 +266,15 @@ def list_participating_flags(request):
 @staff_member_required
 @permission_required('administration.can_list_social_flags')
 @permission_required('administration.can_list_content_flags')
-def claim_flag(request):
+def claim_flag(request, flag_id=None):
+    # flag = get_object_or_404(Flag, pk=flag_id)
     pass
 
 
 @staff_member_required
 @permission_required('administration.can_resolve_flags')
 def resolve_flag(request, flag_id=None):
-    flag = get_object_or_404(Flag, pk=flag_id)
+    # flag = get_object_or_404(Flag, pk=flag_id)
     pass
 
 
@@ -217,12 +300,12 @@ def create_ban(request):
 @staff_member_required
 @permission_required('administration.can_view_bans')
 def view_ban(request, ban_id=None):
-    ban = get_object_or_404(Ban, pk=ban_id)
+    # ban = get_object_or_404(Ban, pk=ban_id)
     pass
 
 
 @staff_member_required
 @permission_required('administration.can_lift_bans')
 def lift_ban(request, ban_id=None):
-    ban = get_object_or_404(Ban, pk=ban_id)
+    # ban = get_object_or_404(Ban, pk=ban_id)
     pass

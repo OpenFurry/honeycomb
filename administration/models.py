@@ -18,6 +18,9 @@ class Application(models.Model):
     AD_LIFECYCLE = 'l'
     CONTENT_MODERATOR = 'm'
     SOCIAL_MODERATOR = 's'
+    # TODO third item in tuple should be next_url for taking the necessary
+    # action.
+    # @makyo 2016-11-07 #66
     APPLICATION_TYPES = (
         (PUBLISHER, 'Create a publisher page'),
         (CLAIM_PUBLISHER, 'Claim a publisher'),
@@ -56,7 +59,7 @@ class Application(models.Model):
     body_raw = models.TextField(verbose_name='body')
     body_rendered = models.TextField()
     resolution = models.CharField(max_length=1, blank=True,
-                                  choices=RESOLUTION_TYPES),
+                                  choices=RESOLUTION_TYPES)
 
     def get_absolute_url(self):
         return reverse('administration:view_application', kwargs={
@@ -70,6 +73,7 @@ class Application(models.Model):
         super(Application, self).save(*args, **kwargs)
 
     class Meta:
+        ordering = ('resolution', '-ctime')
         permissions = (
             ('can_list_social_applications', 'Can list social applications'),
             ('can_view_social_applications', 'Can view social applications'),

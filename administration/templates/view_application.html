@@ -51,22 +51,24 @@
                     Rejected
                 {% else %}
                     <em>No resolution</em><br />
-                    <form method="post" action="{% url 'administration:resolve_application' application_id=application.id %}" class="form-inline inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="resolution" value="a" />
-                        <button type="submit" class="btn btn-success">
-                            <span class="glyphicon glyphicon-ok"></span>
-                            Accept
-                        </button>
-                    </form>
-                    <form method="post" action="{% url 'administration:resolve_application' application_id=application.id %}" class="form-inline inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="resolution" value="r" />
-                        <button type="submit" class="btn btn-danger">
-                            <span class="glyphicon glyphicon-remove"></span>
-                            Reject
-                        </button>
-                    </form>
+                    {% if user == application.admin_contact %}
+                        <form method="post" action="{% url 'administration:resolve_application' application_id=application.id %}" class="form-inline inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="resolution" value="a" />
+                            <button type="submit" class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span>
+                                Accept
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'administration:resolve_application' application_id=application.id %}" class="form-inline inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="resolution" value="r" />
+                            <button type="submit" class="btn btn-danger">
+                                <span class="glyphicon glyphicon-remove"></span>
+                                Reject
+                            </button>
+                        </form>
+                    {% endif %}
                 {% endif %}
             </dd>
         </dl>

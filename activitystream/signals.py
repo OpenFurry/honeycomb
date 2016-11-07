@@ -54,7 +54,6 @@ def log_base_create_or_update(sender, **kwargs):
         return
     if name == 'profile' and kwargs['created']:
         return
-    print(name, kwargs['created'])
     Activity.create(
         name,
         'create' if kwargs['created'] else 'update',

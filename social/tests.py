@@ -601,7 +601,6 @@ class TestDeleteCommentView(BaseSocialSubmissionViewTestCase):
         self.comment.deleted = True
         self.comment.save()
         response = self.client.get(self.submission.get_absolute_url())
-        print(response.content)
         self.assertContains(
             response,
             'This comment has been deleted by the commenter.')
@@ -679,7 +678,7 @@ class TestNotificationBadges(BaseSocialSubmissionViewTestCase):
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse('core:front'))
-        self.assertContains(response, '<span class="badge"></span>', count=4)
+        self.assertContains(response, '<span class="badge"></span>', count=5)
 
     def test_badges(self):
         Notification(
@@ -779,9 +778,9 @@ class TestViewNotificationsCategoriesView(BaseSocialSubmissionViewTestCase):
                           password='a good password')
         response = self.client.get(reverse(
             'social:view_notifications_categories'))
-        self.assertContains(response, '<h2>Messages</h2>')
-        self.assertContains(response, '<h2>User Notifications</h2>')
-        self.assertContains(response, '<h2>Submission Notifications</h2>')
+        self.assertContains(response, '>Messages</h2>')
+        self.assertContains(response, '>User Notifications</h2>')
+        self.assertContains(response, '>Submission Notifications</h2>')
         self.assertContains(response, '<h3>Favorites</h3>')
         self.assertContains(response, '<h3>Ratings</h3>')
         self.assertContains(response, '<h3>Enjoy votes</h3>')

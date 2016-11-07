@@ -18,7 +18,7 @@ application_urls = [
     url('^create/$', views.create_application, name='create_application'),
     url('^application/(?P<application_id>\d+)/$', views.view_application,
         name='view_application'),
-    url('^application/(?P<application_id>\d+)/resolve/$',
+    url('^application/(?P<application_id>\d+)/claim/$',
         views.claim_application, name='claim_application'),
     url('^application/(?P<application_id>\d+)/resolve/$',
         views.resolve_application, name='resolve_application'),

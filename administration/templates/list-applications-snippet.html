@@ -1,0 +1,55 @@
+{% load humanize %}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Applicant</th>
+            <th>Application type</th>
+            <th>Created</th>
+            <th>Admin contact</th>
+            <th>Resolution</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for application in applications %}
+            <tr{% if application.resolution == 'a' %} class="bg-success text-success"{% elif application.resolution == 'r' %} class="bg-danger text-danger"{% endif %}>
+                <td>{{ application.id }}</td>
+                <td>
+                    <a href="{% url 'usermgmt:view_profile' application.applicant.username %}">{{ application.applicant.profile.get_display_name }}</a>
+                </td>
+                <td>
+                    <a href="{% url 'administration:view_application' application_id=application.id %}">{{ application.get_application_type_display }}</a>
+                </td>
+                <td>
+                    <abbr data-toggle="tooltip" data-placement="bottom" title="{{ application.ctime|date:'r' }}">{{ application.ctime|naturaltime }}</abbr>
+                </td>
+                <td>
+                    {% if application.admin_contact %}
+                        <a href="{% url 'usermgmt:view_profile' application.admin_contact.username %}">{{ application.admin_contact.profile.get_display_name }}</a>
+                    {% else %}
+                        <em>Unclaimed</em>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if application.resolution == 'a' %}
+                        <span class="glyphicon glyphicon-ok"></span>
+                        {{ application.get_resolution_display }}
+                    {% elif application.resolution == 'r' %}
+                        <span class="glyphicon glyphicon-remove"></span>
+                        {{ application.get_resolution_display }}
+                    {% else %}
+                        <span class="glyphicon glyphicon-time"></span>
+                        Pending
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">
+                    <em>No applications to display</em>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

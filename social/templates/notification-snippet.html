@@ -110,8 +110,24 @@
     </em>
 
 {% elif notification.notification_type == 'c' %}
-    Your <a href="{{ notification.subject.get_absolute_url }}">application to {{ notification.subject.get_application_type_display|lower }}</a> was claimed by 
+    Your <a href="{{ notification.subject.get_absolute_url }}">application to {{ notification.subject.get_application_type_display|lower }}</a> was claimed by
     <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
+        {{ notification.source.email|gravatar:'40' }}
+        {{ notification.source.profile.get_display_name }}
+    </a>
+
+{% elif notification.notification_type == 'r' %}
+    Your <a href="{{ notification.subject.get_absolute_url }}">application to {{ notification.subject.get_application_type_display|lower }}</a>
+    was {% if notification.subject.resolution == 'a' %}
+        <span class="glyphicon glyphicon-ok"></span>
+        accepted
+    {% elif notification.subject.resolution == 'r' %}
+        <span class="glyphicon glyphicon-remove"></span>
+        rejected
+    {% else %}
+        marked as resolved
+    {% endif %}
+    by <a href="{% url 'usermgmt:view_profile' notification.source.username %}">
         {{ notification.source.email|gravatar:'40' }}
         {{ notification.source.profile.get_display_name }}
     </a>
