@@ -7,8 +7,8 @@ Count	Location
     1	activitystream/__init__.py
     0	activitystream/admin.py
     6	activitystream/apps.py
-   86	activitystream/models.py
-   74	activitystream/signals.py
+   94	activitystream/models.py
+   77	activitystream/signals.py
   135	activitystream/tests.py
    10	activitystream/urls.py
   143	activitystream/views.py
@@ -20,10 +20,12 @@ Count	Location
   114	administration/templates/admin-tabs-snippet.html
    31	administration/templates/create_application.html
    22	administration/templates/dashboard.html
+   54	administration/templates/list-applications-snippet.html
+    9	administration/templates/list_applications.html
    76	administration/templates/view_application.html
-    0	administration/tests.py
-   56	administration/urls.py
-  241	administration/views.py
+   45	administration/tests.py
+   64	administration/urls.py
+   22	administration/views.py
     0	core/__init__.py
     0	core/admin.py
     4	core/apps.py
@@ -98,7 +100,7 @@ Count	Location
   123	social/templates/notification-snippet.html
   237	social/templates/notifications_categories.html
    52	social/templates/notifications_timeline.html
-  899	social/tests.py
+  919	social/tests.py
    42	social/urls.py
   465	social/views.py
   136	spec.md
@@ -166,4 +168,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
- 8999	TOTAL
+ 8927	TOTAL

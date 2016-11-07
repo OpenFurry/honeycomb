@@ -3,50 +3,58 @@ from django.conf.urls import (
     url,
 )
 
-from . import views
+from . import (
+    application_views,
+    ban_views,
+    flag_views,
+    views,
+)
 
 
 app_name = 'administration'
 application_urls = [
-    url('^$', views.list_all_applications, name='list_all_applications'),
-    url('^mine/$', views.list_participating_applications,
+    url('^$', application_views.list_all_applications,
+        name='list_all_applications'),
+    url('^mine/$', application_views.list_participating_applications,
         name='list_participating_applications'),
-    url('^social/$', views.list_social_applications,
+    url('^social/$', application_views.list_social_applications,
         name='list_social_applications'),
-    url('^content/$', views.list_content_applications,
+    url('^content/$', application_views.list_content_applications,
         name='list_content_applications'),
-    url('^create/$', views.create_application, name='create_application'),
-    url('^application/(?P<application_id>\d+)/$', views.view_application,
+    url('^create/$', application_views.create_application,
+        name='create_application'),
+    url('^application/(?P<application_id>\d+)/$',
+        application_views.view_application,
         name='view_application'),
     url('^application/(?P<application_id>\d+)/claim/$',
-        views.claim_application, name='claim_application'),
+        application_views.claim_application, name='claim_application'),
     url('^application/(?P<application_id>\d+)/resolve/$',
-        views.resolve_application, name='resolve_application'),
+        application_views.resolve_application, name='resolve_application'),
 ]
 flag_urls = [
-    url('^$', views.list_all_flags, name='list_all_flags'),
-    url('^mine/$', views.list_participating_flags,
+    url('^$', flag_views.list_all_flags, name='list_all_flags'),
+    url('^mine/$', flag_views.list_participating_flags,
         name='list_participating_flags'),
-    url('^social/$', views.list_social_flags,
+    url('^social/$', flag_views.list_social_flags,
         name='list_social_flags'),
-    url('^content/$', views.list_content_flags,
+    url('^content/$', flag_views.list_content_flags,
         name='list_content_flags'),
-    url('^create/$', views.create_flag, name='create_flag'),
-    url('^flag/(?P<flag_id>\d+)/$', views.view_flag,
+    url('^create/$', flag_views.create_flag, name='create_flag'),
+    url('^flag/(?P<flag_id>\d+)/$', flag_views.view_flag,
         name='view_flag'),
     url('^flag/(?P<flag_id>\d+)/resolve/$',
-        views.claim_flag, name='claim_flag'),
+        flag_views.claim_flag, name='claim_flag'),
     url('^flag/(?P<flag_id>\d+)/resolve/$',
-        views.resolve_flag, name='resolve_flag'),
+        flag_views.resolve_flag, name='resolve_flag'),
 ]
 ban_urls = [
-    url('^$', views.list_bans, name='list_bans'),
-    url('^mine/$', views.list_participating_bans,
+    url('^$', ban_views.list_bans, name='list_bans'),
+    url('^mine/$', ban_views.list_participating_bans,
         name='list_participating_bans'),
-    url('^create/$', views.create_ban, name='create_ban'),
-    url('^ban/(?P<ban_id>\d+)/$', views.view_ban,
+    url('^create/$', ban_views.create_ban, name='create_ban'),
+    url('^ban/(?P<ban_id>\d+)/$', ban_views.view_ban,
         name='view_ban'),
-    url('^ban/(?P<ban_id>\d+)/lift/$', views.lift_ban, name='lift_ban'),
+    url('^ban/(?P<ban_id>\d+)/lift/$', ban_views.lift_ban, name='lift_ban'),
 ]
 admin_urls = [
     url('^$', views.dashboard, name='dashboard'),

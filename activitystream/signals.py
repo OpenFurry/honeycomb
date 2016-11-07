@@ -40,9 +40,10 @@ def log_base_create_or_update(sender, **kwargs):
     """
     try:
         name = {
-            'Ban': 'ban',
+            'Application': 'adminapplication',
+            'Ban': 'adminban',
             'Comment': 'comment',
-            'Flag': 'flag',
+            'Flag': 'adminflag',
             'Folder': 'folder',
             'FriendGroup': 'group',
             'Profile': 'profile',
@@ -69,7 +70,9 @@ def log_base_delete(sender, **kwargs):
     """
     try:
         name = {
-            'Flag': 'flag',
+            'Application': 'adminapplication',
+            'Ban': 'adminban',
+            'Flag': 'adminflag',
             'Folder': 'folder',
             'FriendGroup': 'group',
             'Submission': 'submission',
