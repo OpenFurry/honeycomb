@@ -14,6 +14,7 @@ urlpatterns = [
     url('^', include('django.contrib.auth.urls')),
 
     # Honeycomb app urls
+    url('^', include('administration.urls')),
     url('^', include('usermgmt.urls')),
     url('^', include('social.urls')),
     url('^', include('core.urls')),

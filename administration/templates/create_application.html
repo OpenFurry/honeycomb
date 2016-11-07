@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load form_extras %}
+
+{% block content %}
+{% include 'admin-tabs-snippet.html' %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.application_type.errors }}
+                <label for="id_application_type">{{ form.application_type.label }}</label>
+                {{ form.application_type|append_form_control }}
+                {% if form.application_type.help_text %}
+                    <p class="help-block">{{ form.application_type.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.body_raw.errors }}
+                {{ form.body_raw.label }}
+                {{ form.body_raw|append_form_control }}
+                {% if form.body_raw.help_text %}
+                    <p class="help-block">{{ form.body_raw.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Submit application</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

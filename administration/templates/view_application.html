@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+{% include 'admin-tabs-snippet.html' %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h2>Application text</h2>
+        <div class="text-block">
+            {{ application.body_rendered|safe }}
+        </div>
+        <h2>Information</h2>
+        <dl class="dl-horizontal">
+            <dt>Created</dt>
+            <dd><abbr data-toggle="tooltip" data-placement="bottom" title="{{ application.ctime|date:'r' }}">{{ application.ctime|naturaltime }}</abbr></dd>
+            <dt>Application type</dt>
+            <dd>{{ application.get_application_type_display }}</dd>
+            <dt>Admin contact</dt>
+            <dd>
+                {% if application.admin_contact %}
+                    <a href="{% url 'usermgmt:view_profile' application.admin_contact.username %}">{{ application.admin_contact.profile.get_display_name }}</a>
+                    {% if perms.administration.can_resolve_applications and request.user != application.admin_contact %}
+                        <form method="post" action="{% url 'administration:claim_application' application_id=application.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                <span class="glyphicon glyphicon-check"></span>
+                                Take over
+                            </button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <em>None</em><br />
+                    {% if perms.administration.can_resolve_applications %}
+                        <form method="post" action="{% url 'administration:claim_application' application_id=application.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                <span class="glyphicon glyphicon-check"></span>
+                                Claim
+                            </button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </dd>
+            <dt>Resolution</dt>
+            <dd>
+                {% if application.resolution == 'a' %}
+                    <span class="glyphicon glyphicon-ok"></span>
+                    Accepted
+                {% elif application.resolution == 'r' %}
+                    <span class="glyphicon glyphicon-remove"></span>
+                    Rejected
+                {% else %}
+                    <em>No resolution</em><br />
+                    <form method="post" action="{% url 'administration:resolve_application' application_id=application.id %}" class="form-inline inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="resolution" value="a" />
+                        <button type="submit" class="btn btn-success">
+                            <span class="glyphicon glyphicon-ok"></span>
+                            Accept
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'administration:resolve_application' application_id=application.id %}" class="form-inline inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="resolution" value="r" />
+                        <button type="submit" class="btn btn-danger">
+                            <span class="glyphicon glyphicon-remove"></span>
+                            Reject
+                        </button>
+                    </form>
+                {% endif %}
+            </dd>
+        </dl>
+    </div>
+</div>
+{% endblock %}

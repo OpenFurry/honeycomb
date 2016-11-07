@@ -34,6 +34,11 @@ class Promotion(models.Model):
     # The date the promotion ends
     promotion_end_date = models.DateField(null=True)
 
+    class Meta:
+        permissions = (
+            ('can_highlight', 'Can create highlight permissions'),
+        )
+
 
 class Event(models.Model):
     """An event such as NaNoWriMo where tagged submissions are promoted to

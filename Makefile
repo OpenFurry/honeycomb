@@ -24,6 +24,7 @@ fixtures: venv/bin/django-admin ## Load data fixtures.
 .PHONY: generatefixtures
 generatefixtures: venv/bin/django-admin ## Generate data fixtures.
 	venv/bin/python manage.py dumpdata flatpages -o core/fixtures/flatpages.json
+	venv/bin/python manage.py dumpdata auth.Group auth.Permission -o core/fixtures/groups.json
 
 .PHONY: update-flatpages
 update-flatpages: venv/bin/django-admin ## Update the flatpages from the markdown files.

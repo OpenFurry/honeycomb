@@ -1,3 +1,5 @@
+import random
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
@@ -52,11 +54,15 @@ def front(request):
     # TODO replace this with a dynamic fetch for better caching
     # @makyo 2016-11-06 #52
     static_sitewide_data = _get_sitewide_data()
+    title = 'Welcome, {}'.format(request.user.profile.get_display_name()) \
+        if request.user.is_authenticated else ''
     return render(request, 'front.html', {
         'greetings': greetings,
         'static_sitewide_data': static_sitewide_data,
         'static_stream': static_stream,
         'recent_submissions': recent_submissions,
+        'title': title,
+        'subtitle': random.choice(greetings),
     })
 
 

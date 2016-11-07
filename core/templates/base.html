@@ -9,7 +9,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <title>{# TODO #}&#x2394; Honeycomb - {% if flatpage %}{{ flatpage.title }}{% else %}{{ title|safe }}{% endif %}</title>
+        <title>{# TODO #}&#x2394; Honeycomb - {% if flatpage %}{{ flatpage.title }}{% elif title %}{{ title|safe }}{% else %}A home for authors and readers{% endif %}</title>
 
         <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}" />
         <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap-theme.min.css' %}" />
@@ -74,7 +74,7 @@
                         {% endif %}
                         <li class="dropdown">
                             {% with notifications=user.profile.get_notifications_counts %}
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="badge">{% if notifications.user_notifications or notifications.submission_notifications or notifications.messages %}{{ notifications.user_notifications|add:notifications.submission_notifications|add:notifications.messages }}{% endif %}</span> <span class="caret"></span></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="badge">{% if notifications.user_notifications or notifications.submission_notifications or notifications.messages %}{{ notifications.user_notifications|add:notifications.submission_notifications|add:notifications.messages|add:notifications.admin_notifications }}{% endif %}</span> <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
                                     {% if user.is_authenticated %}
                                         <li><a href="#"><span class="glyphicon glyphicon-book"></span> Read</a></li>
@@ -83,19 +83,25 @@
                                         <li role="separator" class="divider"></li>
                                         <li class="dropdown-header">Notifications</li>
                                         <li>
-                                            <a href="{% url 'social:view_notifications' %}#users">
+                                            <a href="{% url 'social:view_notifications_categories' %}#admin">
+                                                <span class="glyphicon glyphicon-bishop"></span> Admin notifications
+                                                <span class="badge">{% if notifications.admin_notifications %}{{ notifications.admin_notifications }}{% endif %}</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'social:view_notifications_categories' %}#users">
                                                 <span class="glyphicon glyphicon-user"></span> User notifications
                                                 <span class="badge">{% if notifications.user_notifications %}{{ notifications.user_notifications }}{% endif %}</span>
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="{% url 'social:view_notifications' %}#submissions">
+                                            <a href="{% url 'social:view_notifications_categories' %}#submissions">
                                                 <span class="glyphicon glyphicon-file"></span> Submission notifications
                                                 <span class="badge">{% if notifications.submission_notifications %}{{ notifications.submission_notifications }}{% endif %}</span>
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="{% url 'social:view_notifications' %}#messages">
+                                            <a href="{% url 'social:view_notifications_categories' %}#messages">
                                                 <span class="glyphicon glyphicon-envelope"></span> Messages
                                                 <span class="badge">{% if notifications.messages %}{{ notifications.messages }}{% endif %}</span>
                                             </a>
@@ -133,11 +139,22 @@
         </nav>
         <a href="#start-of-content" tabindex="1" class="accessibility-aid js-skip-to-content">Skip to content</a>
         <section class="main container-fluid" id="start-of-content">
-            {% if title or flatpage.title %}
-                <header class="page-header">
+            <header class="page-header">
+                {% if title or flatpage.title %}
                     <h1>{% if flatpage %}{{ flatpage.title }}{% else %}{{ title|safe }}{% endif %}{% if subtitle %} <small>{{ subtitle|safe }}</small>{% endif %}</h1>
-                </header>
-            {% endif %}
+                {% else %}
+                    <h1>&#x2394; Honeycomb <small>A home for authors and readers</small></h1>
+                {% endif %}
+                {% if user.is_staff %}
+                    <div class="text-center staff-banner{% if user.is_superuser %} superuser-banner{% endif %}">
+                        {% if user.is_superuser %}
+                            Superuser.
+                        {% else %}
+                            Staff groups: {{ user.groups.all|join:', '|lower }}.
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </header>
             {% if messages %}
                 <section class="messages">
                     {% for message in messages %}

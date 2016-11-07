@@ -2,206 +2,256 @@
 
 {% block content %}
 
-{% if notifications.count > 0 or user.profile.expired_notifications > 0 %}
-    {% if user.id|divisibleby:2 %}
-        <div class="alert alert-info">
-            Honeycomb is currently conducting A/B testing with notification pages.  You've been selected for viewing notifications in category style.  If you'd like to view notifications as a timeline, you may do so <a href="{% url 'social:view_notifications_timeline' %}">here</a>.  Have feedback? Comment or vote <a href="https://github.com/OpenFurry/honeycomb/issues/11" target="_blank">here</a>.
-        </div>
-    {% endif %}
-{% endif %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
 
-{% if user.profile.expired_notifications > 0 %}
-    <h2>Expired notifications</h2>
-    <div class="alert alert-info">
-        <p><strong>You have {{ user.profile.expired_notifications }} notifications that have expired.</strong>  After six months, notifications expire in order to keep the database from getting too cluttered.  Unfortunately, it is not possible to see what these notifications are after they have expired.</p>
-        <p>To dismiss this message, click "Nuke all notifications" at the bototm of the page</p>
+        {% if notifications.count > 0 or user.profile.expired_notifications > 0 %}
+            {% if user.id|divisibleby:2 %}
+                <div class="alert alert-info">
+                    Honeycomb is currently conducting A/B testing with notification pages.  You've been selected for viewing notifications in category style.  If you'd like to view notifications as a timeline, you may do so <a href="{% url 'social:view_notifications_timeline' %}">here</a>.  Have feedback? Comment or vote <a href="https://github.com/OpenFurry/honeycomb/issues/11" target="_blank">here</a>.
+                </div>
+            {% endif %}
+        {% endif %}
+
+        {% if user.profile.expired_notifications > 0 %}
+            <h2>Expired notifications</h2>
+            <div class="alert alert-info">
+                <p><strong>You have {{ user.profile.expired_notifications }} notifications that have expired.</strong>  After six months, notifications expire in order to keep the database from getting too cluttered.  Unfortunately, it is not possible to see what these notifications are after they have expired.</p>
+                <p>To dismiss this message, click "Nuke all notifications" at the bototm of the page</p>
+            </div>
+        {% endif %}
+
+        {% if notifications.Message|length > 0 %}
+            <h2 id="messages">Messages</h2>
+            <div class="notifications favorite-notifications">
+                <form action="{% url 'social:remove_notifications' %}" method="post">
+                    {% csrf_token %}
+                    <ul class="list-unstyled">
+                        {% for notification in notifications.Message %}
+                            <li class="striped-item"><label>
+                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                            </label></li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button">Select all</button>
+                    <button type="button">Invert selection</button>
+                    <button type="submit">Remove selected</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if notifications.admin_notification_count > 0 %}
+            <h2 class="admin">Administration notifications</h2>
+            <div class="notifications no-bottom-border">
+
+                {% if notifications.Application_claimed|length > 0 %}
+                    <h3>Applications claimed</h3>
+                    <div class="notifications">
+                        <form action="{% url 'social:remove_notifications' %}" method="post">
+                            {% csrf_token %}
+                            <ul class="list-unstyled">
+                                {% for notification in notifications.Application_claimed %}
+                                    <li class="striped-item"><label>
+                                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                                    </label></li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button">Select all</button>
+                            <button type="button">Invert selection</button>
+                            <button type="submit">Remove selected</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if notifications.Application_resolved|length > 0 %}
+                    <h3>Applications resolved</h3>
+                    <div class="notifications">
+                        <form action="{% url 'social:remove_notifications' %}" method="post">
+                            {% csrf_token %}
+                            <ul class="list-unstyled">
+                                {% for notification in notifications.Application_resolved %}
+                                    <li class="striped-item"><label>
+                                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                                    </label></li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button">Select all</button>
+                            <button type="button">Invert selection</button>
+                            <button type="submit">Remove selected</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if notifications.Watch|length > 0 %}
+            <h2 class="users">User Notifications</h2>
+            <div class="notifications watch-notifications">
+                <form action="{% url 'social:remove_notifications' %}" method="post">
+                    {% csrf_token %}
+                    <ul class="list-unstyled">
+                        {% for notification in notifications.Watch %}
+                            <li class="striped-item"><label>
+                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                            </label></li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button">Select all</button>
+                    <button type="button">Invert selection</button>
+                    <button type="submit">Remove selected</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if notifications.submission_notification_count > 0 %}
+            <h2 class="submissions">Submission Notifications</h2>
+            <div class="notifications no-bottom-border">
+
+                {% if notifications.Favorite|length > 0 %}
+                    <h3>Favorites</h3>
+                    <div class="notifications favorite-notifications">
+                        <form action="{% url 'social:remove_notifications' %}" method="post">
+                            {% csrf_token %}
+                            <ul class="list-unstyled">
+                                {% for notification in notifications.Favorite %}
+                                    <li class="striped-item"><label>
+                                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                                    </label></li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button">Select all</button>
+                            <button type="button">Invert selection</button>
+                            <button type="submit">Remove selected</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if notifications.Rating|length > 0 %}
+                    <h3>Ratings</h3>
+                    <div class="notifications favorite-notifications">
+                        <form action="{% url 'social:remove_notifications' %}" method="post">
+                            {% csrf_token %}
+                            <ul class="list-unstyled">
+                                {% for notification in notifications.Rating %}
+                                    <li class="striped-item"><label>
+                                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                                    </label></li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button">Select all</button>
+                            <button type="button">Invert selection</button>
+                            <button type="submit">Remove selected</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if notifications.Enjoy|length > 0 %}
+                    <h3>Enjoy votes</h3>
+                    <div class="notifications favorite-notifications">
+                        <form action="{% url 'social:remove_notifications' %}" method="post">
+                            {% csrf_token %}
+                            <ul class="list-unstyled">
+                                {% for notification in notifications.Enjoy %}
+                                    <li class="striped-item"><label>
+                                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                                    </label></li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button">Select all</button>
+                            <button type="button">Invert selection</button>
+                            <button type="submit">Remove selected</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if notifications.Submission_comment|length > 0 %}
+                    <h3>Submission comments</h3>
+                    <div class="notifications favorite-notifications">
+                        <form action="{% url 'social:remove_notifications' %}" method="post">
+                            {% csrf_token %}
+                            <ul class="list-unstyled">
+                                {% for notification in notifications.Submission_comment %}
+                                    <li class="striped-item"><label>
+                                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                                    </label></li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button">Select all</button>
+                            <button type="button">Invert selection</button>
+                            <button type="submit">Remove selected</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if notifications.Comment_reply|length > 0 %}
+                    <h3>Comment replies</h3>
+                    <div class="notifications favorite-notifications">
+                        <form action="{% url 'social:remove_notifications' %}" method="post">
+                            {% csrf_token %}
+                            <ul class="list-unstyled">
+                                {% for notification in notifications.Comment_reply %}
+                                    <li class="striped-item"><label>
+                                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                                    </label></li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button">Select all</button>
+                            <button type="button">Invert selection</button>
+                            <button type="submit">Remove selected</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if notifications.Promote|length > 0 %}
+                    <h3>Promotions</h3>
+                    <div class="notifications favorite-notifications">
+                        <form action="{% url 'social:remove_notifications' %}" method="post">
+                            {% csrf_token %}
+                            <ul class="list-unstyled">
+                                {% for notification in notifications.Promote %}
+                                    <li class="striped-item"><label>
+                                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                                    </label></li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button">Select all</button>
+                            <button type="button">Invert selection</button>
+                            <button type="submit">Remove selected</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if notifications.Highlight|length > 0 %}
+                    <h3>Highlights</h3>
+                    <div class="notifications favorite-notifications">
+                        <form action="{% url 'social:remove_notifications' %}" method="post">
+                            {% csrf_token %}
+                            <ul class="list-unstyled">
+                                {% for notification in notifications.Highlight %}
+                                    <li class="striped-item"><label>
+                                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
+                                    </label></li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button">Select all</button>
+                            <button type="button">Invert selection</button>
+                            <button type="submit">Remove selected</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if notifications.count > 0 or user.profile.expired_notifications > 0 %}
+            <form action="{% url 'social:nuke_notifications' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Nuke all notifications</button>
+            </form>
+        {% else %}
+            <h2>No notifications <small>Lucky you!</small></h2>
+        {% endif %}
+
     </div>
-{% endif %}
-
-{% if notifications.Message|length > 0 %}
-    <h2>Messages</h2>
-    <div class="notifications favorite-notifications">
-        <form action="{% url 'social:remove_notifications' %}" method="post">
-            {% csrf_token %}
-            <ul class="list-unstyled">
-                {% for notification in notifications.Message %}
-                    <li><label>
-                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
-                    </label></li>
-                {% endfor %}
-            </ul>
-            <button type="button">Select all</button>
-            <button type="button">Invert selection</button>
-            <button type="submit">Remove selected</button>
-        </form>
-    </div>
-{% endif %}
-
-{% if notifications.Watch|length > 0 %}
-    <h2>User Notifications</h2>
-    <div class="notifications watch-notifications">
-        <form action="{% url 'social:remove_notifications' %}" method="post">
-            {% csrf_token %}
-            <ul class="list-unstyled">
-                {% for notification in notifications.Watch %}
-                    <li><label>
-                        <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
-                    </label></li>
-                {% endfor %}
-            </ul>
-            <button type="button">Select all</button>
-            <button type="button">Invert selection</button>
-            <button type="submit">Remove selected</button>
-        </form>
-    </div>
-{% endif %}
-
-{% if notifications.submission_notification_count > 0 %}
-    <h2>Submission Notifications</h2>
-    <div class="notifications no-bottom-border">
-
-        {% if notifications.Favorite|length > 0 %}
-            <h3>Favorites</h3>
-            <div class="notifications favorite-notifications">
-                <form action="{% url 'social:remove_notifications' %}" method="post">
-                    {% csrf_token %}
-                    <ul class="list-unstyled">
-                        {% for notification in notifications.Favorite %}
-                            <li><label>
-                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
-                            </label></li>
-                        {% endfor %}
-                    </ul>
-                    <button type="button">Select all</button>
-                    <button type="button">Invert selection</button>
-                    <button type="submit">Remove selected</button>
-                </form>
-            </div>
-        {% endif %}
-
-        {% if notifications.Rating|length > 0 %}
-            <h3>Ratings</h3>
-            <div class="notifications favorite-notifications">
-                <form action="{% url 'social:remove_notifications' %}" method="post">
-                    {% csrf_token %}
-                    <ul class="list-unstyled">
-                        {% for notification in notifications.Rating %}
-                            <li><label>
-                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
-                            </label></li>
-                        {% endfor %}
-                    </ul>
-                    <button type="button">Select all</button>
-                    <button type="button">Invert selection</button>
-                    <button type="submit">Remove selected</button>
-                </form>
-            </div>
-        {% endif %}
-
-        {% if notifications.Enjoy|length > 0 %}
-            <h3>Enjoy votes</h3>
-            <div class="notifications favorite-notifications">
-                <form action="{% url 'social:remove_notifications' %}" method="post">
-                    {% csrf_token %}
-                    <ul class="list-unstyled">
-                        {% for notification in notifications.Enjoy %}
-                            <li><label>
-                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
-                            </label></li>
-                        {% endfor %}
-                    </ul>
-                    <button type="button">Select all</button>
-                    <button type="button">Invert selection</button>
-                    <button type="submit">Remove selected</button>
-                </form>
-            </div>
-        {% endif %}
-
-        {% if notifications.Submission_comment|length > 0 %}
-            <h3>Submission comments</h3>
-            <div class="notifications favorite-notifications">
-                <form action="{% url 'social:remove_notifications' %}" method="post">
-                    {% csrf_token %}
-                    <ul class="list-unstyled">
-                        {% for notification in notifications.Submission_comment %}
-                            <li><label>
-                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
-                            </label></li>
-                        {% endfor %}
-                    </ul>
-                    <button type="button">Select all</button>
-                    <button type="button">Invert selection</button>
-                    <button type="submit">Remove selected</button>
-                </form>
-            </div>
-        {% endif %}
-
-        {% if notifications.Comment_reply|length > 0 %}
-            <h3>Comment replies</h3>
-            <div class="notifications favorite-notifications">
-                <form action="{% url 'social:remove_notifications' %}" method="post">
-                    {% csrf_token %}
-                    <ul class="list-unstyled">
-                        {% for notification in notifications.Comment_reply %}
-                            <li><label>
-                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
-                            </label></li>
-                        {% endfor %}
-                    </ul>
-                    <button type="button">Select all</button>
-                    <button type="button">Invert selection</button>
-                    <button type="submit">Remove selected</button>
-                </form>
-            </div>
-        {% endif %}
-
-        {% if notifications.Promote|length > 0 %}
-            <h3>Promotions</h3>
-            <div class="notifications favorite-notifications">
-                <form action="{% url 'social:remove_notifications' %}" method="post">
-                    {% csrf_token %}
-                    <ul class="list-unstyled">
-                        {% for notification in notifications.Promote %}
-                            <li><label>
-                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
-                            </label></li>
-                        {% endfor %}
-                    </ul>
-                    <button type="button">Select all</button>
-                    <button type="button">Invert selection</button>
-                    <button type="submit">Remove selected</button>
-                </form>
-            </div>
-        {% endif %}
-
-        {% if notifications.Highlight|length > 0 %}
-            <h3>Highlights</h3>
-            <div class="notifications favorite-notifications">
-                <form action="{% url 'social:remove_notifications' %}" method="post">
-                    {% csrf_token %}
-                    <ul class="list-unstyled">
-                        {% for notification in notifications.Highlight %}
-                            <li><label>
-                                <input type="checkbox" name="notification_id" value="{{ notification.id }}" /> &nbsp; {% include 'notification-snippet.html' %}
-                            </label></li>
-                        {% endfor %}
-                    </ul>
-                    <button type="button">Select all</button>
-                    <button type="button">Invert selection</button>
-                    <button type="submit">Remove selected</button>
-                </form>
-            </div>
-        {% endif %}
-    </div>
-{% endif %}
-
-{% if notifications.count > 0 or user.profile.expired_notifications > 0 %}
-    <form action="{% url 'social:nuke_notifications' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Nuke all notifications</button>
-    </form>
-{% else %}
-    <h2>No notifications <small>Lucky you!</small></h2>
-{% endif %}
+</div>
 
 {% endblock %}

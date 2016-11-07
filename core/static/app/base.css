@@ -30,6 +30,20 @@ body {
     padding: 0 1em;
 }
 
+.staff-banner {
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+    width: 100%;
+    background-color: #ccf;
+    color: #669;
+    margin-bottom: -9px;
+}
+
+.staff-banner.superuser-banner {
+    background-color: #fdc;
+    color: #976;
+}
+
 .main {
     position: relative;
     margin-bottom: -100px;
@@ -68,7 +82,7 @@ body {
     padding-top: 1em;
 }
 
-.profile-tabs {
+.profile-tabs, .admin-tabs {
     padding-bottom: 1em;
 }
 
@@ -122,6 +136,10 @@ body {
 
 .notifications.no-bottom-border {
     border-bottom: none;
+}
+
+.notifications li {
+    padding-left: 1em;
 }
 
 .search-form .input-group {
