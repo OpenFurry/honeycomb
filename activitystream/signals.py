@@ -40,9 +40,10 @@ def log_base_create_or_update(sender, **kwargs):
     """
     try:
         name = {
-            'Ban': 'ban',
+            'Application': 'adminapplication',
+            'Ban': 'adminban',
             'Comment': 'comment',
-            'Flag': 'flag',
+            'Flag': 'adminflag',
             'Folder': 'folder',
             'FriendGroup': 'group',
             'Profile': 'profile',
@@ -54,7 +55,6 @@ def log_base_create_or_update(sender, **kwargs):
         return
     if name == 'profile' and kwargs['created']:
         return
-    print(name, kwargs['created'])
     Activity.create(
         name,
         'create' if kwargs['created'] else 'update',
@@ -70,7 +70,9 @@ def log_base_delete(sender, **kwargs):
     """
     try:
         name = {
-            'Flag': 'flag',
+            'Application': 'adminapplication',
+            'Ban': 'adminban',
+            'Flag': 'adminflag',
             'Folder': 'folder',
             'FriendGroup': 'group',
             'Submission': 'submission',

@@ -39,7 +39,8 @@ class Profile(models.Model):
     expired_notifications = models.PositiveIntegerField(default=0)
 
     def get_display_name(self):
-        return self.display_name if self.display_name else self.user.username
+        return self.display_name if self.display_name else \
+            '~{}'.format(self.user.username)
 
     def save(self, *args, **kwargs):
         self.profile_rendered = markdown.markdown(
@@ -53,12 +54,16 @@ class Profile(models.Model):
             'user_notifications': 0,
             'submission_notifications': 0,
             'messages': 0,
+            'admin_notifications': 0,
         }
         for notification in notifications:
             if notification.notification_type == Notification.WATCH:
                 counts['user_notifications'] += 1
             elif notification.notification_type == Notification.MESSAGE:
                 counts['messages'] += 1
+            elif notification.notification_type in \
+                    Notification.ADMIN_NOTIFICATIONS:
+                counts['admin_notifications'] += 1
             else:
                 counts['submission_notifications'] += 1
         return counts
@@ -75,6 +80,9 @@ class Profile(models.Model):
             'Promote': [],
             'Highlight': [],
             'Message': [],
+            'Application_claimed': [],
+            'Application_resolved': [],
+            'admin_notification_count': 0,
             'submission_notification_count': 0,
             'count': 0,
         }
@@ -85,9 +93,12 @@ class Profile(models.Model):
                     ' ', '_')].append(
                     notification)
             sorted_notifications['count'] += 1
-            if notification.notification_type not in \
-                    [Notification.WATCH, Notification.MESSAGE]:
+            if notification.notification_type in \
+                    Notification.SUBMISSION_NOTIFICATIONS:
                 sorted_notifications['submission_notification_count'] += 1
+            if notification.notification_type in \
+                    Notification.ADMIN_NOTIFICATIONS:
+                sorted_notifications['admin_notification_count'] += 1
         return sorted_notifications
 
 
@@ -104,6 +115,8 @@ class Notification(models.Model):
     COMMENT_REPLY = 'C'
     PROMOTE = 'P'
     HIGHLIGHT = 'H'
+    APPLICATION_CLAIMED = 'c'
+    APPLICATION_RESOLVED = 'r'
     NOTIFICATION_TYPE_CHOICES = (
         (WATCH, 'Watch'),
         (MESSAGE, 'Message'),
@@ -114,6 +127,24 @@ class Notification(models.Model):
         (COMMENT_REPLY, 'Comment reply'),
         (PROMOTE, 'Promote'),
         (HIGHLIGHT, 'Highlight'),
+        (APPLICATION_CLAIMED, 'Application claimed'),
+        (APPLICATION_RESOLVED, 'Application resolved'),
+    )
+    USER_NOTIFICATIONS = (
+        WATCH,
+    )
+    SUBMISSION_NOTIFICATIONS = (
+        FAVORITE,
+        RATING,
+        ENJOY,
+        SUBMISSION_COMMENT,
+        COMMENT_REPLY,
+        PROMOTE,
+        HIGHLIGHT,
+    )
+    ADMIN_NOTIFICATIONS = (
+        APPLICATION_CLAIMED,
+        APPLICATION_RESOLVED,
     )
 
     # The user being notified

@@ -1,5 +1,6 @@
 APPLICATIONS := activitystream administration core promotion publishers social submissions tags usermgmt
 APPLICATIONS_COMMA := $(shell echo $(APPLICATIONS) | tr ' ' ',')
+TESTTAGS_ARGS := $(shell echo $(TAGS) | xargs python -c 'import sys;print("--tag "+" --tag ".join(" ".join(sys.argv[1:]).split(",")))')
 
 .PHONY: help
 help: ## This help.
@@ -12,6 +13,7 @@ run: ## Run the development environment from tox.
 .PHONY: migrate
 migrate: makemigrations ## Run migrate on the DB, updating schema per migration files.
 	venv/bin/python manage.py migrate
+	$(MAKE) generatefixtures
 
 .PHONY: makemigrations
 makemigrations: venv/bin/django-admin ## Generate migration files based on models.
@@ -23,11 +25,13 @@ fixtures: venv/bin/django-admin ## Load data fixtures.
 
 .PHONY: generatefixtures
 generatefixtures: venv/bin/django-admin ## Generate data fixtures.
-	venv/bin/python manage.py dumpdata flatpages -o core/fixtures/flatpages.json
+	venv/bin/python manage.py dumpdata --natural-foreign --natural-primary -o core/fixtures/flatpages.json flatpages.FlatPage
+	venv/bin/python manage.py dumpdata --natural-foreign --natural-primary  -o core/fixtures/groups.json auth.Group auth.Permission
 
 .PHONY: update-flatpages
 update-flatpages: venv/bin/django-admin ## Update the flatpages from the markdown files.
 	venv/bin/python manage.py update_flatpages
+	venv/bin/python manage.py dumpdata --natural-foreign --natural-primary -o core/fixtures/flatpages.json flatpages.FlatPage
 
 .PHONY: collectstatic
 collectstatic: ## Collect static files into the STATIC_ROOT directory.
@@ -63,7 +67,8 @@ update-revno: venv/bin/django-admin ## Update the git revno for non-DEBUG templa
 	venv/bin/python manage.py git_revno $(TAG)
 
 .PHONY: test
-test: testone ## Shortcut for testone.
+test: ## Rapid test (parallel test running, no coverage)
+	tox -e rapidtest
 
 .PHONY: testall
 testall: ## Run tests in all available environments.
@@ -73,13 +78,17 @@ testall: ## Run tests in all available environments.
 testone: ## Run tests in py3.5 only.
 	tox -e 3.5
 
+.PHONY: testtags
+testtags: ## Run only tests tagged with a certain tag or tags (comma separated) passed through the TAGS environment variable.
+	venv/bin/python manage.py test --parallel --verbosity=2 $(TESTTAGS_ARGS)
+
 .PHONY: test-travis
 test-travis: ## Test target for travis-ci use.
 	flake8
 	coverage run \
 		--source='$(APPLICATIONS_COMMA)' \
 		--omit='*migrations*,*urls.py,*apps.py,*admin.py,*__init__.py,*test.py' \
-		manage.py test --verbosity=2
+		manage.py test --verbosity=2 $(TEST_SUITE)
 	coverage report -m --skip-covered
 
 .PHONY: sloccount

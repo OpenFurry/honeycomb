@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'admin-tabs-snippet.html' %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        {% include 'list-applications-snippet.html' %}
+    </div>
+</div>
+{% endblock %}

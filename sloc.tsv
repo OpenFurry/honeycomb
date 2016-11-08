@@ -1,23 +1,37 @@
 Count	Location
    44	CONTRIBUTING.md
    13	DEPLOYING.md
-   96	Makefile
+  104	Makefile
     4	README.md
     9	RELEASE.md
     1	activitystream/__init__.py
     0	activitystream/admin.py
     6	activitystream/apps.py
-   86	activitystream/models.py
-   75	activitystream/signals.py
+   94	activitystream/models.py
+   77	activitystream/signals.py
   135	activitystream/tests.py
    10	activitystream/urls.py
   143	activitystream/views.py
     0	administration/__init__.py
     0	administration/admin.py
+  175	administration/application_views.py
     4	administration/apps.py
-   27	administration/models.py
-    0	administration/tests.py
-    0	administration/views.py
+   25	administration/ban_views.py
+   39	administration/flag_views.py
+   24	administration/forms.py
+  144	administration/models.py
+  114	administration/templates/admin-tabs-snippet.html
+   31	administration/templates/create_application.html
+   22	administration/templates/dashboard.html
+   54	administration/templates/list-applications-snippet.html
+    9	administration/templates/list_applications.html
+   76	administration/templates/view_application.html
+  533	administration/test_application.py
+  107	administration/test_ban.py
+  167	administration/test_flag.py
+  186	administration/tests.py
+   64	administration/urls.py
+   31	administration/views.py
     0	core/__init__.py
     0	core/admin.py
     4	core/apps.py
@@ -35,11 +49,11 @@ Count	Location
    14	core/search_indexes.py
     6	core/templates/404.html
    34	core/templates/activity-snippet.html
-  186	core/templates/base.html
+  203	core/templates/base.html
    11	core/templates/flatpages/default.html
    18	core/templates/flatpages/list.html
-  106	core/templates/front.html
-   12	core/templates/permission_denied.html
+  102	core/templates/front.html
+    9	core/templates/permission_denied.html
    65	core/templates/search/search.html
     0	core/templatetags/__init__.py
    28	core/templatetags/git_revno.py
@@ -47,9 +61,9 @@ Count	Location
    29	core/templatetags/gravatar.py
    10	core/tests.py
    14	core/urls.py
-   73	core/views.py
+   78	core/views.py
     4	flatpage-defaults/about-aup.md
-   31	flatpage-defaults/about-credits.md
+   29	flatpage-defaults/about-credits.md
     0	flatpage-defaults/about-help-administration.md
     0	flatpage-defaults/about-help-api.md
     0	flatpage-defaults/about-help-folders.md
@@ -65,14 +79,14 @@ Count	Location
     0	honeycomb/__init__.py
    23	honeycomb/middleware.py
     2	honeycomb/revno.py
-  138	honeycomb/settings.py
-   19	honeycomb/urls.py
+  136	honeycomb/settings.py
+   20	honeycomb/urls.py
    10	honeycomb/wsgi.py
    89	honeycomb_markdown.py
     0	promotion/__init__.py
     0	promotion/admin.py
     4	promotion/apps.py
-   54	promotion/models.py
+   58	promotion/models.py
     0	promotion/tests.py
     0	promotion/views.py
     0	publishers/__init__.py
@@ -82,26 +96,26 @@ Count	Location
     0	publishers/tests.py
     0	publishers/views.py
     7	run-coveralls.sh
+   19	sloc.py
     0	social/__init__.py
     0	social/admin.py
     4	social/apps.py
    17	social/forms.py
    55	social/models.py
    11	social/templates/confirm_unblock_user.html
-  102	social/templates/notification-snippet.html
-  192	social/templates/notifications_categories.html
+  123	social/templates/notification-snippet.html
+  237	social/templates/notifications_categories.html
    52	social/templates/notifications_timeline.html
-  899	social/tests.py
+  919	social/tests.py
    42	social/urls.py
   465	social/views.py
   136	spec.md
     0	submissions/__init__.py
     0	submissions/admin.py
     4	submissions/apps.py
-  478	submissions/folder_tests.py
   238	submissions/folder_views.py
    33	submissions/forms.py
-  183	submissions/models.py
+  186	submissions/models.py
    24	submissions/templates/confirm_delete_folder.html
    29	submissions/templates/confirm_delete_submission.html
    15	submissions/templates/edit_folder.html
@@ -112,7 +126,8 @@ Count	Location
    21	submissions/templates/submission-list-snippet.html
    38	submissions/templates/update_submission_order_in_folder.html
   155	submissions/templates/view_submission.html
-  854	submissions/tests.py
+  478	submissions/test_folders.py
+  853	submissions/tests.py
    48	submissions/urls.py
    26	submissions/utils.py
   276	submissions/views.py
@@ -130,9 +145,8 @@ Count	Location
     4	usermgmt/apps.py
    37	usermgmt/forms.py
    10	usermgmt/group_models.py
-  201	usermgmt/group_tests.py
   119	usermgmt/group_views.py
-  106	usermgmt/models.py
+  137	usermgmt/models.py
    24	usermgmt/templates/confirm_delete_group.html
    20	usermgmt/templates/list_groups.html
   107	usermgmt/templates/profile-tabs-snippet.html
@@ -155,8 +169,9 @@ Count	Location
    14	usermgmt/templatetags/form_extras.py
    23	usermgmt/templatetags/profile_extras.py
    15	usermgmt/templatetags/profile_extras_tests.py
-  127	usermgmt/tests.py
+  201	usermgmt/test_groups.py
+  126	usermgmt/tests.py
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
- 8180	TOTAL
+10125	TOTAL

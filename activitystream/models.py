@@ -22,6 +22,14 @@ class Activity(models.Model):
         ('adminflag:update', 'administration flag: updated'),
         ('adminflag:delete', 'administration flag: deleted'),
         ('adminflag:view', 'administration flag: viewed'),
+        ('adminapplication:create', 'administration application: created'),
+        ('adminapplication:update', 'administration application: updated'),
+        ('adminapplication:delete', 'administration application: deleted'),
+        ('adminapplication:view', 'administration application: viewed'),
+        ('adminban:create', 'administration ban: created'),
+        ('adminban:update', 'administration ban: updated'),
+        ('adminban:delete', 'administration ban: deleted'),
+        ('adminban:view', 'administration ban: viewed'),
 
         # User groups
         ('group:create', 'group: created'),

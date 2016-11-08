@@ -1,0 +1,114 @@
+<div class="row admin-tabs">
+    <ul class="nav nav-tabs">
+        <li role="presentation"{% if tab == 'dashboard' %} class="active"{% endif %}><a href="{% url 'administration:dashboard' %}">Dashboard</a></li>
+        <li role="presentation" class="dropdown{% if tab == 'applications' %} active {% endif %}">
+            <a href="{% url 'administration:list_all_applications' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                Applications <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{% url 'administration:create_application' %}">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        New application
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'administration:list_participating_applications' %}">
+                        <span class="glyphicon glyphicon-list"></span>
+                        My applications
+                    </a>
+                </li>
+                {% if perms.administration.can_list_social_applications and perms.can_list_content_applications %}
+                    <li>
+                        <a href="{% url 'administration:list_all_applications' %}">
+                            <span class="glyphicon glyphicon-list"></span>
+                            All applications
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.administration.can_list_social_applications %}
+                    <li>
+                        <a href="{% url 'administration:list_social_applications' %}">
+                            <span class="glyphicon glyphicon-list"></span>
+                            Social applications
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.administration.can_list_content_applications %}
+                    <li>
+                        <a href="{% url 'administration:list_content_applications' %}">
+                            <span class="glyphicon glyphicon-list"></span>
+                            Content applications
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </li>
+        <li role="presentation" class="dropdown{% if tab == 'flags' %} active {% endif %}">
+            <a href="{% url 'administration:list_all_flags' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                Flags <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{% url 'administration:list_participating_flags' %}">
+                        <span class="glyphicon glyphicon-list"></span>
+                        My flags
+                    </a>
+                </li>
+                {% if perms.administration.can_list_social_flags and perms.can_list_content_flags %}
+                    <li>
+                        <a href="{% url 'administration:list_all_flags' %}">
+                            <span class="glyphicon glyphicon-list"></span>
+                            All flags
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.administration.can_list_social_flags %}
+                    <li>
+                        <a href="{% url 'administration:list_social_flags' %}">
+                            <span class="glyphicon glyphicon-list"></span>
+                            Social flags
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.administration.can_list_content_flags %}
+                    <li>
+                        <a href="{% url 'administration:list_content_flags' %}">
+                            <span class="glyphicon glyphicon-list"></span>
+                            Content flags
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </li>
+        {% if perms.administration.can_list_bans %}
+            <li role="presentation" class="dropdown{% if tab == 'bans' %} active {% endif %}">
+                <a href="{% url 'administration:list_bans' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    Bans <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    {% if perms.administration.can_ban_users %}
+                        <li>
+                            <a href="{% url 'administration:create_ban' %}">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                New ban
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li>
+                        <a href="{% url 'administration:list_participating_bans' %}">
+                            <span class="glyphicon glyphicon-list"></span>
+                            My bans
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'administration:list_bans' %}">
+                            <span class="glyphicon glyphicon-list"></span>
+                            All bans
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
+    </ul>
+</div>

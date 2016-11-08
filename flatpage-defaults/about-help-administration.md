@@ -1,4 +1,8 @@
+## Applications
+
 ## Flags
+
+## Bans
 
 ## Content moderators
 
@@ -6,4 +10,4 @@
 
 ## Staff and superusers
 
-## The django admin app
+## The Django admin app

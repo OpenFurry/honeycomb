@@ -8,6 +8,7 @@ from .models import (
     Comment,
     Rating,
 )
+from administration.models import Application
 from submissions.models import Submission
 from usermgmt.models import (
     Notification,
@@ -601,7 +602,6 @@ class TestDeleteCommentView(BaseSocialSubmissionViewTestCase):
         self.comment.deleted = True
         self.comment.save()
         response = self.client.get(self.submission.get_absolute_url())
-        print(response.content)
         self.assertContains(
             response,
             'This comment has been deleted by the commenter.')
@@ -679,7 +679,7 @@ class TestNotificationBadges(BaseSocialSubmissionViewTestCase):
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse('core:front'))
-        self.assertContains(response, '<span class="badge"></span>', count=4)
+        self.assertContains(response, '<span class="badge"></span>', count=5)
 
     def test_badges(self):
         Notification(
@@ -698,11 +698,15 @@ class TestNotificationBadges(BaseSocialSubmissionViewTestCase):
             source=self.bar,
             notification_type=Notification.MESSAGE,
         ).save()
+        Notification(
+            target=self.foo,
+            source=self.bar,
+            notification_type=Notification.APPLICATION_CLAIMED).save()
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse('core:front'))
-        self.assertContains(response, '<span class="badge">3</span>')
-        self.assertContains(response, '<span class="badge">1</span>', count=3)
+        self.assertContains(response, '<span class="badge">4</span>')
+        self.assertContains(response, '<span class="badge">1</span>', count=4)
 
 
 class TestViewNotificationsCategoriesView(BaseSocialSubmissionViewTestCase):
@@ -775,13 +779,29 @@ class TestViewNotificationsCategoriesView(BaseSocialSubmissionViewTestCase):
             source=self.bar,
             notification_type=Notification.MESSAGE,
         ).save()
+        app = Application(
+            applicant=self.foo,
+            application_type=Application.AD).save()
+        Notification(
+            target=self.foo,
+            source=self.bar,
+            subject=app,
+            notification_type=Notification.APPLICATION_CLAIMED).save()
+        Notification(
+            target=self.foo,
+            source=self.bar,
+            subject=app,
+            notification_type=Notification.APPLICATION_RESOLVED).save()
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse(
             'social:view_notifications_categories'))
-        self.assertContains(response, '<h2>Messages</h2>')
-        self.assertContains(response, '<h2>User Notifications</h2>')
-        self.assertContains(response, '<h2>Submission Notifications</h2>')
+        self.assertContains(response, '>Administration notifications</h2>')
+        self.assertContains(response, '<h3>Application resolutions</h3>')
+        self.assertContains(response, '<h3>Application claims</h3>')
+        self.assertContains(response, '>Messages</h2>')
+        self.assertContains(response, '>User Notifications</h2>')
+        self.assertContains(response, '>Submission Notifications</h2>')
         self.assertContains(response, '<h3>Favorites</h3>')
         self.assertContains(response, '<h3>Ratings</h3>')
         self.assertContains(response, '<h3>Enjoy votes</h3>')
@@ -790,7 +810,7 @@ class TestViewNotificationsCategoriesView(BaseSocialSubmissionViewTestCase):
         self.assertContains(response, '<h3>Promotions</h3>')
         self.assertContains(response, '<h3>Highlights</h3>')
         self.assertContains(response, '<input type="checkbox" '
-                            'name="notification_id"', count=9)
+                            'name="notification_id"', count=11)
 
     def test_expired_notifications(self):
         self.foo.profile.expired_notifications = 5

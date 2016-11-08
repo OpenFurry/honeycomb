@@ -21,7 +21,6 @@ class RegisterViewTests(TestCase):
                 'password2': 'asdfqwer',
             },
             follow=True)
-        print(response.content)
         self.assertContains(response, '~foo')
 
     def test_register_while_login_disallowed(self):

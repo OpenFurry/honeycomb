@@ -219,6 +219,11 @@ class Folder(models.Model):
     name = models.CharField(max_length=1000)
     slug = models.SlugField()
 
+    # Folder details
+    description_raw = models.TextField(blank=True)
+    description_rendered = models.TextField(blank=True)
+    is_serial = models.BooleanField(default=False)
+
     submissions = models.ManyToManyField(Submission, through='FolderItem')
 
     def save(self, *args, **kwargs):
