@@ -14,13 +14,9 @@ from django.views.decorators.http import require_POST
 
 from .forms import (
     ApplicationForm,
-    # BanForm,
-    # FlagForm,
 )
 from .models import (
     Application,
-    # Ban,
-    # Flag,
 )
 from activitystream.models import Activity
 from usermgmt.models import Notification
@@ -189,12 +185,14 @@ def resolve_application(request, application_id=None):
                 'resolve this application.')
             }, status=403)
 
-    # Mark the application as resolved
+    # Ensure the resolution is valid
     resolution = request.POST.get('resolution')
     valid_types = [t[0] for t in Application.RESOLUTION_TYPES]
     if resolution not in valid_types:
         messages.error(request, 'Received invalid resolution type')
         return redirect(application.get_absolute_url())
+
+    # Mark the application as resolved
     application.resolution = resolution
     application.save()
     Notification(

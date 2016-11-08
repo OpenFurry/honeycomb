@@ -26,7 +26,7 @@ Count	Location
    54	administration/templates/list-applications-snippet.html
     9	administration/templates/list_applications.html
    76	administration/templates/view_application.html
-  506	administration/test_application.py
+  533	administration/test_application.py
   107	administration/test_ban.py
   167	administration/test_flag.py
   186	administration/tests.py
@@ -174,4 +174,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-10098	TOTAL
+10125	TOTAL
