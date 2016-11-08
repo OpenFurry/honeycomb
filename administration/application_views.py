@@ -93,7 +93,7 @@ def view_application(request, application_id=None):
                         Application.SOCIAL_TYPES else 'content')
     pertinent_permission = 'administration.can_view_{}_applications'.format(
         application_type)
-    if (not request.user == application.applicant or not
+    if not(request.user == application.applicant or
             request.user.has_perm(pertinent_permission)):
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
@@ -179,11 +179,10 @@ def resolve_application(request, application_id=None):
         return redirect(application.get_absolute_url())
     application_type = ('social' if application.application_type in
                         Application.SOCIAL_TYPES else 'content')
-    pertinent_permission = ('administration.can_resolve_{}_'
-                            'applications').format(
-        application_type)
+    pertinent_permission = (
+        'administration.can_resolve_{}_applications').format(application_type)
     if not request.user.has_perm(pertinent_permission):
-        return render(request, 'permission_denied', {
+        return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
             'additional_error': (
                 'Only moderators who can resolve {} applications may '

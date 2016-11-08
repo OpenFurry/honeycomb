@@ -390,7 +390,6 @@ class TestLoggedOutListUserFavoritesView(SubmissionsViewsBaseTestCase):
         self.bar.save()
         response = self.client.get(reverse(
             'submissions:list_user_favorites', kwargs={'username': 'bar'}))
-        print(response.content)
         self.assertContains(response, '<a href="{}">2</a>'.format(
             reverse('submissions:list_user_favorites', kwargs={
                 'username': 'bar',

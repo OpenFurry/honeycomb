@@ -1,7 +1,7 @@
 Count	Location
    44	CONTRIBUTING.md
    13	DEPLOYING.md
-   97	Makefile
+  104	Makefile
     4	README.md
     9	RELEASE.md
     1	activitystream/__init__.py
@@ -14,7 +14,10 @@ Count	Location
   143	activitystream/views.py
     0	administration/__init__.py
     0	administration/admin.py
+  175	administration/application_views.py
     4	administration/apps.py
+   25	administration/ban_views.py
+   39	administration/flag_views.py
    24	administration/forms.py
   144	administration/models.py
   114	administration/templates/admin-tabs-snippet.html
@@ -23,9 +26,12 @@ Count	Location
    54	administration/templates/list-applications-snippet.html
     9	administration/templates/list_applications.html
    76	administration/templates/view_application.html
-   45	administration/tests.py
+  506	administration/test_application.py
+  107	administration/test_ban.py
+  167	administration/test_flag.py
+  186	administration/tests.py
    64	administration/urls.py
-   22	administration/views.py
+   31	administration/views.py
     0	core/__init__.py
     0	core/admin.py
     4	core/apps.py
@@ -57,7 +63,7 @@ Count	Location
    14	core/urls.py
    78	core/views.py
     4	flatpage-defaults/about-aup.md
-   31	flatpage-defaults/about-credits.md
+   29	flatpage-defaults/about-credits.md
     0	flatpage-defaults/about-help-administration.md
     0	flatpage-defaults/about-help-api.md
     0	flatpage-defaults/about-help-folders.md
@@ -73,7 +79,7 @@ Count	Location
     0	honeycomb/__init__.py
    23	honeycomb/middleware.py
     2	honeycomb/revno.py
-  138	honeycomb/settings.py
+  136	honeycomb/settings.py
    20	honeycomb/urls.py
    10	honeycomb/wsgi.py
    89	honeycomb_markdown.py
@@ -107,7 +113,6 @@ Count	Location
     0	submissions/__init__.py
     0	submissions/admin.py
     4	submissions/apps.py
-  478	submissions/folder_tests.py
   238	submissions/folder_views.py
    33	submissions/forms.py
   186	submissions/models.py
@@ -121,7 +126,8 @@ Count	Location
    21	submissions/templates/submission-list-snippet.html
    38	submissions/templates/update_submission_order_in_folder.html
   155	submissions/templates/view_submission.html
-  854	submissions/tests.py
+  478	submissions/test_folders.py
+  853	submissions/tests.py
    48	submissions/urls.py
    26	submissions/utils.py
   276	submissions/views.py
@@ -139,7 +145,6 @@ Count	Location
     4	usermgmt/apps.py
    37	usermgmt/forms.py
    10	usermgmt/group_models.py
-  201	usermgmt/group_tests.py
   119	usermgmt/group_views.py
   137	usermgmt/models.py
    24	usermgmt/templates/confirm_delete_group.html
@@ -164,8 +169,9 @@ Count	Location
    14	usermgmt/templatetags/form_extras.py
    23	usermgmt/templatetags/profile_extras.py
    15	usermgmt/templatetags/profile_extras_tests.py
+  201	usermgmt/test_groups.py
   126	usermgmt/tests.py
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
- 8927	TOTAL
+10098	TOTAL

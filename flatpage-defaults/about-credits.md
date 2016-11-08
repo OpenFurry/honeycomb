@@ -1,7 +1,7 @@
 <!--
 Dear site staff,
 
-The creators of Honeycomb respectfully request that this page be left intact, or at least without any subtractions.  If you need to add anything, feel free, but it's important that the labor that goes into a project like this be recognized.
+The creators of Honeycomb respectfully request that this page be left intact, or at least without any subtractions.  If you need to add anything, feel free, but a) some of these are required by the creators, and b) it's important that the labor that goes into a project like this be recognized.
 
 Cheers,
 
@@ -29,9 +29,6 @@ Additionally, the following resources contributed to make the Honeycomb project 
 
 [Glyphicons](https://glyphicons.com)
 :   The Glyphicons icon font provides most of the icons you see throughout the site
-
-[django-nose](django-nose.readthedocs.io/en/latest/)
-:   <code>django-nose</code> provides additional testing framework for Honeycomb
 
 [django-taggit](https://github.com/alex/django-taggit)
 :   <code>django-taggit</code> provides the mechanism used for tagging submissions

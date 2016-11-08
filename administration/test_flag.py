@@ -1,205 +1,236 @@
+from unittest import skip
+
 from django.test import tag
 
-# from .models import Application
+# from .models import Flag
 from .tests import BaseAdminTestCase
 
 
-class BaseApplicationTestCase(BaseAdminTestCase):
+class BaseFlagTestCase(BaseAdminTestCase):
     @classmethod
     def setUpTestCase(cls):
-        super(BaseApplicationTestCase, cls).setUpTestCase()
+        super(BaseFlagTestCase, cls).setUpTestCase()
 
 
+@skip("Not implemented")
 @tag('as_user')
-class TestListAllApplicationsViewAsUser(BaseApplicationTestCase):
+class TestListAllFlagsViewAsUser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_social_mod')
-class TestListAllApplicationsViewAsSocialMod(BaseApplicationTestCase):
+class TestListAllFlagsViewAsSocialMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_content_mod')
-class TestListAllApplicationsViewAsContentMod(BaseApplicationTestCase):
+class TestListAllFlagsViewAsContentMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_superuser')
-class TestListAllApplicationsViewAsSuperuser(BaseApplicationTestCase):
+class TestListAllFlagsViewAsSuperuser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_user')
-class TestListSocialApplicationsViewAsUser(BaseApplicationTestCase):
+class TestListSocialFlagsViewAsUser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_social_mod')
-class TestListSocialApplicationsViewAsSocialMod(BaseApplicationTestCase):
+class TestListSocialFlagsViewAsSocialMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_content_mod')
-class TestListSocialApplicationsViewAsContentMod(BaseApplicationTestCase):
+class TestListSocialFlagsViewAsContentMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_superuser')
-class TestListSocialApplicationsViewAsSuperuser(BaseApplicationTestCase):
+class TestListSocialFlagsViewAsSuperuser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_user')
-class TestListContentApplicationsViewAsUser(BaseApplicationTestCase):
+class TestListContentFlagsViewAsUser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_social_mod')
-class TestListContentApplicationsViewAsSocialMod(BaseApplicationTestCase):
+class TestListContentFlagsViewAsSocialMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_content_mod')
-class TestListContentApplicationsViewAsContentMod(BaseApplicationTestCase):
+class TestListContentFlagsViewAsContentMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_superuser')
-class TestListContentApplicationsViewAsSuperuser(BaseApplicationTestCase):
+class TestListContentFlagsViewAsSuperuser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_user')
-class TestCreateApplicationViewAsUser(BaseApplicationTestCase):
+class TestCreateFlagViewAsUser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_social_mod')
-class TestCreateApplicationViewAsSocialMod(BaseApplicationTestCase):
+class TestCreateFlagViewAsSocialMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_content_mod')
-class TestCreateApplicationViewAsContentMod(BaseApplicationTestCase):
+class TestCreateFlagViewAsContentMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_superuser')
-class TestCreateApplicationViewAsSuperuser(BaseApplicationTestCase):
+class TestCreateFlagViewAsSuperuser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_user')
-class TestViewApplicationViewAsUser(BaseApplicationTestCase):
+class TestViewFlagViewAsUser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_social_mod')
-class TestViewApplicationViewAsSocialMod(BaseApplicationTestCase):
+class TestViewFlagViewAsSocialMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_content_mod')
-class TestViewApplicationViewAsContentMod(BaseApplicationTestCase):
+class TestViewFlagViewAsContentMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_superuser')
-class TestViewApplicationViewAsSuperuser(BaseApplicationTestCase):
+class TestViewFlagViewAsSuperuser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_user')
-class TestListParticipatingApplicationsViewAsUser(BaseApplicationTestCase):
+class TestListParticipatingFlagsViewAsUser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_social_mod')
-class TestListParticipatingApplicationsViewAsSocialMod(
-        BaseApplicationTestCase):
+class TestListParticipatingFlagsViewAsSocialMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_content_mod')
-class TestListParticipatingApplicationsViewAsContentMod(
-        BaseApplicationTestCase):
+class TestListParticipatingFlagsViewAsContentMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_superuser')
-class TestListParticipatingApplicationsViewAsSuperuser(
-        BaseApplicationTestCase):
+class TestListParticipatingFlagsViewAsSuperuser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_user')
-class TestClaimApplicationViewAsUser(BaseApplicationTestCase):
+class TestClaimFlagViewAsUser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_social_mod')
-class TestClaimApplicationViewAsSocialMod(BaseApplicationTestCase):
+class TestClaimFlagViewAsSocialMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_content_mod')
-class TestClaimApplicationViewAsContentMod(BaseApplicationTestCase):
+class TestClaimFlagViewAsContentMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_superuser')
-class TestClaimApplicationViewAsSuperuser(BaseApplicationTestCase):
+class TestClaimFlagViewAsSuperuser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_user')
-class TestResolveApplicationViewAsUser(BaseApplicationTestCase):
+class TestResolveFlagViewAsUser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_social_mod')
-class TestResolveApplicationViewAsSocialMod(BaseApplicationTestCase):
+class TestResolveFlagViewAsSocialMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_content_mod')
-class TestResolveApplicationViewAsContentMod(BaseApplicationTestCase):
+class TestResolveFlagViewAsContentMod(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)
 
 
+@skip("Not implemented")
 @tag('as_superuser')
-class TestResolveApplicationViewAsSuperuser(BaseApplicationTestCase):
+class TestResolveFlagViewAsSuperuser(BaseFlagTestCase):
     def test_it_works(self):
         self.assertEqual(1+1, 2)

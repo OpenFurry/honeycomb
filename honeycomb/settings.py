@@ -33,7 +33,6 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'django_nose',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.auth',
@@ -220,9 +219,6 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
-
-# Run tests using nose
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Additional logging settings
 LOGGING = {
