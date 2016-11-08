@@ -556,7 +556,7 @@ class TestResolveApplicationViewAsSuperuser(BaseAdminTestCase):
             'administration:resolve_application', kwargs={
                 'application_id': 1,
             }), {'resolution': 'q'}, follow=True)
-        self.assertContains(response, 'Recieved invalid resolution type')
+        self.assertContains(response, 'Received invalid resolution type')
 
     def test_cant_resolve_others_applications(self):
         a1 = Application(
