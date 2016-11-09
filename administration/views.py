@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 from .models import (
     Application,
-    # Ban,
+    Ban,
     # Flag,
 )
 
@@ -35,10 +35,15 @@ def dashboard(request):
         if not request.user.is_staff:
             query &= Q(applicant=request.user)
     applications = Application.objects.filter(query)
+
+    if request.user.has_perm('administration.can_list_bans'):
+        bans = Ban.objects.filter(active=True, end_date__isnull=False)
+    else:
+        bans = []
     return render(request, 'dashboard.html', {
         'tab': 'dashboard',
         'title': 'Administration Dashboard',
         'applications': applications,
         'flags': [],
-        'bans': [],
+        'bans': bans,
     })

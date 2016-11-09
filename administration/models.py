@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import hashlib
 import markdown
 
 from django.contrib.auth.models import User
@@ -154,11 +155,12 @@ class Ban(models.Model):
 
     # The time period of the ban
     start_date = models.DateTimeField(auto_now_add=True)
-    end_date = models.DateTimeField(blank=True)
+    end_date = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
+    user_has_viewed = models.BooleanField(default=False)
 
     # The reason for the ban
-    reason_raw = models.TextField()
+    reason_raw = models.TextField(verbose_name='reason')
     reason_rendered = models.TextField()
 
     # Any administrative flags if applicable
@@ -169,6 +171,10 @@ class Ban(models.Model):
             'ban_id': self.id,
         })
 
+    def get_ban_hash(self):
+        hashtext = '{}:{}'.format(self.id, self.reason_raw)
+        return hashlib.sha1(hashtext.encode('utf-8')).hexdigest()
+
     def save(self, *args, **kwargs):
         self.reason_rendered = markdown.markdown(
             self.reason_raw,
@@ -176,6 +182,7 @@ class Ban(models.Model):
         super(Ban, self).save(*args, **kwargs)
 
     class Meta:
+        ordering = ('-start_date',)
         permissions = (
             ('can_ban_users', 'Can ban users'),
             ('can_list_bans', 'Can list bans'),

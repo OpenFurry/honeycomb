@@ -26,6 +26,8 @@ class RegisterViewTests(TestCase):
     def test_register_while_login_disallowed(self):
         foo = User(username='foo')
         foo.save()
+        foo.profile = Profile()
+        foo.profile.save()
         self.client.force_login(foo)
         response = self.client.get(reverse('usermgmt:register'))
         self.assertContains(response, "Whoops!  You're already registered and "

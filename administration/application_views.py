@@ -22,9 +22,11 @@ from activitystream.models import Activity
 from usermgmt.models import Notification
 
 
+@permission_required('administration.can_list_social_applications',
+                     raise_exception=True)
+@permission_required('administration.can_list_content_applications',
+                     raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_list_social_applications')
-@permission_required('administration.can_list_content_applications')
 def list_all_applications(request):
     """View for listing all applications."""
     applications = Application.objects.all()
@@ -35,8 +37,9 @@ def list_all_applications(request):
     })
 
 
+@permission_required('administration.can_list_social_applications',
+                     raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_list_social_applications')
 def list_social_applications(request):
     """View for listing only applications for social moderators."""
     applications = Application.objects.filter(
@@ -48,8 +51,9 @@ def list_social_applications(request):
     })
 
 
+@permission_required('administration.can_list_content_applications',
+                     raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_list_content_applications')
 def list_content_applications(request):
     """View for only listing applications for content moderators."""
     applications = Application.objects.filter(
@@ -130,8 +134,9 @@ def list_participating_applications(request):
     })
 
 
+@permission_required('administration.can_resolve_applications',
+                     raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_resolve_applications')
 @require_POST
 def claim_application(request, application_id=None):
     """View for allowing a moderator to claim an application."""
@@ -159,8 +164,9 @@ def claim_application(request, application_id=None):
     return redirect(application.get_absolute_url())
 
 
+@permission_required('administration.can_resolve_applications',
+                     raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_resolve_applications')
 @require_POST
 def resolve_application(request, application_id=None):
     """View for allowing the moderator in charge of the application to resolve

@@ -34,6 +34,7 @@ class Profile(models.Model):
     attributes = models.TextField(blank=True)
 
     # Additional settings
+    banned = models.BooleanField(default=False)
     can_see_adult_submissions = models.BooleanField(default=True)
     results_per_page = models.PositiveIntegerField(default=25)
     expired_notifications = models.PositiveIntegerField(default=0)

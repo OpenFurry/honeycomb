@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'admin-tabs-snippet.html' %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <p class="pull-right">
+            {% if showing_inactive %}
+                <a href=".">Hide inactive</a></p>
+            {% else %}
+                <a href="?all=true">View inactive</a></p>
+            {% endif %}
+        {% include 'list-bans-snippet.html' %}
+    </div>
+</div>
+{% endblock %}

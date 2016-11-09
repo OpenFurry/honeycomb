@@ -13,7 +13,7 @@
     </thead>
     <tbody>
         {% for application in applications %}
-            <tr{% if application.resolution == 'a' %} class="bg-success text-success"{% elif application.resolution == 'r' %} class="bg-danger text-danger"{% endif %}>
+            <tr{% if application.resolution == 'a' %} class="success"{% elif application.resolution == 'r' %} class="danger"{% endif %}>
                 <td>{{ application.id }}</td>
                 <td>
                     <a href="{% url 'usermgmt:view_profile' application.applicant.username %}">{{ application.applicant.profile.get_display_name }}</a>

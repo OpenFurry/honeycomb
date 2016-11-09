@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+{% include 'admin-tabs-snippet.html' %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h2>Ban reason</h2>
+        <div class="text-block">
+            {{ ban.reason_rendered|safe }}
+        </div>
+        <h2>Information</h2>
+        <dl class="dl-horizontal">
+            <dt>Ban start date</dt>
+            <dd><abbr data-toggle="tooltip" data-placement="bottom" title="{{ ban.start_date|date:'r' }}">{{ ban.start_date|naturaltime }}</abbr></dd>
+            <dt>Ban end date</dt>
+            <dd>
+                {% if not ban.active %}
+                    <em>Inactive</em>
+                {% else %}
+                    {% if ban.end_date %}
+                        <abbr data-toggle="tooltip" data-placement="bottom" title="{{ ban.end_date|date:'D, j M' }}">{{ ban.end_date|naturalday }}</abbr>
+                    {% else %}
+                        <em>Indefinite</em>
+                    {% endif %}
+                {% endif %}
+            </dd>
+            <dt>Admin contact</dt>
+            <dd>
+                <a href="{% url 'usermgmt:view_profile' ban.admin_contact.username %}">{{ ban.admin_contact.profile.get_display_name }}</a>
+            </dd>
+            {% if perms.administration.can_lift_bans and ban.active %}
+                <dt>Lift ban</dt>
+                <dd>
+                    <form action="{% url 'administration:lift_ban' ban_id=ban.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning">
+                            Lift ban
+                        </button>
+                    </form>
+                </dd>
+            {% endif %}
+        </dl>
+    </div>
+</div>
+{% endblock %}

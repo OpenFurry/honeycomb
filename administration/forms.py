@@ -1,3 +1,4 @@
+from datetimewidget.widgets import DateWidget
 from django import forms
 
 from .models import (
@@ -5,6 +6,11 @@ from .models import (
     Ban,
     Flag,
 )
+
+
+dateTimeOptions = {
+    'format': 'yyyy-mm-dd',
+}
 
 
 class ApplicationForm(forms.ModelForm):
@@ -22,7 +28,16 @@ class ApplicationForm(forms.ModelForm):
 class BanForm(forms.ModelForm):
     class Meta:
         model = Ban
-        fields = ('end_date', 'reason_raw')
+        fields = ('user', 'end_date', 'reason_raw', 'flag')
+        widgets = {
+            'end_date': DateWidget(options=dateTimeOptions,
+                                   attrs={
+                                       'id': 'id_dateTimeField',
+                                   },
+                                   bootstrap_version=3),
+            'user': forms.HiddenInput(),
+            'flag': forms.HiddenInput(),
+        }
 
 
 class FlagForm(forms.ModelForm):

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load form_extras %}
+
+{% block content %}
+{{ form.media }}
+{% include 'admin-tabs-snippet.html' %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.user }}
+            {{ form.flag }}
+            <div class="form-group">
+                {{ form.end_date.errors }}
+                {{ form.end_date.label }}
+                {{ form.end_date|append_form_control }}
+                {% if form.end_date.help_text %}
+                    <p class="help-block">{{ form.end_date.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.reason_raw.errors }}
+                {{ form.reason_raw.label }}
+                {{ form.reason_raw|append_form_control }}
+                {% if form.reason_raw.help_text %}
+                    <p class="help-block">{{ form.reason_raw.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="alert alert-warning">
+                This ban will go into effect <strong>immediately</strong> and is not editable!  Only superusers and moderators with the correct permissions will be able to lift the ban.  Be <strong>very sure</strong> that you want to do this.
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Submit ban</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
