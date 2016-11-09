@@ -1,0 +1,61 @@
+{% load humanize %}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Start date</th>
+            <th>End date</th>
+            <th>Admin contact</th>
+            <th>Flag</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ban in bans %}
+            <tr{% if not ban.active %} class="active text-muted"{% endif %}>
+                <td>{{ ban.id }} &bullet; <a href="{{ ban.get_absolute_url }}">View ban</a></td>
+                <td>
+                    <a href="{% url 'usermgmt:view_profile' ban.user.username %}">{{ ban.user.profile.get_display_name }}</a>
+                </td>
+                <td>
+                    <abbr data-toggle="tooltip" data-placement="bottom" title="{{ ban.start_date|date:'r' }}">{{ ban.start_date|naturaltime }}</abbr>
+                </td>
+                {% if not ban.active %}
+                    <td><em>Inactive</em></td>
+                {% else %}
+                    {% if ban.end_date %}
+                        <td>
+
+                            <abbr data-toggle="tooltip" data-placement="bottom" title="{{ ban.end_date|date:'D, j M' }}">{{ ban.end_date|naturalday }}</abbr>
+                        </td>
+                    {% else %}
+                        <td class="danger">
+                            <strong>Indefinite</strong>
+                        </td>
+                    {% endif %}
+                {% endif %}
+                <td>
+                    {% if ban.admin_contact %}
+                        <a href="{% url 'usermgmt:view_profile' ban.admin_contact.username %}">{{ ban.admin_contact.profile.get_display_name }}</a>
+                    {% else %}
+                        <em>Unclaimed</em>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if ban.flag %}
+                        TODO
+                    {% else %}
+                        <em>None</em>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">
+                    <em>No bans to display</em>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

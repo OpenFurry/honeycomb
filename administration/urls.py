@@ -49,6 +49,8 @@ flag_urls = [
 ]
 ban_urls = [
     url('^$', ban_views.list_bans, name='list_bans'),
+    url('^notice/(?P<ban_id>\d+)/(?P<ban_hash>.+)/$', ban_views.ban_notice,
+        name='ban_notice'),
     url('^mine/$', ban_views.list_participating_bans,
         name='list_participating_bans'),
     url('^create/$', ban_views.create_ban, name='create_ban'),

@@ -87,14 +87,6 @@
                     Bans <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    {% if perms.administration.can_ban_users %}
-                        <li>
-                            <a href="{% url 'administration:create_ban' %}">
-                                <span class="glyphicon glyphicon-pencil"></span>
-                                New ban
-                            </a>
-                        </li>
-                    {% endif %}
                     <li>
                         <a href="{% url 'administration:list_participating_bans' %}">
                             <span class="glyphicon glyphicon-list"></span>

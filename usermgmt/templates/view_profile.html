@@ -5,6 +5,9 @@
 {% if blocked_by %}
     <div class="alert alert-warning">You are blocked from viewing this profile by the owner</div>
 {% else %}
+    {% if not author.is_active %}
+        <div class="alert alert-danger">This user's account has been deactivated.</div>
+    {% endif %}
     {% include 'profile-tabs-snippet.html' %}
     <div class="row">
         <div class="col-md-9">
