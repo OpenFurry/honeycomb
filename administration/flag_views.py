@@ -22,21 +22,25 @@ from django.views.decorators.http import require_POST
 # from usermgmt.models import Notification
 
 
+@permission_required('administration.can_list_social_flags',
+                     raise_exception=True)
+@permission_required('administration.can_list_content_flags',
+                     raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_list_social_flags')
-@permission_required('administration.can_list_content_flags')
 def list_all_flags(request):
     pass
 
 
+@permission_required('administration.can_list_social_flags',
+                     raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_list_social_flags')
 def list_social_flags(request):
     pass
 
 
+@permission_required('administration.can_list_content_applications',
+                     raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_list_content_applications')
 def list_content_flags(request):
     pass
 
@@ -57,17 +61,19 @@ def list_participating_flags(request):
     pass
 
 
+@permission_required('administration.can_list_social_flags',
+                     raise_exception=True)
+@permission_required('administration.can_list_content_flags',
+                     raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_list_social_flags')
-@permission_required('administration.can_list_content_flags')
 @require_POST
 def claim_flag(request, flag_id=None):
     # flag = get_object_or_404(Flag, pk=flag_id)
     pass
 
 
+@permission_required('administration.can_resolve_flags', raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_resolve_flags')
 @require_POST
 def resolve_flag(request, flag_id=None):
     # flag = get_object_or_404(Flag, pk=flag_id)

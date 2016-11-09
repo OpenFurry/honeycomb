@@ -155,12 +155,12 @@ class Ban(models.Model):
 
     # The time period of the ban
     start_date = models.DateTimeField(auto_now_add=True)
-    end_date = models.DateField(blank=True)
+    end_date = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
     user_has_viewed = models.BooleanField(default=False)
 
     # The reason for the ban
-    reason_raw = models.TextField()
+    reason_raw = models.TextField(verbose_name='reason')
     reason_rendered = models.TextField()
 
     # Any administrative flags if applicable

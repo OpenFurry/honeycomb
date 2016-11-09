@@ -25,8 +25,8 @@ from .models import (
 # from usermgmt.models import Notification
 
 
+@permission_required('administration.can_list_bans', raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_list_bans')
 def list_bans(request):
     if request.GET.get('all'):
         bans = Ban.objects.all()
@@ -35,11 +35,12 @@ def list_bans(request):
     return render(request, 'list_bans.html', {
         'bans': bans,
         'tab': 'bans',
+        'showing_inactive': request.GET.get('all'),
     })
 
 
+@permission_required('administration.can_list_bans', raise_exception=True)
 @login_required
-@permission_required('administration.can_list_bans')
 def list_participating_bans(request):
     bans = Ban.objects.filter(admin_contact=request.user)
     return render(request, 'list_bans.html', {
@@ -48,10 +49,13 @@ def list_participating_bans(request):
     })
 
 
+@permission_required('administration.can_ban_users', raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_ban_users')
 def create_ban(request):
-    user = get_object_or_404(User, username=request.GET.get('user'))
+    if request.method == 'GET':
+        user = get_object_or_404(User, username=request.GET.get('user'))
+    else:
+        user = get_object_or_404(User, pk=request.POST.get('user'))
     if user == request.user or user.is_superuser:
         messages.error(request, "You cannot ban yourself or superusers.")
         return render(request, 'permission_denied.html', {
@@ -89,8 +93,8 @@ def create_ban(request):
     })
 
 
+@permission_required('administration.can_view_bans', raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_view_bans')
 def view_ban(request, ban_id=None):
     ban = get_object_or_404(Ban, pk=ban_id)
     return render(request, 'view_ban.html', {
@@ -100,8 +104,8 @@ def view_ban(request, ban_id=None):
     })
 
 
+@permission_required('administration.can_lift_bans', raise_exception=True)
 @staff_member_required
-@permission_required('administration.can_lift_bans')
 @require_POST
 def lift_ban(request, ban_id=None):
     ban = get_object_or_404(Ban, pk=ban_id)

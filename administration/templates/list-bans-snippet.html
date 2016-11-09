@@ -36,11 +36,7 @@
                     {% endif %}
                 {% endif %}
                 <td>
-                    {% if ban.admin_contact %}
-                        <a href="{% url 'usermgmt:view_profile' ban.admin_contact.username %}">{{ ban.admin_contact.profile.get_display_name }}</a>
-                    {% else %}
-                        <em>Unclaimed</em>
-                    {% endif %}
+                    <a href="{% url 'usermgmt:view_profile' ban.admin_contact.username %}">{{ ban.admin_contact.profile.get_display_name }}</a>
                 </td>
                 <td>
                     {% if ban.flag %}

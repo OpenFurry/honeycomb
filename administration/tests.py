@@ -26,7 +26,7 @@ class BaseAdminTestCase(TestCase):
         cls.user.profile.save()
         cls.social_mod = User.objects.create_user(
             'social_mod', 'social_mod@example.com', 'social_mod pass')
-        cls.social_mod.profile = Profile(display_name='User McUserface',
+        cls.social_mod.profile = Profile(display_name='Social Modface',
                                          profile_raw='Wow')
         cls.social_mod.profile.save()
         cls.social_mod.groups.add(social_moderators)
@@ -34,7 +34,7 @@ class BaseAdminTestCase(TestCase):
         cls.social_mod.save()
         cls.content_mod = User.objects.create_user(
             'content_mod', 'content_mod@example.com', 'content_mod pass')
-        cls.content_mod.profile = Profile(display_name='User McUserface',
+        cls.content_mod.profile = Profile(display_name='Content Modface',
                                           profile_raw='Wow')
         cls.content_mod.profile.save()
         cls.content_mod.groups.add(content_moderators)
@@ -42,7 +42,7 @@ class BaseAdminTestCase(TestCase):
         cls.content_mod.save()
         cls.superuser = User.objects.create_user(
             'superuser', 'superuser@example.com', 'superuser pass')
-        cls.superuser.profile = Profile(display_name='User McUserface',
+        cls.superuser.profile = Profile(display_name='Super Q. User',
                                         profile_raw='Wow')
         cls.superuser.profile.save()
         cls.superuser.is_staff = True

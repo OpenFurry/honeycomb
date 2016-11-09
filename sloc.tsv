@@ -14,10 +14,10 @@ Count	Location
   143	activitystream/views.py
     0	administration/__init__.py
     0	administration/admin.py
-  175	administration/application_views.py
+  181	administration/application_views.py
     4	administration/apps.py
-  114	administration/ban_views.py
-   39	administration/flag_views.py
+  118	administration/ban_views.py
+   45	administration/flag_views.py
    37	administration/forms.py
   150	administration/models.py
   106	administration/templates/admin-tabs-snippet.html
@@ -25,13 +25,13 @@ Count	Location
    37	administration/templates/create_ban.html
    23	administration/templates/dashboard.html
    54	administration/templates/list-applications-snippet.html
-   59	administration/templates/list-bans-snippet.html
+   55	administration/templates/list-bans-snippet.html
     9	administration/templates/list_applications.html
-    5	administration/templates/list_bans.html
+   15	administration/templates/list_bans.html
    76	administration/templates/view_application.html
    45	administration/templates/view_ban.html
   533	administration/test_application.py
-  107	administration/test_ban.py
+  413	administration/test_ban.py
   167	administration/test_flag.py
   186	administration/tests.py
    66	administration/urls.py
@@ -174,8 +174,8 @@ Count	Location
    23	usermgmt/templatetags/profile_extras.py
    15	usermgmt/templatetags/profile_extras_tests.py
   201	usermgmt/test_groups.py
-  126	usermgmt/tests.py
+  128	usermgmt/tests.py
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-10385	TOTAL
+10715	TOTAL
