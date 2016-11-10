@@ -74,6 +74,14 @@
             </div>
         </div>
         <div class="text-block{% if not submission.description_rendered %} less-top-margin{% endif %}">
+            {% with counts=submission.get_counts.counts %}
+                {% if counts.words > 0 %}
+                    <p class="small text-muted counts">
+                        {{ counts.words }} words &bullet;
+                        {{ counts.paragraphs }} paragraphs
+                    </p>
+                {% endif %}
+            {% endwith %}
             {{ submission.content_rendered|safe }}
         </div>
     </div>

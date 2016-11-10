@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
+import json
 import markdown
 from PIL import Image
+from prose_wc import wc
 import pypandoc
 import tempfile
 
@@ -122,6 +124,7 @@ class Submission(models.Model):
     rating_average = models.DecimalField(max_digits=3, decimal_places=2,
                                          default=0.0)
     rating_count = models.PositiveIntegerField(default=0)
+    counts = models.CharField(max_length=250)
     tags = TaggableManager()
 
     def save(self, *args, **kwargs):
@@ -173,8 +176,11 @@ class Submission(models.Model):
                     'pymdownx.smartsymbols',
                     'pymdownx.tilde',
                     'pymdownx.mark',
-                    HoneycombMarkdown(),
                 ])
+
+            # Calculate counts
+            self.set_counts(wc.wc(
+                None, wc.markdown_to_text(self.content_rendered)))
 
         # Save separately so that self.icon/self.cover are populated below
         super(Submission, self).save(*args, **kwargs)
@@ -191,6 +197,12 @@ class Submission(models.Model):
                 cover = Image.open(self.cover)
                 cover.thumbnail((2048, 2048), Image.ANTIALIAS)
                 cover.save(self.cover.path)
+
+    def get_counts(self):
+        return json.loads(self.counts)
+
+    def set_counts(self, counts_obj):
+        self.counts = json.dumps(counts_obj, indent=None)
 
     def get_average_rating(self):
         """Gets the average rating of the submission based on all ratings."""

@@ -19,7 +19,7 @@ Count	Location
   118	administration/ban_views.py
    45	administration/flag_views.py
    37	administration/forms.py
-  150	administration/models.py
+  177	administration/models.py
   106	administration/templates/admin-tabs-snippet.html
    31	administration/templates/create_application.html
    37	administration/templates/create_ban.html
@@ -48,12 +48,12 @@ Count	Location
    40	core/management/commands/test_update_flatpages.py
     6	core/management/commands/toggle_ads.py
     6	core/management/commands/toggle_promotions.py
-   69	core/management/commands/update_flatpages.py
+   78	core/management/commands/update_flatpages.py
     1	core/models.py
    14	core/search_indexes.py
     6	core/templates/404.html
    34	core/templates/activity-snippet.html
-  203	core/templates/base.html
+  205	core/templates/base.html
    11	core/templates/flatpages/default.html
    18	core/templates/flatpages/list.html
   102	core/templates/front.html
@@ -72,7 +72,7 @@ Count	Location
     0	flatpage-defaults/about-help-api.md
     0	flatpage-defaults/about-help-folders.md
     0	flatpage-defaults/about-help-honeycomb.md
-    0	flatpage-defaults/about-help-markdown.md
+  357	flatpage-defaults/about-help-markdown.md
     0	flatpage-defaults/about-help-promoting.md
     0	flatpage-defaults/about-help-publishers.md
    30	flatpage-defaults/about-help-submissions.md
@@ -86,7 +86,7 @@ Count	Location
   148	honeycomb/settings.py
    20	honeycomb/urls.py
    10	honeycomb/wsgi.py
-   89	honeycomb_markdown.py
+  104	honeycomb_markdown.py
     0	promotion/__init__.py
     0	promotion/admin.py
     4	promotion/apps.py
@@ -105,7 +105,7 @@ Count	Location
     0	social/admin.py
     4	social/apps.py
    17	social/forms.py
-   55	social/models.py
+   64	social/models.py
    11	social/templates/confirm_unblock_user.html
   123	social/templates/notification-snippet.html
   237	social/templates/notifications_categories.html
@@ -119,7 +119,7 @@ Count	Location
     4	submissions/apps.py
   238	submissions/folder_views.py
    33	submissions/forms.py
-  186	submissions/models.py
+  212	submissions/models.py
    24	submissions/templates/confirm_delete_folder.html
    29	submissions/templates/confirm_delete_submission.html
    15	submissions/templates/edit_folder.html
@@ -129,9 +129,9 @@ Count	Location
    63	submissions/templates/subcomments-snippet.html
    21	submissions/templates/submission-list-snippet.html
    38	submissions/templates/update_submission_order_in_folder.html
-  155	submissions/templates/view_submission.html
+  163	submissions/templates/view_submission.html
   478	submissions/test_folders.py
-  853	submissions/tests.py
+  863	submissions/tests.py
    48	submissions/urls.py
    26	submissions/utils.py
   276	submissions/views.py
@@ -150,7 +150,7 @@ Count	Location
    37	usermgmt/forms.py
    10	usermgmt/group_models.py
   119	usermgmt/group_views.py
-  138	usermgmt/models.py
+  147	usermgmt/models.py
    24	usermgmt/templates/confirm_delete_group.html
    20	usermgmt/templates/list_groups.html
   107	usermgmt/templates/profile-tabs-snippet.html
@@ -178,4 +178,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-10715	TOTAL
+11187	TOTAL

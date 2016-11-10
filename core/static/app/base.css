@@ -65,7 +65,10 @@ body {
     margin-top: 2em;
     margin-bottom: 2em;
     padding: 1em;
+}
 
+.text-block .counts {
+    margin-top: -1em;
 }
 
 .submission-icon {

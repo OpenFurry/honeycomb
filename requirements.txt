@@ -1,3 +1,5 @@
+beautifulsoup4==4.5.1
+bs4==0.0.1
 configparser==3.5.0
 coverage==4.0.3
 coverage-badge==0.1.2
@@ -14,6 +16,7 @@ mccabe==0.5.2
 mock==2.0.0
 pbr==1.10.0
 Pillow==3.4.1
+prose-wc==0.2.1
 pycodestyle==2.0.0
 pyflakes==1.2.3
 Pygments==2.1.3
