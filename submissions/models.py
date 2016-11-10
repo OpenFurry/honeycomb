@@ -179,8 +179,8 @@ class Submission(models.Model):
                 ])
 
             # Calculate counts
-            self.set_counts(wc.wc(
-                None, wc.markdown_to_text(self.content_raw)))
+            self.set_counts(wc.wc(None, pypandoc.convert(
+                self.content_rendered, 'plain', 'html')))
 
         # Save separately so that self.icon/self.cover are populated below
         super(Submission, self).save(*args, **kwargs)
