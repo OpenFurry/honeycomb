@@ -59,7 +59,16 @@ class Command(BaseCommand):
                 content = f.read()
             rendered_content = markdown.markdown(
                 content,
-                extensions=['pymdownx.extra', HoneycombMarkdown()])
+                extensions=[
+                    'pymdownx.extra',
+                    'markdown.extensions.codehilite',
+                    'pymdownx.headeranchor',
+                    'pymdownx.magiclink',
+                    'pymdownx.smartsymbols',
+                    'pymdownx.tilde',
+                    'pymdownx.mark',
+                    HoneycombMarkdown(),
+                ])
 
             # Retrieve the flatpage and update it.
             try:

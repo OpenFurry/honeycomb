@@ -141,7 +141,16 @@ class Submission(models.Model):
             # Render description
             self.description_rendered = markdown.markdown(
                 strip_tags(self.description_raw),
-                extensions=['pymdownx.extra', HoneycombMarkdown()])
+                extensions=[
+                    'pymdownx.extra',
+                    'markdown.extensions.codehilite',
+                    'pymdownx.headeranchor',
+                    'pymdownx.magiclink',
+                    'pymdownx.smartsymbols',
+                    'pymdownx.tilde',
+                    'pymdownx.mark',
+                    HoneycombMarkdown(),
+                ])
 
             # Update content from file
             if self.content_file.name:
@@ -156,7 +165,16 @@ class Submission(models.Model):
             # Render content
             self.content_rendered = markdown.markdown(
                 strip_tags(self.content_raw),
-                extensions=['pymdownx.extra'])
+                extensions=[
+                    'pymdownx.extra',
+                    'markdown.extensions.codehilite',
+                    'pymdownx.headeranchor',
+                    'pymdownx.magiclink',
+                    'pymdownx.smartsymbols',
+                    'pymdownx.tilde',
+                    'pymdownx.mark',
+                    HoneycombMarkdown(),
+                ])
 
         # Save separately so that self.icon/self.cover are populated below
         super(Submission, self).save(*args, **kwargs)

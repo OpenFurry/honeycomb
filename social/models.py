@@ -42,7 +42,16 @@ class Comment(models.Model):
     def save(self, *args, **kwargs):
         self.body_rendered = markdown.markdown(
             strip_tags(self.body_raw),
-            extensions=['pymdownx.extra', HoneycombMarkdown()])
+            extensions=[
+                'pymdownx.extra',
+                'markdown.extensions.codehilite',
+                'pymdownx.headeranchor',
+                'pymdownx.magiclink',
+                'pymdownx.smartsymbols',
+                'pymdownx.tilde',
+                'pymdownx.mark',
+                HoneycombMarkdown(),
+            ])
         super(Comment, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

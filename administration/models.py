@@ -70,7 +70,16 @@ class Application(models.Model):
     def save(self, *args, **kwargs):
         self.body_rendered = markdown.markdown(
             self.body_raw,
-            extensions=['pymdownx.extra', HoneycombMarkdown()])
+            extensions=[
+                'pymdownx.extra',
+                'markdown.extensions.codehilite',
+                'pymdownx.headeranchor',
+                'pymdownx.magiclink',
+                'pymdownx.smartsymbols',
+                'pymdownx.tilde',
+                'pymdownx.mark',
+                HoneycombMarkdown(),
+            ])
         super(Application, self).save(*args, **kwargs)
 
     class Meta:
@@ -130,7 +139,16 @@ class Flag(models.Model):
     def save(self, *args, **kwargs):
         self.body_rendered = markdown.markdown(
             self.body_raw,
-            extensions=['pymdownx.extra', HoneycombMarkdown()])
+            extensions=[
+                'pymdownx.extra',
+                'markdown.extensions.codehilite',
+                'pymdownx.headeranchor',
+                'pymdownx.magiclink',
+                'pymdownx.smartsymbols',
+                'pymdownx.tilde',
+                'pymdownx.mark',
+                HoneycombMarkdown(),
+            ])
         super(Flag, self).save(*args, **kwargs)
 
     class Meta:
@@ -178,7 +196,16 @@ class Ban(models.Model):
     def save(self, *args, **kwargs):
         self.reason_rendered = markdown.markdown(
             self.reason_raw,
-            extensions=['pymdownx.extra', HoneycombMarkdown()])
+            extensions=[
+                'pymdownx.extra',
+                'markdown.extensions.codehilite',
+                'pymdownx.headeranchor',
+                'pymdownx.magiclink',
+                'pymdownx.smartsymbols',
+                'pymdownx.tilde',
+                'pymdownx.mark',
+                HoneycombMarkdown(),
+            ])
         super(Ban, self).save(*args, **kwargs)
 
     class Meta:

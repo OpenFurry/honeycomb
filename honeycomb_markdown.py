@@ -10,7 +10,9 @@ from markdown.postprocessors import Postprocessor
 from markdown.util import etree
 
 
-TABLEFIX_RE = re.compile('<table>')
+TABLEFIX_RE = re.compile(r'<table>')
+DLFIX_RE = re.compile(r'<dl>')
+ABBRFIX_RE = re.compile(r'<abbr title="([^"]+)">([^</abbr>]+)</abbr>')
 USERNAME_PATTERN_NAME = r'~([\w-]+)'
 USERNAME_PATTERN_ICON = r'@!([\w-]+)'
 USERNAME_PATTERN_ICONNAME = r'@([\w-]+)'
@@ -87,7 +89,22 @@ class HoneycombUserIconName(Pattern):
 
 class TableFix(Postprocessor):
     def run(self, text):
-        return TABLEFIX_RE.sub('<table class="table table-hover">', text)
+        return TABLEFIX_RE.sub(
+            r'<table class="table table-striped table-hover">', text)
+
+
+class DLFix(Postprocessor):
+    def run(self, text):
+        return DLFIX_RE.sub(r'<dl class="dl-indent">', text)
+
+
+class ABBRFix(Postprocessor):
+    def run(self, text):
+        return re.sub(
+            ABBRFIX_RE,
+            r'<abbr data-toggle="tooltip" '
+            r'data-placement="bottom" '
+            r'title="\1">\2</abbr>', text)
 
 
 class HoneycombMarkdown(Extension):
@@ -103,3 +120,5 @@ class HoneycombMarkdown(Extension):
         md.inlinePatterns['honeycomb_user_name'] = HoneycombUserName(
             USERNAME_PATTERN_NAME)
         md.postprocessors['tablefix'] = TableFix(md)
+        md.postprocessors['dlfix'] = DLFix(md)
+        md.postprocessors['abbrfix'] = ABBRFix(md)
