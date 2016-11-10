@@ -1,5 +1,3 @@
-## Help for markdown
-
 Honeycomb lets users write with rich formatting in several different places.  Submissions, obviously, but also in comments, in user profiles, in content flags, bans, applications, publisher pages...just about anywhere you see a big textbox, markdown is welcome!
 
 Markdown is a simple way to format your text for the web so that it's readable both when rendered in the browser and as plaintext.  Honeycomb supports basic formatting, plus several extensions, as listed below:
@@ -23,11 +21,11 @@ Markdown is a simple way to format your text for the web so that it's readable b
     * [Smart symbols](#smart-symbols)
     * [CodeHilite and SuperFences](#codehilite-and-superfences)
 
-### Base features
+## Base features
 
 Markdown comes with a list of basic features that every implementation should support.  These are listed here.  For additional features beyond the basics, make sure to check out the [extensions](#extensions).
 
-#### Basic paragraphs and line breaks
+### Basic paragraphs and line breaks
 
 You can write in markdown as you would in just about any text document.  Every line is its own paragraph, just like this.
 
@@ -72,7 +70,7 @@ lengths.
 
 ---
 
-#### Headers
+### Headers
 
 Sometimes you need to break your code up into sections, and for that you often need a header at the start of each section.
 
@@ -152,7 +150,7 @@ You can also write:
 
 ---
 
-#### Lists
+### Lists
 
 You can also do some common list tasks within markdown, such as bulleted lists:
 
@@ -218,7 +216,7 @@ Topic 2
 
 ---
 
-#### Emphasis
+### Emphasis
 
 Emphasizing text in various ways is also available.  You can make it **strong** or *italic* with asterisks, or even __strong__ or _italic_ with underscores.
 
@@ -232,7 +230,7 @@ underscores.
 
 ---
 
-#### Links
+### Links
 
 If you'd like to include links in your text, that's super easy too.  You can link with [any text you want](https://github.com/OpenFurry/honeycomb).
 
@@ -264,7 +262,7 @@ Type
 
 ---
 
-#### Images
+### Images
 
 Honeycomb itself doesn't support hosting any images beyond submission icons and covers, but if *you* host an image, it's simple to include it!
 
@@ -285,7 +283,7 @@ Is your image too big?  Attribute lists are also supported:
 
 ---
 
-#### Code and preformatted text
+### Code and preformatted text
 
 Insert code, preformatted text, and similar monospaced text with backticks.
 
@@ -345,7 +343,7 @@ Or indent the text you want preformated by four spaces (dots representing spaces
 
 ---
 
-#### Block quotes
+### Block quotes
 
 > Need to quote something at length?  You can use a blockquote for that.
 >
@@ -362,7 +360,7 @@ Or indent the text you want preformated by four spaces (dots representing spaces
 
 ---
 
-#### Horizontal rule
+### Horizontal rule
 
 You can include a horizontal rule like the one just below this paragraph by entering three or more dashes on their own line with a blank line to the top and bottom:
 
@@ -374,11 +372,11 @@ You can include a horizontal rule like the one just below this paragraph by ente
 
 ---
 
-### Extensions
+## Extensions
 
 We've just gone over what goes into stock markdown, but the format is definitely extensible, and we've added quite a few add-ons to add more features.
 
-#### Tables
+### Tables
 
 Tables are provided through `pymdownx.tables`:
 
@@ -406,7 +404,7 @@ One | Two?! | idk like a gajillion
 
 ---
 
-#### Footnotes
+### Footnotes
 
 Footnotes are provided through `pymdownx.footnotes`:
 
@@ -426,7 +424,7 @@ And then, at some point later in your work (doesn't need to be the bottom), refe
 
 ---
 
-#### Abbreviations
+### Abbreviations
 
 Abbreviations are included as well:
 
@@ -441,7 +439,7 @@ The HTML specification is maintained by the W3C.
 
 ---
 
-#### Additional formatting
+### Additional formatting
 
 PyMdownX includes some additional formatting options:
 
@@ -459,7 +457,7 @@ PyMdownX includes some additional formatting options:
 
 ---
 
-#### Honeycomb Markdown Extensions
+### Honeycomb Markdown Extensions
 
 Honeycomb comes with some of its own markdown options. *Site owner: replace with a real user*
 
@@ -483,7 +481,7 @@ Just name: ~makyo
 
 ---
 
-#### Smart symbols
+### Smart symbols
 
 One extension includes some shortcuts to commonly used symbols:
 
@@ -503,7 +501,7 @@ Markdown | Result
 
 ---
 
-#### CodeHilite and SuperFences
+### CodeHilite and SuperFences
 
 Highlight your code with syntax highlighting (for languages in [this list](http://pygments.org/languages/), perhaps fewer depending on the version of pygments installed):
 
