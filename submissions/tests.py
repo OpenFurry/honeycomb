@@ -42,7 +42,10 @@ class ModelTest(TestCase):
             owner=cls.foo,
             title='Submission 1',
             description_raw='Description for submission 1',
-            content_raw='Content for submission 1',
+            content_raw='''
+            Content for submission 1
+
+            Paragraph 2''',
             ctime=timezone.now())
         cls.submission1.save(update_content=True)
         cls.folder = Folder(
@@ -111,20 +114,6 @@ class TestSubmissionModel(ModelTest):
             cover_path(self.submission1, 'foo.jpg'),
             'uploads/user-1/covers/{}-submission-1.jpg'.format(ctime))
 
-    @mock.patch.object(tempfile, 'NamedTemporaryFile')
-    @mock.patch.object(pypandoc, 'convert_file')
-    def test_content_file_rendered(self, convert_mock, temp_mock):
-        convert_mock.return_value = 'asdf'
-        self.storage_mock.save.return_value = self.content_file_mock
-        with mock.patch(self.wrappedfn, self.storage_mock):
-            self.submission1.content_file = self.content_file_mock
-            self.submission1.save(update_content=True)
-        self.assertEqual(self.submission1.content_rendered, '<p>asdf</p>')
-        self.assertTrue(convert_mock.called)
-        # XXX This shouldn't be infecting other tests, and yet here we are.
-        self.submission1.content_file = None
-        self.submission1.save()
-
     @mock.patch.object(Image, 'open')
     def test_thumbnail_cover(self, mock_image):
         self.storage_mock.save.return_value = self.image_file_mock
@@ -146,6 +135,34 @@ class TestSubmissionModel(ModelTest):
         self.assertTrue(mock_image.called)
         self.assertTrue(opened_image.thumbnail.called)
         self.assertTrue(opened_image.save.called)
+
+    def test_get_counts(self):
+        counts = self.submission1.get_counts()['counts']
+        self.assertEqual(counts['words'], 6)
+        self.assertEqual(counts['paragraphs'], 2)
+
+    def test_set_counts(self):
+        self.submission1.content_raw += ' whoa'
+        with mock.patch.object(self.submission1, 'set_counts') as mock_set:
+            self.submission1.save(update_content=True)
+        self.assertTrue(mock_set.called_once)
+
+
+class TestSubmissionModel_Isolated(ModelTest):
+    @mock.patch.object(tempfile, 'NamedTemporaryFile')
+    @mock.patch.object(pypandoc, 'convert_file')
+    def test_content_file_rendered(self, convert_mock, temp_mock):
+        # XXX This test appears to not be well isolated and I haven't figured
+        # out why.  The content of submission1 in this test persists to other
+        # tests despite transactions, so now it has to go sit in the corner.
+        # @makyo 2016-11-10
+        convert_mock.return_value = 'asdf'
+        self.storage_mock.save.return_value = self.content_file_mock
+        with mock.patch(self.wrappedfn, self.storage_mock):
+            self.submission1.content_file = self.content_file_mock
+            self.submission1.save(update_content=True)
+        self.assertEqual(self.submission1.content_rendered, '<p>asdf</p>')
+        self.assertTrue(convert_mock.called)
 
 
 class TestFolderModel(ModelTest):
