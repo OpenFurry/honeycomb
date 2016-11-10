@@ -46,7 +46,16 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         self.profile_rendered = markdown.markdown(
             strip_tags(self.profile_raw),
-            extensions=['pymdownx.extra', HoneycombMarkdown()])
+            extensions=[
+                'pymdownx.extra',
+                'markdown.extensions.codehilite',
+                'pymdownx.headeranchor',
+                'pymdownx.magiclink',
+                'pymdownx.smartsymbols',
+                'pymdownx.tilde',
+                'pymdownx.mark',
+                HoneycombMarkdown(),
+            ])
         super(Profile, self).save(*args, **kwargs)
 
     def get_notifications_counts(self):
