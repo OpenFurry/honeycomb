@@ -21,7 +21,6 @@ from .forms import (
 from .models import (
     Flag,
 )
-from activitystream.models import Activity
 from usermgmt.models import Notification
 
 
@@ -108,9 +107,9 @@ def view_flag(request, flag_id=None):
     content = 'administration.can_view_content_applications'
     if request.user not in flag.participants.all() and not \
             (not (request.user.has_perm(social) and
-                  flag.flag_type == Flag.SOCIAL) or \
-            not (request.user.has_perm(content) and
-                 flag.flag_type == Flag.CONTENT)):
+                  flag.flag_type == Flag.SOCIAL) or
+             not (request.user.has_perm(content) and
+                  flag.flag_type == Flag.CONTENT)):
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
         }, status=403)
@@ -143,14 +142,15 @@ def join_flag(request, flag_id=None):
     social = 'administration.can_view_social_applications'
     content = 'administration.can_view_content_applications'
     if not ((request.user.has_perm(social) and
-             flag.flag_type == Flag.SOCIAL) or \
+             flag.flag_type == Flag.SOCIAL) or
             (request.user.has_perm(content) and
              flag.flag_type == Flag.CONTENT)):
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
         }, status=403)
     if request.user in flag.participants.all():
-        message.warning(request, 'You are already a participant in this flag')
+        messages.warning(request,
+                         'You are already a participant in this flag')
     else:
         for participant in flag.participants.all():
             Notification(
@@ -159,7 +159,7 @@ def join_flag(request, flag_id=None):
                 notification_type=Notification.FLAG_PARTICIPANT_JOINED,
                 subject=flag).save()
         flag.participants.add(request.user)
-        message.success(request, 'You are now a participant in this flag')
+        messages.success(request, 'You are now a participant in this flag')
     return redirect
 
 
@@ -171,7 +171,7 @@ def resolve_flag(request, flag_id=None):
     social = 'administration.can_view_social_applications'
     content = 'administration.can_view_content_applications'
     if not ((request.user.has_perm(social) and
-             flag.flag_type == Flag.SOCIAL) or \
+             flag.flag_type == Flag.SOCIAL) or
             (request.user.has_perm(content) and
              flag.flag_type == Flag.CONTENT)):
         return render(request, 'permission_denied.html', {

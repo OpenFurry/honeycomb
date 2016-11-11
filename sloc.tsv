@@ -14,28 +14,32 @@ Count	Location
   143	activitystream/views.py
     0	administration/__init__.py
     0	administration/admin.py
-  181	administration/application_views.py
+  194	administration/application_views.py
     4	administration/apps.py
-  118	administration/ban_views.py
-   45	administration/flag_views.py
-   37	administration/forms.py
-  177	administration/models.py
+  123	administration/ban_views.py
+  183	administration/flag_views.py
+   46	administration/forms.py
+  189	administration/models.py
   106	administration/templates/admin-tabs-snippet.html
    31	administration/templates/create_application.html
    37	administration/templates/create_ban.html
-   23	administration/templates/dashboard.html
+   40	administration/templates/create_flag.html
+   24	administration/templates/dashboard.html
    54	administration/templates/list-applications-snippet.html
    55	administration/templates/list-bans-snippet.html
-    9	administration/templates/list_applications.html
-   15	administration/templates/list_bans.html
+   55	administration/templates/list-flags-snippet.html
+   16	administration/templates/list_applications.html
+   16	administration/templates/list_bans.html
+   16	administration/templates/list_flags.html
    76	administration/templates/view_application.html
    45	administration/templates/view_ban.html
+   47	administration/templates/view_flag.html
   533	administration/test_application.py
   413	administration/test_ban.py
-  167	administration/test_flag.py
+  134	administration/test_flag.py
   186	administration/tests.py
    66	administration/urls.py
-   36	administration/views.py
+   52	administration/views.py
     0	core/__init__.py
     0	core/admin.py
     4	core/apps.py
@@ -57,7 +61,7 @@ Count	Location
    11	core/templates/flatpages/default.html
    18	core/templates/flatpages/list.html
   102	core/templates/front.html
-    9	core/templates/permission_denied.html
+   14	core/templates/permission_denied.html
    65	core/templates/search/search.html
     0	core/templatetags/__init__.py
    28	core/templatetags/git_revno.py
@@ -81,7 +85,7 @@ Count	Location
    11	flatpage-defaults/about-terms.md
    16	gen-badge.sh
     0	honeycomb/__init__.py
-   14	honeycomb/middleware.py
+   17	honeycomb/middleware.py
     2	honeycomb/revno.py
   148	honeycomb/settings.py
    20	honeycomb/urls.py
@@ -150,7 +154,7 @@ Count	Location
    37	usermgmt/forms.py
    10	usermgmt/group_models.py
   119	usermgmt/group_views.py
-  147	usermgmt/models.py
+  159	usermgmt/models.py
    24	usermgmt/templates/confirm_delete_group.html
    20	usermgmt/templates/list_groups.html
   107	usermgmt/templates/profile-tabs-snippet.html
@@ -178,4 +182,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-11187	TOTAL
+11534	TOTAL

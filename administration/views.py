@@ -54,7 +54,7 @@ def dashboard(request):
         for perm, allowed_type in perms.items():
             if request.user.has_perm(perm):
                 query &= (Q(flag_type=allowed_type) |
-                          Q(participants__in=request.user))
+                          Q(participants__in=[request.user]))
 
         # Non-staff only get their own flags
         if not request.user.is_staff:
