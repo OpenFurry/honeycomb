@@ -2,12 +2,16 @@ from __future__ import unicode_literals
 import markdown
 
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import (
+    GenericForeignKey,
+    GenericRelation,
+)
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.html import strip_tags
 
 from .group_models import FriendGroup
+from administration.models import Flag
 from honeycomb_markdown import HoneycombMarkdown
 from submissions.models import Submission
 
@@ -35,6 +39,7 @@ class Profile(models.Model):
 
     # Additional settings
     banned = models.BooleanField(default=False)
+    flags = GenericRelation(Flag)
     can_see_adult_submissions = models.BooleanField(default=True)
     results_per_page = models.PositiveIntegerField(default=25)
     expired_notifications = models.PositiveIntegerField(default=0)

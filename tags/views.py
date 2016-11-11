@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import (
     EmptyPage,
     Paginator,
@@ -10,6 +11,7 @@ from django.shortcuts import (
 )
 from taggit.models import Tag
 
+from administration.models import Flag
 from submissions.models import Submission
 from submissions.utils import (
     filters_for_anonymous_user,
@@ -34,6 +36,25 @@ def view_tag(request, tag_slug=None, page=1):
     """
     tag = get_object_or_404(Tag, slug=tag_slug)
 
+    # Check for admin flags, only show the tag if there are none or the user
+    # has permissions to the flag
+    ctype = ContentType.objects.get(app_label='taggit', model='tag')
+    flags = Flag.objects.filter(content_type=ctype, object_id=tag.id,
+                                resolved=None)
+    if len(flags) > 0:
+        active_flag = flags[0]
+    else:
+        active_flag = None
+    if active_flag is not None and not (
+            request.user in active_flag.participants.all() or
+            request.user.has_perm('administration.can_view_social_flags') or
+            request.user.has_perm('administration.can_view_content_flags')):
+        return render(request, 'permission_denied.html', {
+            'title': 'Permission denied',
+            'additional_error': 'This tag has been flagged for '
+                                'administrative review',
+        }, status=403)
+
     # Filter submissions visible to the reader
     filters = filters_for_authenticated_user(request.user) if \
         request.user.is_authenticated else filters_for_anonymous_user()
@@ -48,6 +69,7 @@ def view_tag(request, tag_slug=None, page=1):
     return render(request, 'view_tag.html', {
         'title': 'Submissions tagged "{}"'.format(tag.name),
         'tag': tag,
+        'active_flag': active_flag,
         'submissions': submissions,
     })
 

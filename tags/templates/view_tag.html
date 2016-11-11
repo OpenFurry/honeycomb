@@ -1,10 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if active_flag %}
+    <div class="alert alert-danger">
+        <h2>Tag flagged <small>{{ active_flag.subject }}</small></h2>
+        <p>This tag has been flagged by {{ active_flag.flagged_by.profile.get_display_name }} for a {{ active_flag.get_flag_type_display|lower }} violation.</p>
+        {% if user in active_flag.participants.all %}
+            <p>You are marked as a participant in this flag; only moderators participants in this flag may view this submission.</p>
+        {% else %}
+            <p>You have permissions to view this submission because of your moderator status; only moderators participants in this flag may view this submission.</p>
+        {% endif %}
+        <p>You may view the flag <a href="{{ active_flag.get_absolute_url }}">here</a></p>
+    </div>
+{% endif %}
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
         <p>
             <em>Showing results {{ submissions.start_index }} through {{ submissions.end_index }} of {{ submissions.paginator.count }}</em>
+            {% if not active_flag %}
+                <span class="pull-right">
+                    <a href="{% url 'administration:create_flag' %}?content_type=taggit:tag&amp;object_id={{ tag.id }}">
+                        <span class="glyphicon glyphicon-flag"></span>
+                        Flag for administrative review
+                    </a>
+                </span>
+            {% endif %}
         </p>
     </div>
 </div>

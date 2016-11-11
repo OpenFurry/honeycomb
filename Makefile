@@ -10,6 +10,10 @@ help: ## This help.
 run: ## Run the development environment from tox.
 	tox -e devenv
 
+.PHONY: shell
+shell: ## Run the django shell using some additional tools.
+	venv/bin/python manage.py shell_plus
+
 .PHONY: migrate
 migrate: makemigrations ## Run migrate on the DB, updating schema per migration files.
 	venv/bin/python manage.py migrate
@@ -37,9 +41,10 @@ update-flatpages: venv/bin/django-admin ## Update the flatpages from the markdow
 collectstatic: ## Collect static files into the STATIC_ROOT directory.
 	venv/bin/python manage.py collectstatic
 
-.PHONY: check-deploy
-check-deploy: ## Run a check against the project for deployability.
+.PHONY: check
+check: ## Run various checks against the project
 	venv/bin/python manage.py check --deploy
+	venv/bin/python manage.py validate_templates
 
 .PHONY: reestdb
 resetdb: ## Remove the development database and regenerate it, loading fixtures.
@@ -91,14 +96,16 @@ test-travis: ## Test target for travis-ci use.
 		manage.py test --verbosity=2 $(TEST_SUITE)
 	coverage report -m --skip-covered
 
-.PHONY: sloccount
-sloccount: ## Get sloc count from all Python, html, markdown, Makefile, and shell files.
+.PHONY: metadata
+metadata: ## Get metadata about the project (sloc, models, urls)
 	git ls-files \
 		| grep -v static \
 		| grep -v manage.py \
 		| grep -v migrations \
 		| grep -E '(.py|.html|.md|Makefile|sh)' \
 		| xargs python sloc.py > sloc.tsv
+	venv/bin/python manage.py graph_models -a -o models.png
+	venv/bin/python manage.py show_urls > urls.tsv
 
 .PHONY: clean
 clean: ## Remove virtualenv and tox environments, along with compiled/optimized python files.

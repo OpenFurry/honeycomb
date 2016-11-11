@@ -26,6 +26,7 @@ from .utils import (
     filters_for_authenticated_user,
 )
 from activitystream.models import Activity
+from administration.models import Flag
 from core.templatetags.gravatar import gravatar
 from social.forms import CommentForm
 from social.models import Comment
@@ -146,11 +147,32 @@ def view_submission(request, username=None, submission_id=None,
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
         }, status=403)
+    active_flag = submission.get_active_flag()
 
     # Increment the submission views
-    submission.views += 1
-    submission.save()
-    Activity.create('submission', 'view', submission)
+    if request.user != submission.owner:
+        submission.views += 1
+        submission.save()
+        Activity.create('submission', 'view', submission)
+        if active_flag is not None:
+            can_view = False
+            if request.user in active_flag.participants.all():
+                can_view = True
+            if not can_view and ((
+                    active_flag.flag_type == Flag.SOCIAL and
+                    request.user.has_perm(
+                        'administration.can_view_social_flags')) or
+                    (active_flag.flag_type == Flag.CONTENT and
+                     request.user.has_perm(
+                         'administration.can_view_content_flags'))):
+                can_view = True
+            if not can_view:
+                return render(request, 'permission_denied.html', {
+                    'title': 'Submission flagged',
+                    'additional_error': 'This submission is flagged for '
+                                        'administrative review.'
+                }, status=403)
+
     display_name = '{} {}'.format(
         gravatar(author.email, size=40),
         author.profile.get_display_name())
@@ -159,6 +181,7 @@ def view_submission(request, username=None, submission_id=None,
         'title': submission.title,
         'subtitle': 'by {}'.format(display_name),
         'submission': submission,
+        'active_flag': active_flag,
         'comment_form': CommentForm(instance=Comment(
             content_type=ctype,
             object_id=submission.id)),

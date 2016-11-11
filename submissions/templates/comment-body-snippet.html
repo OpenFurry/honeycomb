@@ -1,0 +1,49 @@
+{% load form_extras %}
+{% load gravatar %}
+{% load humanize %}
+<div class="comment-header">
+    <a href="{% url 'usermgmt:view_profile' comment.owner.username %}">{{ comment.owner.email|gravatar }} {{ comment.owner.profile.get_display_name }}</a>
+    &bullet; Posted <abbr data-toggle="tooltip" data-placement="bottom" title="{{ comment.ctime|date:'r' }}">{{ comment.ctime|naturaltime }}</abbr>
+    &bullet; <a href="#comment-{{ comment.id }}"><span class="glyphicon glyphicon-link"></span> Direct link</a>
+    {% if user.is_authenticated and not flag %}
+        <span class="pull-right">
+            <a class="btn btn-warning btn-xs" role="button" href="{% url 'administration:create_flag' %}?content_type=social:comment&amp;object_id={{ comment.id }}">
+                <span class="glyphicon glyphicon-flag"></span>
+                Flag for administrative review
+            </a>
+        </span>
+    {% endif %}
+    {% if user == comment.owner or user == comment.target_object_owner %}
+        <form class="inline pull-right" method="post" action="{% url 'social:delete_comment' %}">
+            {% csrf_token %}
+            <input type="hidden" name="comment_id" value="{{ comment.id }}" />
+            <button type="submit" class="btn btn-danger btn-xs">
+                <span class="glyphicon glyphicon-remove"></span>
+                Delete comment
+            </button>
+        </form>
+    {% endif %}
+</div>
+<div class="comment-body">
+    {{ comment.body_rendered|safe }}
+</div>
+{% if can_reply and user.is_authenticated %}
+    <div class="comment-reply-form-wrapper">
+        <a data-toggle="collapse" href="#reply-{{ comment.id }}" aria-expanded="false" aria-controls="collapseExample">Post reply</a>
+        <div id="reply-{{ comment.id }}" class="comment-reply-form collapse">
+            <div class="well">
+                <form action="{% url 'social:post_comment' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="parent" value="{{ comment.id }}" />
+                    {{ comment_form.content_type }}
+                    {{ comment_form.object_id }}
+                    <div class="form-group">
+                        {{ comment_form.body_raw.label }}
+                        {{ comment_form.body_raw|append_form_control }}
+                    </div>
+                    <button class="btn btn-primary" type="submit">Post reply</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endif %}

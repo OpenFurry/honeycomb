@@ -294,7 +294,7 @@ def rate_submission(request, username=None, submission_id=None,
     reader = request.user
     author = submission.owner
 
-    # MAke sure the rating is valid
+    # Make sure the rating is valid
     try:
         rating = int(request.POST.get('rating', 0))
     except ValueError:

@@ -162,6 +162,7 @@ INSTALLED_APPS += [
     'taggit',
     'haystack',
     'datetimewidget',
+    'django_extensions',
 ]
 MIDDLEWARE = [
     'honeycomb.middleware.BanMiddleware',
@@ -242,3 +243,14 @@ LOGGING = {
 # NB you should also set this up on the server through apache/nginx config;
 # this is only intended to be a backup
 MAX_UPLOAD_SIZE = 1024 * 1024 * 10
+
+# The content types (in the form app_label:model) which users can flag for
+# administrative review.
+FLAGGABLE_CONTENT_TYPES = [
+    'promotion:adlifecycle',
+    'publishers:publisherpage',
+    'social:comment',
+    'submissions:submission',
+    'taggit:tag',
+    'usermgmt:profile',
+]

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import (
     login_required,
@@ -67,14 +68,34 @@ def list_content_flags(request):
 
 @login_required
 def create_flag(request):
+    # Ensure that we have both content type and object id
     if 'content_type' not in request.GET or 'object_id' not in request.GET:
         return render(request, 'permission_denied.html', {
             'title': 'Cannot create flag without a subject',
             'additional_error': 'Flags must be related to an object',
         }, status=403)
-    ctype = get_object_or_404(ContentType, pk=request.GET.get('content_type'))
+
+    # Ensure that we can flag the given content type
+    if request.GET.get('content_type') not in \
+            settings.FLAGGABLE_CONTENT_TYPES:
+        return render(request, 'permission_denied.html', {
+            'title': 'That content type is not flaggable',
+            'additional_error':
+                'The flaggable content types are <ul>{}</ul>'.format(
+                    ''.join([
+                        '<li>'+c+'</li>' for c in
+                        settings.FLAGGABLE_CONTENT_TYPES
+                    ])
+                ),
+        }, status=403)
+
+    # Retrieve the content type and object
+    parts = request.GET.get('content_type').split(':')
+    ctype = get_object_or_404(ContentType, app_label=parts[0], model=parts[1])
     obj = ctype.get_object_for_this_type(pk=request.GET.get('object_id'))
-    if obj.owner == request.user:
+
+    # Ensure that we can flag the given object
+    if hasattr(obj, 'owner') and obj.owner == request.user:
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
             'additional_error': 'You cannot flag your own objects',
@@ -83,19 +104,24 @@ def create_flag(request):
         content_type=ctype,
         object_id=obj.id,
     ))
+
+    # Try to save any POSTed data
     if request.method == 'POST':
         form = FlagForm(request.POST)
         if form.is_valid():
             flag = form.save(commit=False)
             flag.flagged_by = request.user
-            flag.flagged_object_owner = flag.object_model.owner
+            flag.flagged_object_owner = (request.user if not
+                                         hasattr(flag.object_model, 'owner')
+                                         else flag.object_model.owner)
             flag.save()
             form.save_m2m()
             flag.participants.add(request.user)
-            flag.participants.add(flag.object_model.owner)
+            flag.participants.add(flag.flagged_object_owner)
             return redirect(flag.get_absolute_url())
     return render(request, 'create_flag.html', {
         'title': 'Flag {}'.format(ctype.model),
+        'subtitle': str(obj),
         'form': form,
     })
 
