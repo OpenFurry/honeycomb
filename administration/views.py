@@ -5,7 +5,7 @@ from django.shortcuts import render
 from .models import (
     Application,
     Ban,
-    # Flag,
+    Flag,
 )
 
 
@@ -36,6 +36,31 @@ def dashboard(request):
             query &= Q(applicant=request.user)
     applications = Application.objects.filter(query)
 
+    # List flags
+    perms = {
+        'administration.can_list_social_flags':
+            Flag.SOCIAL,
+        'administration.can_list_content_flags':
+            Flag.CONTENT,
+    }
+
+    # Only select unresolve flags
+    query = Q(resolved=None)
+
+    # Superusers get all flags
+    if not request.user.is_superuser:
+        # Staff only get flags according to their permissions as well as
+        # their own flags
+        for perm, allowed_type in perms.items():
+            if request.user.has_perm(perm):
+                query &= (Q(flag_type=allowed_type) |
+                          Q(participants__in=request.user))
+
+        # Non-staff only get their own flags
+        if not request.user.is_staff:
+            query &= Q(participants__in=[request.user])
+    flags = Flag.objects.filter(query)
+
     if request.user.has_perm('administration.can_list_bans'):
         bans = Ban.objects.filter(active=True, end_date__isnull=False)
     else:
@@ -44,6 +69,6 @@ def dashboard(request):
         'tab': 'dashboard',
         'title': 'Administration Dashboard',
         'applications': applications,
-        'flags': [],
+        'flags': flags,
         'bans': bans,
     })

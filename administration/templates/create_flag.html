@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load form_extras %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.content_type }}
+            {{ form.object_id }}
+            <div class="form-group">
+                {{ form.subject.errors }}
+                {{ form.subject.label }}
+                {{ form.subject|append_form_control }}
+                {% if form.subject.help_text %}
+                    <p class="help-block">{{ form.subject.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.flag_type.errors }}
+                {{ form.flag_type.label }}
+                {{ form.flag_type|append_form_control }}
+                {% if form.flag_type.help_text %}
+                    <p class="help-block">{{ form.flag_type.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.body_raw.errors }}
+                {{ form.body_raw.label }}
+                {{ form.body_raw|append_form_control }}
+                {% if form.body_raw.help_text %}
+                    <p class="help-block">{{ form.body_raw.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-danger">Flag object</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

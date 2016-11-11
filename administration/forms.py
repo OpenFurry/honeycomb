@@ -43,4 +43,13 @@ class BanForm(forms.ModelForm):
 class FlagForm(forms.ModelForm):
     class Meta:
         model = Flag
-        fields = ('subject', 'body_raw')
+        fields = (
+            'subject',
+            'flag_type',
+            'body_raw',
+            'content_type',
+            'object_id')
+        widgets = {
+            'content_type': forms.HiddenInput(),
+            'object_id': forms.HiddenInput(),
+        }

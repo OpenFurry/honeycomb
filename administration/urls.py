@@ -42,8 +42,8 @@ flag_urls = [
     url('^create/$', flag_views.create_flag, name='create_flag'),
     url('^flag/(?P<flag_id>\d+)/$', flag_views.view_flag,
         name='view_flag'),
-    url('^flag/(?P<flag_id>\d+)/resolve/$',
-        flag_views.claim_flag, name='claim_flag'),
+    url('^flag/(?P<flag_id>\d+)/join/$',
+        flag_views.join_flag, name='join_flag'),
     url('^flag/(?P<flag_id>\d+)/resolve/$',
         flag_views.resolve_flag, name='resolve_flag'),
 ]

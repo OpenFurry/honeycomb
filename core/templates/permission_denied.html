@@ -3,8 +3,13 @@
 {% block content %}
 <div class="alert alert-warning">
     <p>Unfortunately, permission was denied for viewing this page!</p>
-    {% if additional_error %}
-        <p>{{ additional_error|safe }}</p>
-    {% endif %}
 </div>
+{% if additional_error %}
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h2>Additional information</h2>
+            <p>{{ additional_error|safe }}</p>
+        </div>
+    </div>
+{% endif %}
 {% endblock %}

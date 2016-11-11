@@ -127,6 +127,10 @@ class Notification(models.Model):
     HIGHLIGHT = 'H'
     APPLICATION_CLAIMED = 'c'
     APPLICATION_RESOLVED = 'r'
+    FLAG_CREATED_AGAINST = 'f'
+    FLAG_PARTICIPANT_JOINED = 'p'
+    FLAG_RESOLVED = 's'
+    FLAG_COMMENT = 'm'
     NOTIFICATION_TYPE_CHOICES = (
         (WATCH, 'Watch'),
         (MESSAGE, 'Message'),
@@ -139,6 +143,10 @@ class Notification(models.Model):
         (HIGHLIGHT, 'Highlight'),
         (APPLICATION_CLAIMED, 'Application claimed'),
         (APPLICATION_RESOLVED, 'Application resolved'),
+        (FLAG_CREATED_AGAINST, 'Flag created against'),
+        (FLAG_PARTICIPANT_JOINED, 'Flag participant joined'),
+        (FLAG_RESOLVED, 'Flag resolved'),
+        (FLAG_COMMENT, 'Flag commented on'),
     )
     USER_NOTIFICATIONS = (
         WATCH,
@@ -155,6 +163,10 @@ class Notification(models.Model):
     ADMIN_NOTIFICATIONS = (
         APPLICATION_CLAIMED,
         APPLICATION_RESOLVED,
+        FLAG_CREATED_AGAINST,
+        FLAG_PARTICIPANT_JOINED,
+        FLAG_RESOLVED,
+        FLAG_COMMENT,
     )
 
     # The user being notified

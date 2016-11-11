@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+{% include 'admin-tabs-snippet.html' %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h2>{{ flag.subject }} <small><a href="{{ flag.object_model.get_absolute_url }}">{{ flag.object_model }}</a></h2>
+        <div class="text-block">
+            {{ flag.body_rendered|safe }}
+        </div>
+        <h2>Information</h2>
+        <dl class="dl-horizontal">
+            <dt>Flag type</dt>
+            <dd>{% if flag.flag_type == 's' %}Social{% else %}Content{% endif %}</dd>
+            <dt>Created</dt>
+            <dd><abbr data-toggle="tooltip" data-placement="bottom" title="{{ flag.ctime|date:'r' }}">{{ flag.ctime|naturaltime }}</abbr></dd>
+            <dt>Participants</dt>
+            <dd>
+                <ul class="list-group">
+                    {% for participant in flag.participants.all %}
+                        <li class="list-group-item striped-item">
+                            {% if participant == flag.flagged_by %}Creator:{% elif participant == flag.flagged_object_owner %}Object owner:{% endif %}
+                            <a href="{% url 'usermgmt:view_profile' participant.username %}">{{ participant.profile.get_display_name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </dd>
+            {% if perms.administration.can_resolve_flag and not flag.resolved %}
+                <dt>Resolve flag</dt>
+                <dd>
+                    <form action="{% url 'administration:resolve_flag' flag_id=flag.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="id_resolution">Resolution</label>
+                            <textarea name="resolution" id="id_resolution" class="form-control" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <span class="glyphicon glyphicon-ok"></span>
+                            Resolve flag
+                        </button>
+                    </form>
+                </dd>
+            {% endif %}
+        </dl>
+    </div>
+</div>
+{% endblock %}
