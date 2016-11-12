@@ -17,7 +17,7 @@ Count	Location
   194	administration/application_views.py
     4	administration/apps.py
   123	administration/ban_views.py
-  200	administration/flag_views.py
+  211	administration/flag_views.py
    46	administration/forms.py
   189	administration/models.py
   106	administration/templates/admin-tabs-snippet.html
@@ -59,7 +59,7 @@ Count	Location
    14	core/search_indexes.py
     6	core/templates/404.html
    34	core/templates/activity-snippet.html
-  205	core/templates/base.html
+  227	core/templates/base.html
    11	core/templates/flatpages/default.html
    18	core/templates/flatpages/list.html
   102	core/templates/front.html
@@ -157,7 +157,7 @@ Count	Location
    37	usermgmt/forms.py
    10	usermgmt/group_models.py
   119	usermgmt/group_views.py
-  164	usermgmt/models.py
+  169	usermgmt/models.py
    24	usermgmt/templates/confirm_delete_group.html
    20	usermgmt/templates/list_groups.html
   107	usermgmt/templates/profile-tabs-snippet.html
@@ -175,7 +175,7 @@ Count	Location
    15	usermgmt/templates/update_group.html
    49	usermgmt/templates/update_profile.html
    16	usermgmt/templates/view_group.html
-   54	usermgmt/templates/view_profile.html
+   81	usermgmt/templates/view_profile.html
     0	usermgmt/templatetags/__init__.py
    14	usermgmt/templatetags/form_extras.py
    23	usermgmt/templatetags/profile_extras.py
@@ -185,4 +185,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-11787	TOTAL
+11852	TOTAL

@@ -79,6 +79,7 @@ def view_profile(request, username):
         watched = user in request.user.profile.watched_users.all()
         blocked = user in request.user.profile.blocked_users.all()
         blocked_by = request.user in user.profile.blocked_users.all()
+    active_flag = user.profile.get_active_flag()
     subtitle = ''
     display_name = '{} {}'.format(
         gravatar(user.email, size=80),
@@ -89,14 +90,13 @@ def view_profile(request, username):
     if blocked:
         display_name = '&#x20e0; {}'.format(display_name)
         subtitle = "blocked"
-    return render(request,
-                  'view_profile.html',
-                  {
-                      'title': display_name,
-                      'subtitle': subtitle,
-                      'author': user,
-                      'watched': watched,
-                      'blocked': blocked,
-                      'blocked_by': blocked_by,
-                      'tab': 'profile',
-                  })
+    return render(request, 'view_profile.html', {
+        'title': display_name,
+        'subtitle': subtitle,
+        'author': user,
+        'watched': watched,
+        'blocked': blocked,
+        'blocked_by': blocked_by,
+        'active_flag': active_flag,
+        'tab': 'profile',
+    })

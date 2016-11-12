@@ -679,7 +679,7 @@ class TestNotificationBadges(BaseSocialSubmissionViewTestCase):
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse('core:front'))
-        self.assertContains(response, '<span class="badge"></span>', count=5)
+        self.assertContains(response, '<span class="badge"></span>', count=6)
 
     def test_badges(self):
         Notification(
@@ -705,8 +705,9 @@ class TestNotificationBadges(BaseSocialSubmissionViewTestCase):
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse('core:front'))
-        self.assertContains(response, '<span class="badge">4</span>')
-        self.assertContains(response, '<span class="badge">1</span>', count=4)
+        self.assertContains(response, '<span class="badge">3</span>')
+        self.assertContains(response, '<span class="badge">1</span>',
+                            count=5)
 
 
 class TestViewNotificationsCategoriesView(BaseSocialSubmissionViewTestCase):

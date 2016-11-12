@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load profile_extras %}
+{% load flag_extras %}
 
 {% block content %}
 {% if blocked_by %}
@@ -14,9 +15,35 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Profile
+                    {% if not active_flag %}
+                        <span class="pull-right">
+                            <a class="btn btn-warning btn-xs" role="button" href="{% url 'administration:create_flag' %}?content_type=usermgmt:profile&amp;object_id={{ author.profile.id }}">
+                                <span class="glyphicon glyphicon-flag"></span>
+                                Flag profile for administrative review
+                            </a>
+                        </span>
+                    {% endif %}
                 </div>
                 <div class="panel-body">
-                    {{ author.profile.profile_rendered|safe }}
+                    {% if active_flag %}
+                        <div class="alert alert-danger">
+                            <h2>Profile flagged <small>{{ active_flag.subject }}</small></h2>
+                            <p>This profile has been flagged by {{ active_flag.flagged_by.profile.get_display_name }} for a {{ active_flag.get_flag_type_display|lower }} violation.</p>
+                        {% if user|can_view_flagged_item:active_flag %}
+                                {% if user in active_flag.participants.all %}
+                                    <p>You are marked as a participant in this flag; only moderators participants in this flag may view this submission.</p>
+                                {% else %}
+                                    <p>You have permissions to view this submission because of your moderator status; only moderators participants in this flag may view this submission.</p>
+                                {% endif %}
+                                <p>You may view the flag <a href="{{ active_flag.get_absolute_url }}">here</a></p>
+                            </div>
+                            {{ author.profile.profile_rendered|safe }}
+                        {% else %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        {{ author.profile.profile_rendered|safe }}
+                    {% endif %}
                 </div>
                 {% comment "Attributes TODO" %}
                 <div class="panel-footer">

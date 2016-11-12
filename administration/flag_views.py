@@ -89,13 +89,19 @@ def create_flag(request):
                 ),
         }, status=403)
 
-    # Retrieve the content type and object
+    # Retrieve the content type, object, and, if possible, the object's owner
     parts = request.GET.get('content_type').split(':')
     ctype = get_object_or_404(ContentType, app_label=parts[0], model=parts[1])
     obj = ctype.get_object_for_this_type(pk=request.GET.get('object_id'))
+    if hasattr(obj, 'owner'):
+        owner = obj.owner
+    elif hasattr(obj, 'user'):
+        owner = obj.user
+    else:
+        owner = None
 
     # Ensure that we can flag the given object
-    if hasattr(obj, 'owner') and obj.owner == request.user:
+    if owner == request.user:
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
             'additional_error': 'You cannot flag your own objects',
@@ -112,12 +118,19 @@ def create_flag(request):
             flag = form.save(commit=False)
             flag.flagged_by = request.user
             flag.flagged_object_owner = (request.user if not
-                                         hasattr(flag.object_model, 'owner')
-                                         else flag.object_model.owner)
+                                         owner else owner)
             flag.save()
             form.save_m2m()
             flag.participants.add(request.user)
             flag.participants.add(flag.flagged_object_owner)
+
+            # Notify the object owner if one exists
+            if owner != request.user:
+                Notification(
+                    source=flag.flagged_by,
+                    target=flag.flagged_object_owner,
+                    notification_type=Notification.FLAG_CREATED_AGAINST
+                ).save()
             return redirect(flag.get_absolute_url())
     return render(request, 'create_flag.html', {
         'title': 'Flag {}'.format(ctype.model),

@@ -83,6 +83,12 @@ class Profile(models.Model):
                 counts['submission_notifications'] += 1
         return counts
 
+    def get_active_flag(self):
+        """Retrieve flag if there is an active flag against this submission"""
+        active_flags = self.flags.filter(resolved=None)
+        if len(active_flags) > 0:
+            return active_flags[0]
+
     def get_notifications_sorted(self):
         notifications = self.user.notification_set.all()
         sorted_notifications = {

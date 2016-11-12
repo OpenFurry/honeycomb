@@ -104,7 +104,7 @@ metadata: ## Get metadata about the project (sloc, models, urls)
 		| grep -v migrations \
 		| grep -E '(.py|.html|.md|Makefile|sh)' \
 		| xargs python sloc.py > sloc.tsv
-	venv/bin/python manage.py graph_models -a -o models.png
+	venv/bin/python manage.py graph_models -g -a -o models.png
 	venv/bin/python manage.py show_urls > urls.tsv
 
 .PHONY: clean
