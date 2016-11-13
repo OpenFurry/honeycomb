@@ -28,7 +28,7 @@ class ApplicationForm(forms.ModelForm):
 class BanForm(forms.ModelForm):
     class Meta:
         model = Ban
-        fields = ('user', 'end_date', 'reason_raw', 'flag')
+        fields = ('user', 'end_date', 'reason_raw', 'flags')
         widgets = {
             'end_date': DateWidget(options=dateTimeOptions,
                                    attrs={
@@ -36,7 +36,6 @@ class BanForm(forms.ModelForm):
                                    },
                                    bootstrap_version=3),
             'user': forms.HiddenInput(),
-            'flag': forms.HiddenInput(),
         }
 
 

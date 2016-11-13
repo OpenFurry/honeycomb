@@ -162,6 +162,12 @@ class Flag(models.Model):
             ])
         super(Flag, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return '{} (against {})'.format(self.subject, str(self.object_model))
+
+    def __unicode__(self):
+        return '{} (against {})'.format(self.subject, str(self.object_model))
+
     class Meta:
         ordering = ['-ctime']
         permissions = (
@@ -194,7 +200,8 @@ class Ban(models.Model):
     reason_rendered = models.TextField()
 
     # Any administrative flags if applicable
-    flag = models.ManyToManyField(Flag, blank=True)
+    flags = models.ManyToManyField(Flag, blank=True,
+                                   verbose_name='Pertinent flags')
 
     def get_absolute_url(self):
         return reverse('administration:view_ban', kwargs={

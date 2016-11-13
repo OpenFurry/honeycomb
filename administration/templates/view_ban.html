@@ -25,6 +25,18 @@
                     {% endif %}
                 {% endif %}
             </dd>
+            <dt>Pertinent flags</dt>
+            <dd>
+                <ul class="list-group">
+                    {% for flag in ban.flags.all %}
+                        <li class="list-group-item striped-item">
+                            <a href="{{ flag.get_absolute_url }}">
+                                {{ flag }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </dt>
             <dt>Admin contact</dt>
             <dd>
                 <a href="{% url 'usermgmt:view_profile' ban.admin_contact.username %}">{{ ban.admin_contact.profile.get_display_name }}</a>

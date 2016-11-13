@@ -26,20 +26,54 @@
                     {% endfor %}
                 </ul>
             </dd>
+            <dt>Pertinent ban</dt>
+            <dd>
+                <ul class="list-group">
+                    {% for ban in flag.ban_set.all %}
+                        <li class="list-group-item striped-item">
+                            <a href="{{ ban.get_absolute_url }}">
+                                {{ ban }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </dd>
             {% if perms.administration.can_resolve_flag and not flag.resolved %}
-                <dt>Resolve flag</dt>
+                {% if user in flag.participants.all %}
+                    <dt>Resolve flag</dt>
+                    <dd>
+                        <form action="{% url 'administration:resolve_flag' flag_id=flag.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="id_resolution">Resolution</label>
+                                <textarea name="resolution" id="id_resolution" class="form-control" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span>
+                                Resolve flag
+                            </button>
+                        </form>
+                    </dd>
+                {% else %}
+                    <dt>Join flag</dt>
+                    <dd>
+                        <form action="{% url 'administration:join_flag' flag_id=flag.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                <span class="glyphicon glyphicon-user"></span>
+                                Join flag
+                            </button>
+                        </form>
+                    </dd>
+                {% endif %}
+            {% endif %}
+            {% if perms.administration.can_ban_users %}
+                <dt>Escalate to ban</dt>
                 <dd>
-                    <form action="{% url 'administration:resolve_flag' flag_id=flag.id %}" method="post">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="id_resolution">Resolution</label>
-                            <textarea name="resolution" id="id_resolution" class="form-control" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-success">
-                            <span class="glyphicon glyphicon-ok"></span>
-                            Resolve flag
-                        </button>
-                    </form>
+                    <a href="{% url 'administration:create_ban' %}?user={{ flag.flagged_object_owner.username }}&amp;flag={{ flag.id }}" role="button" class="btn btn-danger">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Escalate
+                    </a>
                 </dd>
             {% endif %}
         </dl>

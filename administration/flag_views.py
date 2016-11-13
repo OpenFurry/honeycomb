@@ -54,7 +54,7 @@ def list_social_flags(request):
     })
 
 
-@permission_required('administration.can_list_content_applications',
+@permission_required('administration.can_list_content_flags',
                      raise_exception=True)
 @staff_member_required
 def list_content_flags(request):
@@ -69,15 +69,18 @@ def list_content_flags(request):
 @login_required
 def create_flag(request):
     # Ensure that we have both content type and object id
-    if 'content_type' not in request.GET or 'object_id' not in request.GET:
+    content_type = request.GET.get('content_type',
+                                   request.POST.get('content_type'))
+    object_id = request.GET.get('object_id',
+                                request.POST.get('object_id'))
+    if content_type is None or object_id is None:
         return render(request, 'permission_denied.html', {
             'title': 'Cannot create flag without a subject',
             'additional_error': 'Flags must be related to an object',
         }, status=403)
 
     # Ensure that we can flag the given content type
-    if request.GET.get('content_type') not in \
-            settings.FLAGGABLE_CONTENT_TYPES:
+    if content_type not in settings.FLAGGABLE_CONTENT_TYPES:
         return render(request, 'permission_denied.html', {
             'title': 'That content type is not flaggable',
             'additional_error':
@@ -90,35 +93,37 @@ def create_flag(request):
         }, status=403)
 
     # Retrieve the content type, object, and, if possible, the object's owner
-    parts = request.GET.get('content_type').split(':')
+    no_owner = False
+    parts = content_type.split(':')
     ctype = get_object_or_404(ContentType, app_label=parts[0], model=parts[1])
-    obj = ctype.get_object_for_this_type(pk=request.GET.get('object_id'))
+    obj = ctype.get_object_for_this_type(pk=object_id)
     if hasattr(obj, 'owner'):
         owner = obj.owner
     elif hasattr(obj, 'user'):
         owner = obj.user
     else:
-        owner = None
+        no_owner = True
+        owner = request.user
 
     # Ensure that we can flag the given object
-    if owner == request.user:
+    if not no_owner and owner == request.user:
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
             'additional_error': 'You cannot flag your own objects',
         }, status=403)
+
+    # Try to save any POSTed data
     form = FlagForm(instance=Flag(
         content_type=ctype,
         object_id=obj.id,
     ))
-
-    # Try to save any POSTed data
     if request.method == 'POST':
+        request.POST['content_type'] = ctype.id
         form = FlagForm(request.POST)
         if form.is_valid():
             flag = form.save(commit=False)
             flag.flagged_by = request.user
-            flag.flagged_object_owner = (request.user if not
-                                         owner else owner)
+            flag.flagged_object_owner = owner
             flag.save()
             form.save_m2m()
             flag.participants.add(request.user)
@@ -142,13 +147,15 @@ def create_flag(request):
 @login_required
 def view_flag(request, flag_id=None):
     flag = get_object_or_404(Flag, pk=flag_id)
-    social = 'administration.can_view_social_applications'
-    content = 'administration.can_view_content_applications'
-    if request.user not in flag.participants.all() and not \
-            (not (request.user.has_perm(social) and
-                  flag.flag_type == Flag.SOCIAL) or
-             not (request.user.has_perm(content) and
-                  flag.flag_type == Flag.CONTENT)):
+
+    # Ensure the user can view the flag
+    social = 'administration.can_view_social_flags'
+    content = 'administration.can_view_content_flags'
+    is_participant = request.user in flag.participants.all()
+    has_perm = (
+        flag.flag_type == Flag.SOCIAL and request.user.has_perm(social)) or (
+        flag.flag_type == Flag.CONTENT and request.user.has_perm(content))
+    if not (is_participant or has_perm):
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
         }, status=403)
@@ -178,15 +185,27 @@ def list_participating_flags(request):
 @require_POST
 def join_flag(request, flag_id=None):
     flag = get_object_or_404(Flag, pk=flag_id)
+
+    # Ensure that user can join the flag
+    if flag.resolved is not None:
+        return render(request, 'permission_denied.html', {
+           'title': 'Permission denied',
+           'additional_error': 'This flag is already resolved',
+        }, status=403)
     social = 'administration.can_view_social_applications'
     content = 'administration.can_view_content_applications'
-    if not ((request.user.has_perm(social) and
-             flag.flag_type == Flag.SOCIAL) or
-            (request.user.has_perm(content) and
-             flag.flag_type == Flag.CONTENT)):
+    has_perm = (
+        flag.flag_type == Flag.SOCIAL and request.user.has_perm(social)) or (
+        flag.flag_type == Flag.CONTENT and request.user.has_perm(content))
+    if not has_perm:
         return render(request, 'permission_denied.html', {
             'title': 'Permission denied',
+            'additional_error':
+                'Only {} moderators may join this flag'.format(
+                    flag.get_flag_type_display().lower()),
         }, status=403)
+
+    # Join the flag if the user hasn't already
     if request.user in flag.participants.all():
         messages.warning(request,
                          'You are already a participant in this flag')
@@ -199,14 +218,21 @@ def join_flag(request, flag_id=None):
                 subject=flag).save()
         flag.participants.add(request.user)
         messages.success(request, 'You are now a participant in this flag')
-    return redirect
+    return redirect(flag.get_absolute_url())
 
 
-@permission_required('administration.can_resolve_flags', raise_exception=True)
 @staff_member_required
+@permission_required('administration.can_resolve_flags', raise_exception=True)
 @require_POST
 def resolve_flag(request, flag_id=None):
     flag = get_object_or_404(Flag, pk=flag_id)
+
+    # Ensure the user can resolve the flag
+    if flag.resolved is not None:
+        return render(request, 'permission_denied.html', {
+           'title': 'Permission denied',
+           'additional_error': 'This flag is already resolved',
+        }, status=403)
     social = 'administration.can_view_social_applications'
     content = 'administration.can_view_content_applications'
     if not ((request.user.has_perm(social) and
@@ -220,6 +246,8 @@ def resolve_flag(request, flag_id=None):
         messages.error(request, 'You must be participating in this flag to '
                        'resolve it')
         return redirect(flag.get_absolute_url())
+
+    # Resolve the flag and notify participants
     resolution = request.POST.get('resolution')
     if resolution is None:
         messages.error(request, 'You must provide a resolution')

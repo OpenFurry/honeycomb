@@ -60,6 +60,16 @@ class Comment(models.Model):
             ])
         super(Comment, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return "{}'s comment on {}".format(
+            self.owner.profile.get_display_name(),
+            str(self.object_model))
+
+    def __unicode__(self):
+        return "{}'s comment on {}".format(
+            self.owner.profile.get_display_name(),
+            str(self.object_model))
+
     def get_active_flag(self):
         """Retrieve flag if there is an active flag against this submission"""
         active_flags = self.flags.filter(resolved=None)

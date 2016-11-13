@@ -73,15 +73,13 @@ def create_ban(request):
             'title': 'Permission denied',
         }, status=403)
 
-    try:
-        flag = Flag.objects.get(pk=request.GET.get('flag'))
-    except Flag.DoesNotExist:
-        flag = None
     form = BanForm(initial={
         'user': user,
-        'flag': flag,
         'end_date': timezone.now(),
+        'flags': Flag.objects.filter(pk=request.GET.get('flag')),
     })
+    form.fields['flags'].queryset = Flag.objects.filter(
+        flagged_object_owner=user)
     if request.method == 'POST':
         form = BanForm(request.POST)
         if form.is_valid():

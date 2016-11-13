@@ -16,13 +16,13 @@ Count	Location
     0	administration/admin.py
   194	administration/application_views.py
     4	administration/apps.py
-  123	administration/ban_views.py
-  211	administration/flag_views.py
-   46	administration/forms.py
-  189	administration/models.py
+  121	administration/ban_views.py
+  229	administration/flag_views.py
+   45	administration/forms.py
+  194	administration/models.py
   106	administration/templates/admin-tabs-snippet.html
    31	administration/templates/create_application.html
-   37	administration/templates/create_ban.html
+   44	administration/templates/create_ban.html
    40	administration/templates/create_flag.html
    24	administration/templates/dashboard.html
    54	administration/templates/list-applications-snippet.html
@@ -32,14 +32,14 @@ Count	Location
    16	administration/templates/list_bans.html
    16	administration/templates/list_flags.html
    76	administration/templates/view_application.html
-   45	administration/templates/view_ban.html
-   47	administration/templates/view_flag.html
+   57	administration/templates/view_ban.html
+   81	administration/templates/view_flag.html
     0	administration/templatetags/__init__.py
    15	administration/templatetags/flag_extras.py
-  533	administration/test_application.py
+  547	administration/test_application.py
   413	administration/test_ban.py
-  134	administration/test_flag.py
-  186	administration/tests.py
+  654	administration/test_flag.py
+  187	administration/tests.py
    66	administration/urls.py
    52	administration/views.py
     0	core/__init__.py
@@ -111,19 +111,20 @@ Count	Location
     0	social/admin.py
     4	social/apps.py
    17	social/forms.py
-   74	social/models.py
+   82	social/models.py
    11	social/templates/confirm_unblock_user.html
   123	social/templates/notification-snippet.html
   237	social/templates/notifications_categories.html
    52	social/templates/notifications_timeline.html
-  919	social/tests.py
+  951	social/tests.py
    42	social/urls.py
-  465	social/views.py
+  467	social/views.py
   136	spec.md
     0	submissions/__init__.py
     0	submissions/admin.py
     4	submissions/apps.py
   238	submissions/folder_views.py
+   14	submissions/form_extras.py
    33	submissions/forms.py
   220	submissions/models.py
    49	submissions/templates/comment-body-snippet.html
@@ -138,7 +139,7 @@ Count	Location
    38	submissions/templates/update_submission_order_in_folder.html
   249	submissions/templates/view_submission.html
   478	submissions/test_folders.py
-  863	submissions/tests.py
+  864	submissions/tests.py
    48	submissions/urls.py
    26	submissions/utils.py
   298	submissions/views.py
@@ -185,4 +186,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-11852	TOTAL
+12517	TOTAL
