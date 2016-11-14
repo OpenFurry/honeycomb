@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import (
 )
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.db.models import Q
 from django.shortcuts import (
     get_object_or_404,
     redirect,
@@ -42,10 +43,14 @@ def list_bans(request):
 @permission_required('administration.can_list_bans', raise_exception=True)
 @login_required
 def list_participating_bans(request):
-    bans = Ban.objects.filter(admin_contact=request.user)
+    query = Q(admin_contact=request.user)
+    if request.GET.get('all') is None:
+        query &= Q(active=True)
+    bans = Ban.objects.filter(query)
     return render(request, 'list_bans.html', {
         'bans': bans,
         'tab': 'bans',
+        'showing_inactive': request.GET.get('all')
     })
 
 
@@ -68,15 +73,13 @@ def create_ban(request):
             'title': 'Permission denied',
         }, status=403)
 
-    try:
-        flag = Flag.objects.get(pk=request.GET.get('flag'))
-    except Flag.DoesNotExist:
-        flag = None
     form = BanForm(initial={
         'user': user,
-        'flag': flag,
         'end_date': timezone.now(),
+        'flags': Flag.objects.filter(pk=request.GET.get('flag')),
     })
+    form.fields['flags'].queryset = Flag.objects.filter(
+        flagged_object_owner=user)
     if request.method == 'POST':
         form = BanForm(request.POST)
         if form.is_valid():

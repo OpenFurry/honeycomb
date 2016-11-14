@@ -1,0 +1,56 @@
+{% load humanize %}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Flag title</th>
+            <th>Flagged object</th>
+            <th>Flagged by</th>
+            <th>Flag type</th>
+            <th>Created</th>
+            <th>Resolved by</th>
+            <th>Resolution</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for flag in flags %}
+            <tr{% if flag.resolved %} class="active text-muted"{% endif %}}>
+                <td>{{ flag.id }}</td>
+                <td><a href="{{ flag.get_absolute_url }}">{{ flag.subject|truncatewords:20 }}</a></td>
+                <td><a href="{{ flag.object_model.get_absolute_url }}">{{ flag.object_model }}</a></td>
+                <td>
+                    <a href="{% url 'usermgmt:view_profile' flag.flagged_by.username %}">{{ flag.flagged_by.profile.get_display_name }}</a>
+                </td>
+                <td>
+                    <a href="{% url 'administration:view_flag' flag_id=flag.id %}">{{ flag.get_flag_type_display }}</a>
+                </td>
+                <td>
+                    <abbr data-toggle="tooltip" data-placement="bottom" title="{{ flag.ctime|date:'r' }}">{{ flag.ctime|naturaltime }}</abbr>
+                </td>
+                <td>
+                    {% if flag.resolved_by %}
+                        <a href="{% url 'usermgmt:view_profile' flag.resolved_by.username %}">{{ flag.resolved_by.profile.get_display_name }}</a>
+                    {% else %}
+                        <em>Unresolved</em>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if flag.resolution %}
+                        <span class="glyphicon glyphicon-ok"></span>
+                        {{ flag.resolution|truncatewords:20 }}
+                    {% else %}
+                        <span class="glyphicon glyphicon-time"></span>
+                        Pending
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">
+                    <em>No flags to display</em>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -7,12 +7,14 @@ import pypandoc
 import tempfile
 
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.html import strip_tags
 from taggit.managers import TaggableManager
 
+from administration.models import Flag
 from honeycomb_markdown import HoneycombMarkdown
 from usermgmt.group_models import FriendGroup
 
@@ -126,6 +128,7 @@ class Submission(models.Model):
     rating_count = models.PositiveIntegerField(default=0)
     counts = models.CharField(max_length=250)
     tags = TaggableManager()
+    flags = GenericRelation(Flag)
 
     def save(self, *args, **kwargs):
         """Overridden save method.
@@ -219,6 +222,12 @@ class Submission(models.Model):
             }
         else:
             return {'stars': '', 'average': 0, 'count': 0}
+
+    def get_active_flag(self):
+        """Retrieve flag if there is an active flag against this submission"""
+        active_flags = self.flags.filter(resolved=None)
+        if len(active_flags) > 0:
+            return active_flags[0]
 
     def get_absolute_url(self):
         """Gets the absolute URL of the image, reversed from patterns."""

@@ -29,11 +29,15 @@ from usermgmt.models import Notification
 @staff_member_required
 def list_all_applications(request):
     """View for listing all applications."""
-    applications = Application.objects.all()
+    if request.GET.get('all'):
+        applications = Application.objects.all()
+    else:
+        applications = Application.objects.filter(resolution='')
     return render(request, 'list_applications.html', {
         'title': 'All applications',
         'applications': applications,
-        'tab': 'applications'
+        'tab': 'applications',
+        'showing_inactive': request.GET.get('all'),
     })
 
 
@@ -42,12 +46,15 @@ def list_all_applications(request):
 @staff_member_required
 def list_social_applications(request):
     """View for listing only applications for social moderators."""
-    applications = Application.objects.filter(
-        application_type__in=Application.SOCIAL_TYPES)
+    query = Q(application_type__in=Application.SOCIAL_TYPES)
+    if request.GET.get('all') is None:
+        query &= Q(resolution='')
+    applications = Application.objects.filter(query)
     return render(request, 'list_applications.html', {
         'title': 'My applications',
         'applications': applications,
-        'tab': 'applications'
+        'tab': 'applications',
+        'showing_inactive': request.GET.get('all'),
     })
 
 
@@ -56,12 +63,15 @@ def list_social_applications(request):
 @staff_member_required
 def list_content_applications(request):
     """View for only listing applications for content moderators."""
-    applications = Application.objects.filter(
-        application_type__in=Application.CONTENT_TYPES)
+    query = Q(application_type__in=Application.CONTENT_TYPES)
+    if request.GET.get('all') is None:
+        query &= Q(resolution='')
+    applications = Application.objects.filter(query)
     return render(request, 'list_applications.html', {
         'title': 'My applications',
         'applications': applications,
-        'tab': 'applications'
+        'tab': 'applications',
+        'showing_inactive': request.GET.get('all'),
     })
 
 
@@ -125,12 +135,15 @@ def view_application(request, application_id=None):
 @login_required
 def list_participating_applications(request):
     """View for listing applications one is participing in."""
-    applications = Application.objects.filter(Q(applicant=request.user) |
-                                              Q(admin_contact=request.user))
+    query = (Q(applicant=request.user) | Q(admin_contact=request.user))
+    if request.GET.get('all') is None:
+        query &= Q(resolution='')
+    applications = Application.objects.filter(query)
     return render(request, 'list_applications.html', {
         'title': 'My applications',
         'applications': applications,
-        'tab': 'applications'
+        'tab': 'applications',
+        'showing_inactive': request.GET.get('all'),
     })
 
 

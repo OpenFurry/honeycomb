@@ -1,8 +1,10 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
+from administration.models import Flag
 from submissions.models import Submission
 
 
@@ -86,3 +88,5 @@ class AdLifecycle(models.Model):
     # Information about the ad's activity
     impressions = models.PositiveIntegerField(default=0)
     interactions = models.PositiveIntegerField(default=0)
+
+    flags = GenericRelation(Flag)

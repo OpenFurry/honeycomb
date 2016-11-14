@@ -294,7 +294,7 @@ def rate_submission(request, username=None, submission_id=None,
     reader = request.user
     author = submission.owner
 
-    # MAke sure the rating is valid
+    # Make sure the rating is valid
     try:
         rating = int(request.POST.get('rating', 0))
     except ValueError:
@@ -474,11 +474,13 @@ def delete_comment(request):
         if request.user == comment.owner:
             comment.deleted = True
             comment.deleted_by_object_owner = False
+            comment.body_raw = '~~deleted~~'
             comment.save()
             messages.success(request, "Comment deleted.")
         elif request.user == comment.target_object_owner:
             comment.deleted = True
             comment.deleted_by_object_owner = True
+            comment.body_raw = '~~deleted~~'
             comment.save()
             messages.success(request, "Comment deleted.")
         else:

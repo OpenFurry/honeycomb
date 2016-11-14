@@ -104,8 +104,8 @@ class Flag(models.Model):
     SOCIAL = 's'
     CONTENT = 'c'
     FLAG_TYPES = (
-        (SOCIAL, 'Social flags'),
-        (CONTENT, 'Content flags'),
+        (SOCIAL, 'Social'),
+        (CONTENT, 'Content'),
     )
 
     # The object being flagged
@@ -123,12 +123,23 @@ class Flag(models.Model):
     flagged_by = models.ForeignKey(User)
 
     # Flag information
-    flag_type = models.CharField(max_length=1, choices=FLAG_TYPES)
-    created = models.DateTimeField(auto_now_add=True)
+    flag_type = models.CharField(
+        max_length=1, choices=FLAG_TYPES, help_text="""Pick 'content' if the
+        issue is with the content of the object, such as a violation of the
+        acceptable upload policy.  Pick 'social' if the issue is with the way
+        the creator of the content is behaving, such as a violation of the
+        terms of service.""")
+    ctime = models.DateTimeField(auto_now_add=True)
     resolved = models.DateTimeField(null=True)
-    resolved_by = models.ForeignKey(User, related_name='resolved_flags')
-    subject = models.CharField(max_length=100)
-    body_raw = models.TextField()
+    resolved_by = models.ForeignKey(User, related_name='resolved_flags',
+                                    null=True)
+    resolution = models.TextField(blank=True)
+    subject = models.CharField(max_length=100, help_text="""Briefly describe
+    the issue with the content or user. (100 characters)""")
+    body_raw = models.TextField(verbose_name='body', help_text="""Describe
+    the issue with the content or the user.  Be as specific as possible,
+    including as many details and as much evidence as you can.  Markdown is
+    allowed.""")
     body_rendered = models.TextField()
 
     def get_absolute_url(self):
@@ -151,7 +162,14 @@ class Flag(models.Model):
             ])
         super(Flag, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return '{} (against {})'.format(self.subject, str(self.object_model))
+
+    def __unicode__(self):
+        return '{} (against {})'.format(self.subject, str(self.object_model))
+
     class Meta:
+        ordering = ['-ctime']
         permissions = (
             ('can_list_social_flags', 'Can list social flags'),
             ('can_view_social_flags', 'Can view social flags'),
@@ -182,7 +200,8 @@ class Ban(models.Model):
     reason_rendered = models.TextField()
 
     # Any administrative flags if applicable
-    flag = models.ManyToManyField(Flag, blank=True)
+    flags = models.ManyToManyField(Flag, blank=True,
+                                   verbose_name='Pertinent flags')
 
     def get_absolute_url(self):
         return reverse('administration:view_ban', kwargs={

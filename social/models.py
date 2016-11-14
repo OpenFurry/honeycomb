@@ -2,11 +2,15 @@ from __future__ import unicode_literals
 import markdown
 
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import (
+    GenericForeignKey,
+    GenericRelation,
+)
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.html import strip_tags
 
+from administration.models import Flag
 from honeycomb_markdown import HoneycombMarkdown
 from submissions.models import Submission
 
@@ -39,6 +43,8 @@ class Comment(models.Model):
     deleted = models.BooleanField(default=False)
     deleted_by_object_owner = models.BooleanField(default=False)
 
+    flags = GenericRelation(Flag)
+
     def save(self, *args, **kwargs):
         self.body_rendered = markdown.markdown(
             strip_tags(self.body_raw),
@@ -53,6 +59,22 @@ class Comment(models.Model):
                 HoneycombMarkdown(),
             ])
         super(Comment, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return "{}'s comment on {}".format(
+            self.owner.profile.get_display_name(),
+            str(self.object_model))
+
+    def __unicode__(self):
+        return "{}'s comment on {}".format(
+            self.owner.profile.get_display_name(),
+            str(self.object_model))
+
+    def get_active_flag(self):
+        """Retrieve flag if there is an active flag against this submission"""
+        active_flags = self.flags.filter(resolved=None)
+        if len(active_flags) > 0:
+            return active_flags[0]
 
     def get_absolute_url(self):
         return '{}#comment-{}'.format(

@@ -1,7 +1,7 @@
 Count	Location
    44	CONTRIBUTING.md
    13	DEPLOYING.md
-  104	Makefile
+  110	Makefile
     3	README.md
     9	RELEASE.md
     1	activitystream/__init__.py
@@ -14,28 +14,34 @@ Count	Location
   143	activitystream/views.py
     0	administration/__init__.py
     0	administration/admin.py
-  181	administration/application_views.py
+  194	administration/application_views.py
     4	administration/apps.py
-  118	administration/ban_views.py
-   45	administration/flag_views.py
-   37	administration/forms.py
-  177	administration/models.py
+  121	administration/ban_views.py
+  229	administration/flag_views.py
+   45	administration/forms.py
+  194	administration/models.py
   106	administration/templates/admin-tabs-snippet.html
    31	administration/templates/create_application.html
-   37	administration/templates/create_ban.html
-   23	administration/templates/dashboard.html
+   44	administration/templates/create_ban.html
+   40	administration/templates/create_flag.html
+   24	administration/templates/dashboard.html
    54	administration/templates/list-applications-snippet.html
    55	administration/templates/list-bans-snippet.html
-    9	administration/templates/list_applications.html
-   15	administration/templates/list_bans.html
+   55	administration/templates/list-flags-snippet.html
+   16	administration/templates/list_applications.html
+   16	administration/templates/list_bans.html
+   16	administration/templates/list_flags.html
    76	administration/templates/view_application.html
-   45	administration/templates/view_ban.html
-  533	administration/test_application.py
+   57	administration/templates/view_ban.html
+   81	administration/templates/view_flag.html
+    0	administration/templatetags/__init__.py
+   15	administration/templatetags/flag_extras.py
+  547	administration/test_application.py
   413	administration/test_ban.py
-  167	administration/test_flag.py
-  186	administration/tests.py
+  654	administration/test_flag.py
+  187	administration/tests.py
    66	administration/urls.py
-   36	administration/views.py
+   52	administration/views.py
     0	core/__init__.py
     0	core/admin.py
     4	core/apps.py
@@ -53,11 +59,11 @@ Count	Location
    14	core/search_indexes.py
     6	core/templates/404.html
    34	core/templates/activity-snippet.html
-  205	core/templates/base.html
+  227	core/templates/base.html
    11	core/templates/flatpages/default.html
    18	core/templates/flatpages/list.html
   102	core/templates/front.html
-    9	core/templates/permission_denied.html
+   14	core/templates/permission_denied.html
    65	core/templates/search/search.html
     0	core/templatetags/__init__.py
    28	core/templatetags/git_revno.py
@@ -81,22 +87,22 @@ Count	Location
    11	flatpage-defaults/about-terms.md
    16	gen-badge.sh
     0	honeycomb/__init__.py
-   14	honeycomb/middleware.py
+   17	honeycomb/middleware.py
     2	honeycomb/revno.py
-  148	honeycomb/settings.py
+  157	honeycomb/settings.py
    20	honeycomb/urls.py
    10	honeycomb/wsgi.py
   104	honeycomb_markdown.py
     0	promotion/__init__.py
     0	promotion/admin.py
     4	promotion/apps.py
-   58	promotion/models.py
+   61	promotion/models.py
     0	promotion/tests.py
     0	promotion/views.py
     0	publishers/__init__.py
     0	publishers/admin.py
     4	publishers/apps.py
-   13	publishers/models.py
+   16	publishers/models.py
     0	publishers/tests.py
     0	publishers/views.py
     7	run-coveralls.sh
@@ -105,52 +111,54 @@ Count	Location
     0	social/admin.py
     4	social/apps.py
    17	social/forms.py
-   64	social/models.py
+   82	social/models.py
    11	social/templates/confirm_unblock_user.html
   123	social/templates/notification-snippet.html
   237	social/templates/notifications_categories.html
    52	social/templates/notifications_timeline.html
-  919	social/tests.py
+  951	social/tests.py
    42	social/urls.py
-  465	social/views.py
+  467	social/views.py
   136	spec.md
     0	submissions/__init__.py
     0	submissions/admin.py
     4	submissions/apps.py
   238	submissions/folder_views.py
+   14	submissions/form_extras.py
    33	submissions/forms.py
-  212	submissions/models.py
+  220	submissions/models.py
+   49	submissions/templates/comment-body-snippet.html
    24	submissions/templates/confirm_delete_folder.html
    29	submissions/templates/confirm_delete_submission.html
    15	submissions/templates/edit_folder.html
   159	submissions/templates/edit_submission.html
    11	submissions/templates/list_root_folders.html
   102	submissions/templates/list_submissions.html
-   63	submissions/templates/subcomments-snippet.html
+   44	submissions/templates/subcomments-snippet.html
    21	submissions/templates/submission-list-snippet.html
    38	submissions/templates/update_submission_order_in_folder.html
-  163	submissions/templates/view_submission.html
+  249	submissions/templates/view_submission.html
   478	submissions/test_folders.py
-  863	submissions/tests.py
+  864	submissions/tests.py
    48	submissions/urls.py
    26	submissions/utils.py
-  276	submissions/views.py
+  298	submissions/views.py
     0	tags/__init__.py
     4	tags/apps.py
    12	tags/templates/list_tags.html
-   56	tags/templates/view_tag.html
+   76	tags/templates/view_tag.html
     0	tags/templatetags/__init__.py
    48	tags/templatetags/tag_extras.py
   116	tags/tests.py
    27	tags/urls.py
-   59	tags/views.py
+   78	tags/views.py
     0	usermgmt/__init__.py
     0	usermgmt/admin.py
     4	usermgmt/apps.py
    37	usermgmt/forms.py
    10	usermgmt/group_models.py
   119	usermgmt/group_views.py
-  147	usermgmt/models.py
+  169	usermgmt/models.py
    24	usermgmt/templates/confirm_delete_group.html
    20	usermgmt/templates/list_groups.html
   107	usermgmt/templates/profile-tabs-snippet.html
@@ -168,7 +176,7 @@ Count	Location
    15	usermgmt/templates/update_group.html
    49	usermgmt/templates/update_profile.html
    16	usermgmt/templates/view_group.html
-   54	usermgmt/templates/view_profile.html
+   81	usermgmt/templates/view_profile.html
     0	usermgmt/templatetags/__init__.py
    14	usermgmt/templatetags/form_extras.py
    23	usermgmt/templatetags/profile_extras.py
@@ -178,4 +186,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-11187	TOTAL
+12517	TOTAL

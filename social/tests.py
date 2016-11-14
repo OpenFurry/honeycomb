@@ -8,7 +8,10 @@ from .models import (
     Comment,
     Rating,
 )
-from administration.models import Application
+from administration.models import (
+    Application,
+    Flag,
+)
 from submissions.models import Submission
 from usermgmt.models import (
     Notification,
@@ -455,6 +458,39 @@ class TestEnjoySubmissionView(BaseSocialSubmissionViewTestCase):
                             'author.', status_code=403)
 
 
+class TestCommentModel(BaseSocialSubmissionViewTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super(TestCommentModel, cls).setUpTestData()
+        cls.comment = Comment(
+            owner=cls.foo,
+            target_object_owner=cls.foo,
+            object_model=cls.submission,
+            body_raw='foo')
+        cls.comment.save()
+
+    def test_str(self):
+        self.assertEqual(
+            self.comment.__str__(),
+            "Mx Foo Bar's comment on Submission by ~foo (id:1)")
+
+    def test_unicode(self):
+        self.assertEqual(
+            self.comment.__unicode__(),
+            "Mx Foo Bar's comment on Submission by ~foo (id:1)")
+
+    def test_get_active_flag(self):
+        flag = Flag(
+            flagged_by=self.foo,
+            object_model=self.comment,
+            flagged_object_owner=self.foo,
+            flag_type=Flag.CONTENT,
+            subject='user + submission1 + content + active',
+            body_raw='Test flag')
+        flag.save()
+        self.assertEqual(self.comment.get_active_flag(), flag)
+
+
 class TestPostCommentView(BaseSocialSubmissionViewTestCase):
     def test_form_renders_if_logged_in(self):
         self.client.login(username='bar',
@@ -679,7 +715,7 @@ class TestNotificationBadges(BaseSocialSubmissionViewTestCase):
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse('core:front'))
-        self.assertContains(response, '<span class="badge"></span>', count=5)
+        self.assertContains(response, '<span class="badge"></span>', count=6)
 
     def test_badges(self):
         Notification(
@@ -705,8 +741,9 @@ class TestNotificationBadges(BaseSocialSubmissionViewTestCase):
         self.client.login(username='foo',
                           password='a good password')
         response = self.client.get(reverse('core:front'))
-        self.assertContains(response, '<span class="badge">4</span>')
-        self.assertContains(response, '<span class="badge">1</span>', count=4)
+        self.assertContains(response, '<span class="badge">3</span>')
+        self.assertContains(response, '<span class="badge">1</span>',
+                            count=5)
 
 
 class TestViewNotificationsCategoriesView(BaseSocialSubmissionViewTestCase):

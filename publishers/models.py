@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+
+from administration.models import Flag
 
 
 class PublisherPage(models.Model):
@@ -23,3 +26,5 @@ class PublisherPage(models.Model):
 
     # Users who have been published by the publisher
     members = models.ManyToManyField(User)
+
+    flags = GenericRelation(Flag)

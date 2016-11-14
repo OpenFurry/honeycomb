@@ -9,13 +9,20 @@
         <form method="post">
             {% csrf_token %}
             {{ form.user }}
-            {{ form.flag }}
             <div class="form-group">
                 {{ form.end_date.errors }}
                 {{ form.end_date.label }}
                 {{ form.end_date|append_form_control }}
                 {% if form.end_date.help_text %}
                     <p class="help-block">{{ form.end_date.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.flags.errors }}
+                {{ form.flags.label }}
+                {{ form.flags|append_form_control }}
+                {% if form.flag.help_text %}
+                    <p class="help-block">{{ form.flags.help_text|safe }}</p>
                 {% endif %}
             </div>
             <div class="form-group">

@@ -58,6 +58,21 @@ class TestListAllApplicationsViewAsSuperuser(BaseAdminTestCase):
         self.assertContains(response, 'Create an ad')
         self.assertContains(response, 'Claim a publisher')
 
+    def test_renders_inactive_applications(self):
+        Application(
+            applicant=self.content_mod,
+            application_type=Application.CLAIM_PUBLISHER).save()
+        Application(
+            applicant=self.user,
+            resolution=Application.ACCEPTED,
+            application_type=Application.AD).save()
+        self.client.login(username='superuser',
+                          password='superuser pass')
+        response = self.client.get(reverse(
+            'administration:list_all_applications'), {'all': 1})
+        self.assertContains(response, 'Create an ad')
+        self.assertContains(response, 'Claim a publisher')
+
 
 @tag('as_user')
 class TestListSocialApplicationsViewAsUser(BaseAdminTestCase):
@@ -342,7 +357,7 @@ class TestViewApplicationViewAsSuperuser(BaseAdminTestCase):
         self.assertContains(response, 'Create an ad')
 
 
-class TestListParticipatingApplicationsViewAsUser(BaseAdminTestCase):
+class TestListParticipatingApplicationsView(BaseAdminTestCase):
     def test_renders_own_applications(self):
         self.client.login(username='superuser',
                           password='superuser pass')

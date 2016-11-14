@@ -1,63 +1,45 @@
-{% load form_extras %}
-{% load gravatar %}
-{% load humanize %}
+{% load flag_extras %}
 {% for comment in comments %}
-    <div id="comment-{{ comment.id }}">
-        <div class="panel panel-default">
-            <div class="panel-body">
-                {% if comment.deleted %}
-                    <em class="text-muted">This comment has been deleted by {% if comment.deleted_by_object_owner %}the page owner{% else %}the commenter{% endif %}.</em>
-                {% else %}
-                    <div class="comment-header">
-                        <a href="{% url 'usermgmt:view_profile' comment.owner.username %}">{{ comment.owner.email|gravatar }} {{ comment.owner.profile.get_display_name }}</a>
-                        &bullet; Posted <abbr data-toggle="tooltip" data-placement="bottom" title="{{ comment.ctime|date:'r' }}">{{ comment.ctime|naturaltime }}</abbr>
-                        &bullet; <a href="#comment-{{ comment.id }}"><span class="glyphicon glyphicon-link"></span> Direct link</a>
-                        {% if user == comment.owner or user == comment.target_object_owner %}
-                            <form class="inline pull-right" method="post" action="{% url 'social:delete_comment' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="comment_id" value="{{ comment.id }}" />
-                                <button type="submit" class="btn btn-danger btn-xs">
-                                    <span class="glyphicon glyphicon-remove"></span>
-                                    Delete comment
-                                </button>
-                            </form>
+    {% with flag=comment.get_active_flag %}
+        <div id="comment-{{ comment.id }}">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {% if comment.deleted %}
+                        <em class="text-muted">This comment has been deleted by {% if comment.deleted_by_object_owner %}the page owner{% else %}the commenter{% endif %}.</em>
+                    {% elif flag %}
+                        {# XXX funky indentation below, reader beware #}
+                        {# @makyo 2016-11-11 - if anyone finds a better way, by all means... #}
+                        {% if user|can_view_flagged_item:flag %}
+                            {% include 'comment-body-snippet.html' %}
+                            <div class="alert alert-danger">
+                                <p><em>
+                                    You can view this comment because you are a moderator or participant in this flag.  Other users cannot view this comment.
+
+                                    You can view the flag <a href="{{ flag.get_absolute_url }}">here</a>.
+                                </em></p>
+                        {% else %}
+                            <div class="alert-danger">
                         {% endif %}
-                    </div>
-                    <div class="comment-body">
-                        {{ comment.body_rendered|safe }}
-                    </div>
-                    {% if can_reply and user.is_authenticated %}
-                        <div class="comment-reply-form-wrapper">
-                            <a data-toggle="collapse" href="#reply-{{ comment.id }}" aria-expanded="false" aria-controls="collapseExample">Post reply</a>
-                            <div id="reply-{{ comment.id }}" class="comment-reply-form collapse">
-                                <div class="well">
-                                    <form action="{% url 'social:post_comment' %}" method="post">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="parent" value="{{ comment.id }}" />
-                                        {{ comment_form.content_type }}
-                                        {{ comment_form.object_id }}
-                                        <div class="form-group">
-                                            {{ comment_form.body_raw.label }}
-                                            {{ comment_form.body_raw|append_form_control }}
-                                        </div>
-                                        <button class="btn btn-primary" type="submit">Post reply</button>
-                                    </form>
-                                </div>
+                                <p><em>
+                                    This comment has been flagged for administrative review.
+                                </em></p>
                             </div>
-                        </div>
+                        {# XXX end funky indentation #}
+                    {% else %}
+                        {% include 'comment-body-snippet.html' %}
                     {% endif %}
-                {% endif %}
-            </div>
-        </div>
-        {% if comment.children.count > 0 %}
-            <div class="small text-right">
-                <a data-toggle="collapse" href="#replies-{{ comment.id }}" aria-expanded="false" aria-controls="replies-{{ comment.id }}"><span class="glyphicon glyphicon-th-list"></span> Hide replies</a>
-            </div>
-            <div class="comment-reply">
-                <div class="collapse in" id="replies-{{ comment.id }}">
-                    {% include 'subcomments-snippet.html' with comments=comment.children.all can_reply=can_reply %}
                 </div>
             </div>
-        {% endif %}
-    </div>
+            {% if comment.children.count > 0 %}
+                <div class="small text-right">
+                    <a data-toggle="collapse" href="#replies-{{ comment.id }}" aria-expanded="false" aria-controls="replies-{{ comment.id }}"><span class="glyphicon glyphicon-th-list"></span> Hide replies</a>
+                </div>
+                <div class="comment-reply">
+                    <div class="collapse in" id="replies-{{ comment.id }}">
+                        {% include 'subcomments-snippet.html' with comments=comment.children.all can_reply=can_reply %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% endwith %}
 {% endfor %}

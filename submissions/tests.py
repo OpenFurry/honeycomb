@@ -176,6 +176,7 @@ class TestFolderModel(ModelTest):
 class SubmissionsViewsBaseTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
+        super(SubmissionsViewsBaseTestCase, cls).setUpTestData()
         cls.foo = User.objects.create_user('foo', 'foo@example.com',
                                            'a good password')
         cls.foo.profile = Profile(profile_raw='Wow!',

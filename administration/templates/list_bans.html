@@ -6,10 +6,11 @@
     <div class="col-md-8 col-md-offset-2">
         <p class="pull-right">
             {% if showing_inactive %}
-                <a href=".">Hide inactive</a></p>
+                <a href=".">Hide inactive</a>
             {% else %}
-                <a href="?all=true">View inactive</a></p>
+                <a href="?all=true">View inactive</a>
             {% endif %}
+        </p>
         {% include 'list-bans-snippet.html' %}
     </div>
 </div>

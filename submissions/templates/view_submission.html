@@ -4,6 +4,18 @@
 {% load gravatar %}
 
 {% block content %}
+{% if active_flag %}
+    <div class="alert alert-danger">
+        <h2>Submission flagged <small>{{ active_flag.subject }}</small></h2>
+        <p>This submission has been flagged by {{ active_flag.flagged_by.profile.get_display_name }} for a {{ active_flag.get_flag_type_display|lower }} violation.</p>
+        {% if user in active_flag.participants.all %}
+            <p>You are marked as a participant in this flag; only moderators participants in this flag may view this submission.</p>
+        {% else %}
+            <p>You have permissions to view this submission because of your moderator status; only moderators participants in this flag may view this submission.</p>
+        {% endif %}
+        <p>You may view the flag <a href="{{ active_flag.get_absolute_url }}">here</a></p>
+    </div>
+{% endif %}
 {% if submission.cover %}
     <div class="row">
         <div class="col-md-8 col-md-offset-2 text-center">
@@ -52,19 +64,72 @@
                         {% endfor %}
                     </dd>
                 </dl>
-                {% if user == submission.owner %}
+                {% if user.is_authenticated %}
                     <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Submission actions <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li>
-                                <a href="{% url 'submissions:edit_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}"><span class="glyphicon glyphicon-edit"></span> Edit submission</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'submissions:delete_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}"><span class="glyphicon glyphicon-remove"></span> Delete submission</a>
-                            </li>
-                            <li><a href="#"><span class="glyphicon glyphicon-usd"></span> Promote submission</a></li>
+                            {% if user == submission.owner %}
+                                <li>
+                                    <a href="{% url 'submissions:edit_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}"><span class="glyphicon glyphicon-edit"></span> Edit submission</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'submissions:delete_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}"><span class="glyphicon glyphicon-remove"></span> Delete submission</a>
+                                </li>
+                                <li><a href="#"><span class="glyphicon glyphicon-usd"></span> Promote submission</a></li>
+                            {% else %}
+                                <li><a>
+                                    Rate:
+                                    <form method="post" action="{% url 'social:rate_submission' username=submission.owner.username submission_id=submission.id submission_slug=submission.slug %}" class="inline">
+                                        {% csrf_token %}
+                                        <button class="link-button" name="rating" value="1" type="submit">&#x2606;</button>
+                                        <button class="link-button" name="rating"  value="2" type="submit">&#x2606;</button>
+                                        <button class="link-button" name="rating"  value="3" type="submit">&#x2606;</button>
+                                        <button class="link-button" name="rating"  value="4" type="submit">&#x2606;</button>
+                                        <button class="link-button" name="rating"  value="5" type="submit">&#x2606;</button>
+                                    </form>
+                                </a></li>
+                                <li>
+                                    {% if submission in user.profile.favorited_submissions.all %}
+                                        <a><form action="unfavorite/" method="post" class="inline">
+                                            {% csrf_token %}
+                                            <button class="link-button" type="submit">
+                                                <span class="glyphicon glyphicon-heart-empty"></span>
+                                                Unfavorite
+                                            </button>
+                                        </form></a>
+                                    {% else %}
+                                        <a><form action="favorite/" method="post" class="inline">
+                                            {% csrf_token %}
+                                            <button class="link-button" type="submit">
+                                                <span class="glyphicon glyphicon-heart"></span>
+                                                Favorite
+                                            </button>
+                                        </form></a>
+                                    {% endif %}
+                                </li>
+                                {% if submission.can_enjoy %}
+                                    <li>
+                                        <a><form action="enjoy/" method="post" class="inline">
+                                            {% csrf_token %}
+                                            <button class="link-button" type="submit">
+                                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                                                I just enjoyed this submission!
+                                            </button>
+                                        </form></a>
+                                    </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{% url 'administration:create_flag' %}?content_type=submissions:submission&amp;object_id={{ submission.id }}">
+                                        <span class="glyphicon glyphicon-flag"></span>
+                                        Flag for administrative review
+                                    </a>
+                                </li>
+                                {% if perms.promotion.can_highlight_submissions %}
+                                    <li><a>Highlight</a></li>
+                                {% endif %}
+                            {% endif %}
                         </ul>
                     </div>
                 {% endif %}
@@ -90,40 +155,61 @@
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    Actions
-                </div>
                 <div class="panel-body text-center">
-                    <form action="rate/" method="post" class="inline">
-                        {% csrf_token %}
-                        <button class="link-button" name="rating" value="1" type="submit">&#x2606;</button>
-                        <button class="link-button" name="rating"  value="2" type="submit">&#x2606;</button>
-                        <button class="link-button" name="rating"  value="3" type="submit">&#x2606;</button>
-                        <button class="link-button" name="rating"  value="4" type="submit">&#x2606;</button>
-                        <button class="link-button" name="rating"  value="5" type="submit">&#x2606;</button>
-                    </form> -
-                    {% if submission in user.profile.favorited_submissions.all %}
-                        <a><form action="unfavorite/" method="post" class="inline">
-                            {% csrf_token %}
-                            <button class="link-button" type="submit">
-                                Unfavorite
-                            </button>
-                        </form></a>
-                    {% else %}
-                        <a><form action="favorite/" method="post" class="inline">
-                            {% csrf_token %}
-                            <button class="link-button" type="submit">
-                                Favorite
-                            </button>
-                        </form></a>
-                    {% endif %} -
-                    {% if submission.can_enjoy %}
-                        <a><form action="enjoy/" method="post" class="inline">
-                            {% csrf_token %}
-                            <button class="link-button" type="submit">
-                                I just read and enjoyed this submission!
-                            </button>
-                        </form></a>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <form action="rate/" method="post" class="inline">
+                                {% csrf_token %}
+                                <button class="link-button" name="rating" value="1" type="submit">&#x2606;</button>
+                                <button class="link-button" name="rating"  value="2" type="submit">&#x2606;</button>
+                                <button class="link-button" name="rating"  value="3" type="submit">&#x2606;</button>
+                                <button class="link-button" name="rating"  value="4" type="submit">&#x2606;</button>
+                                <button class="link-button" name="rating"  value="5" type="submit">&#x2606;</button>
+                            </form>
+                        </div>
+                        <div class="col-md-3">
+                            {% if submission in user.profile.favorited_submissions.all %}
+                                <a><form action="unfavorite/" method="post" class="inline">
+                                    {% csrf_token %}
+                                    <button class="link-button" type="submit">
+                                        <span class="glyphicon glyphicon-heart-empty"></span>
+                                        Unfavorite
+                                    </button>
+                                </form></a>
+                            {% else %}
+                                <a><form action="favorite/" method="post" class="inline">
+                                    {% csrf_token %}
+                                    <button class="link-button" type="submit">
+                                    <span class="glyphicon glyphicon-heart"></span>
+                                        Favorite
+                                    </button>
+                                </form></a>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            {% if submission.can_enjoy %}
+                                <a><form action="enjoy/" method="post" class="inline">
+                                    {% csrf_token %}
+                                    <button class="link-button" type="submit">
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        I just enjoyed this submission!
+                                    </button>
+                                </form></a>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'administration:create_flag' %}?content_type=submissions:submission&amp;object_id={{ submission.id }}">
+                                <span class="glyphicon glyphicon-flag"></span>
+                                Flag for administrative review
+                            </a>
+                        </div>
+                    </div>
+                    {% if perms.promotion.can_highlight_submission %}
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <a>Highlight</a>
+                            </div>
+                        </div>
                     {% endif %}
                 </div>
             </div>

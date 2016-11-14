@@ -17,6 +17,7 @@ class BaseAdminTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        super(BaseAdminTestCase, cls).setUpTestData()
         social_moderators = Group.objects.get(name='Social moderators')
         content_moderators = Group.objects.get(name='Content moderators')
         cls.user = User.objects.create_user('user', 'user@example.com',
