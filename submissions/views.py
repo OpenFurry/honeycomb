@@ -140,7 +140,7 @@ def view_submission(request, username=None, submission_id=None,
     author = submission.owner
     try:
         submission = Submission.objects.get(Q(id=submission_id) & (
-            filters_for_authenticated_user(reader) if
+            filters_for_authenticated_user(reader, blocked_tags=False) if
             reader.is_authenticated else filters_for_anonymous_user()))
     except Submission.DoesNotExist:
         # XXX Perhaps we should distinguish between 403 and 404 at some point

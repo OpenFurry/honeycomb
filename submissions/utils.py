@@ -1,7 +1,7 @@
 from django.db.models import Q
 
 
-def filters_for_authenticated_user(reader):
+def filters_for_authenticated_user(reader, blocked_tags=True):
     """Gets submission filters for an authenticated user.
 
     Args:
@@ -24,6 +24,10 @@ def filters_for_authenticated_user(reader):
     query &= (Q(restricted_to_groups=False) |
               (Q(restricted_to_groups=True) &
                Q(allowed_groups__in=reader.friendgroup_set.all())))
+
+    # Filter out blocked tags if we've been asked
+    if blocked_tags:
+        query &= ~Q(tags__in=reader.profile.blocked_tags.all())
 
     # Shortcut to allow authors all access
     query = Q(owner=reader) | query

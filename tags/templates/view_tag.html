@@ -15,7 +15,7 @@
 {% endif %}
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
-        <p>
+        <div class="pull-left">
             <em>Showing results {{ submissions.start_index }} through {{ submissions.end_index }} of {{ submissions.paginator.count }}</em>
             {% if not active_flag %}
                 <span class="pull-right">
@@ -25,7 +25,50 @@
                     </a>
                 </span>
             {% endif %}
-        </p>
+        </div>
+        {% if user.is_authenticated %}
+            <div class="pull-right">
+                {% if tag not in user.profile.favorite_tags.all %}
+                    {% if tag not in user.profile.blocked_tags.all %}
+                        <form method="post" class="inline" action="{% url 'tags:favorite_tag' tag_slug=tag.slug %}">
+                            {% csrf_token %}
+                            <button class="btn btn-success" type="submit">
+                                <span class="glyphicon glyphicon-plus"></span>
+                                Favorite tag
+                            </button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <form method="post" class="inline" action="{% url 'tags:unfavorite_tag' tag_slug=tag.slug %}">
+                        {% csrf_token %}
+                        <button class="btn btn-warning" type="submit">
+                            <span class="glyphicon glyphicon-minus"></span>
+                            Unfavorite tag
+                        </button>
+                    </form>
+                {% endif %}
+                {% if tag not in user.profile.blocked_tags.all %}
+                    {% if tag not in user.profile.favorite_tags.all %}
+                        <form method="post" class="inline" action="{% url 'tags:block_tag' tag_slug=tag.slug %}">
+                            {% csrf_token %}
+                            <button class="btn btn-danger" type="submit">
+                                <span class="glyphicon glyphicon-ban-circle"></span>
+                                Block tag
+                            </button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <form method="post" class="inline" action="{% url 'tags:unblock_tag' tag_slug=tag.slug %}">
+                        {% csrf_token %}
+                        <button class="btn btn-warning" type="submit">
+                            <span class="glyphicon glyphicon-ok-circle"></span>
+                            Unblock tag
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+        <p class="clearfix">&nbsp;</p>
     </div>
 </div>
 <div class="row">
