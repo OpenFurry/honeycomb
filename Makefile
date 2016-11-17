@@ -87,6 +87,12 @@ testone: ## Run tests in py3.5 only.
 testtags: ## Run only tests tagged with a certain tag or tags (comma separated) passed through the TAGS environment variable.
 	venv/bin/python manage.py test --parallel --verbosity=2 $(TESTTAGS_ARGS)
 
+.PHONY: rapidcoverage
+rapidcoverage: ## Run tests in four parallel threads and generate coverage from that (may be unstable)
+	venv/bin/coverage erase
+	detox -e rapidcov-1,rapidcov-2,rapidcov-3,rapidcov-4
+	tox -e rapidcoverage
+
 .PHONY: test-travis
 test-travis: ## Test target for travis-ci use.
 	flake8
@@ -122,6 +128,9 @@ check-sysdeps: ## Check that system dependencies are met.
 	@printf "\e[31mChecking for tox...\e[0m"
 	@tox --version
 	@printf "\e[32m- tox found\e[0m\n\n"
+	@printf "\e[31mChecking for detox...\e[0m"
+	@detox --version
+	@printf "\e[32m- detox found\e[0m\n\n"
 	@printf "\e[31mChecking for virtualenv...\e[0m"
 	@virtualenv --version
 	@printf "\e[32m- virtualenv found\e[0m\n\n"
