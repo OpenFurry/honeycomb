@@ -1,3 +1,15 @@
+## All about tags
+
+Tags are a very general way to categorize submissions.  A submission can have many tags, and a tag can belong to many submissions.  This means that you can describe what's happening in a submission through the use of tags.  For instance, you could say that your submission is fiction, involves romance between a homosexual couple and has violence (but not between the members of the relationship).  You can get as general or as specific as you want with tags.
+
+A lot of different sites have tags like this, whether they call them 'categories' on a news site or 'hashtags' on Twitter.  Honeycomb allows you to do a few neat things with tags, however.
+
+Of course, you can list all tags on the site within a tag cloud, which shows tags according to size, where the more popular a tag is, the larger the text is.  You can list all submissions tagged with a certain tag, as well, which lets you find submissions that might also contain something that you enjoy.
+
+To that end, you can favorite tags on Honeycomb.  This lets you follow submissions that contain topics that you like.  For instance, you could favorite 'science fiction', 'foxes', and 'humor', and easily have a list of submissions that fall under one or more of those tags.
+
+Not everyone likes everything, though, and to that end, Honeycomb allows you to block a tag.  For instance, if you just *hate* science fiction, you could block that tag and then submissions tagged with 'science fiction' would no longer show up in lists of submissions for you (though you'll still be able to view a submission with blocked tags directly, if someone provides you with the link).  Of course, you can remove favorites and submissions to change the way you view submissions.
+
 ## Tagging submissions
 
 Honeycomb uses a tagging system called *taggit*.  Taggit allows you to tag in several ways!  You can tag your submissions as a comma separated list of tags - if you need to use a comma in a tag for some reason, you can wrap the tag in quotes (e.g: `"look ma, no hands"`) - or, if you want to be super simple, by just a space-delimited set of words.  The tagging system is fairly flexible, and treats tag inputs like such:

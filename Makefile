@@ -89,6 +89,7 @@ testtags: ## Run only tests tagged with a certain tag or tags (comma separated) 
 
 .PHONY: rapidcoverage
 rapidcoverage: ## Run tests in four parallel threads and generate coverage from that (may be unstable)
+	tox --notest -e 3.5
 	venv/bin/coverage erase
 	detox -e rapidcov-1,rapidcov-2,rapidcov-3,rapidcov-4
 	tox -e rapidcoverage

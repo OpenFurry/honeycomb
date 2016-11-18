@@ -9,6 +9,7 @@ from django.contrib.contenttypes.fields import (
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.html import strip_tags
+from taggit.models import Tag
 
 from .group_models import FriendGroup
 from administration.models import Flag
@@ -36,6 +37,10 @@ class Profile(models.Model):
     # Key/value pairs of simple profile information
     # (favorite genre, editor, etc)
     attributes = models.TextField(blank=True)
+
+    # Content filter settings
+    favorite_tags = models.ManyToManyField(Tag, related_name='favorited_by')
+    blocked_tags = models.ManyToManyField(Tag, related_name='blocked_by')
 
     # Additional settings
     banned = models.BooleanField(default=False)
