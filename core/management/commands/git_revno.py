@@ -21,6 +21,10 @@ class Command(BaseCommand):
         """
         revno = subprocess.check_output(
             ['git', 'rev-parse', '--verify', 'HEAD']).strip()
+        try:
+            revno = revno.decode()
+        except:
+            pass
 
         with open(os.sep.join(['honeycomb', 'revno.py']), 'w') as f:
             f.write("GIT_REVNO = '{}'\nVERSION = '{}'\n".format(

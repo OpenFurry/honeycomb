@@ -49,7 +49,7 @@ Count	Location
     0	core/management/__init__.py
     0	core/management/commands/__init__.py
     7	core/management/commands/clear_old_notifications.py
-   20	core/management/commands/git_revno.py
+   24	core/management/commands/git_revno.py
     7	core/management/commands/rotate_activitystream.py
    15	core/management/commands/test_git_revno.py
    40	core/management/commands/test_update_flatpages.py
@@ -188,4 +188,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-12886	TOTAL
+12890	TOTAL
