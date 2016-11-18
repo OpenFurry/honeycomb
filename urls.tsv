@@ -100,11 +100,12 @@
 /submit/	submissions.views.submit	submissions:submit	
 /tags/	tags.views.list_tags	tags:list_tags	
 /tags/favorites/	tags.views.list_submissions_with_favorite_tags	tags:list_submissions_with_favorite_tags	
+/tags/favorites/<page>/	tags.views.list_submissions_with_favorite_tags	tags:list_submissions_with_favorite_tags	
 /tags/tag/<tag_slug>/	tags.views.view_tag	tags:view_tag	
 /tags/tag/<tag_slug>/<page>/	tags.views.view_tag	tags:view_tag	
 /tags/tag/<tag_slug>/block/	tags.views.block_tag	tags:block_tag	
 /tags/tag/<tag_slug>/favorite/	tags.views.favorite_tag	tags:favorite_tag	
-/tags/tag/<tag_slug>/unblock/	tags.views.block_tag	tags:block_tag	
+/tags/tag/<tag_slug>/unblock/	tags.views.unblock_tag	tags:unblock_tag	
 /tags/tag/<tag_slug>/unfavorite	tags.views.unfavorite_tag	tags:unfavorite_tag	
 /uploads/<path>	django.views.static.serve		
 /~<username>/<submission_id>-<submission_slug>/	submissions.views.view_submission	submissions:view_submission	

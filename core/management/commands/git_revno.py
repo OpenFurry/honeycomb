@@ -24,4 +24,4 @@ class Command(BaseCommand):
 
         with open(os.sep.join(['honeycomb', 'revno.py']), 'w') as f:
             f.write("GIT_REVNO = '{}'\nVERSION = '{}'\n".format(
-                revno, kwargs['tag']))
+                str(revno), kwargs['tag']))

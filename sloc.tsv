@@ -1,7 +1,7 @@
 Count	Location
    44	CONTRIBUTING.md
    13	DEPLOYING.md
-  110	Makefile
+  119	Makefile
     3	README.md
     9	RELEASE.md
     1	activitystream/__init__.py
@@ -36,6 +36,7 @@ Count	Location
    81	administration/templates/view_flag.html
     0	administration/templatetags/__init__.py
    15	administration/templatetags/flag_extras.py
+   16	administration/templatetags/test_flag_extras.py
   547	administration/test_application.py
   413	administration/test_ban.py
   654	administration/test_flag.py
@@ -82,7 +83,7 @@ Count	Location
     0	flatpage-defaults/about-help-promoting.md
     0	flatpage-defaults/about-help-publishers.md
    30	flatpage-defaults/about-help-submissions.md
-   35	flatpage-defaults/about-help-tags.md
+   40	flatpage-defaults/about-help-tags.md
     0	flatpage-defaults/about-help-user.md
    11	flatpage-defaults/about-terms.md
    16	gen-badge.sh
@@ -141,24 +142,25 @@ Count	Location
   478	submissions/test_folders.py
   864	submissions/tests.py
    48	submissions/urls.py
-   26	submissions/utils.py
+   28	submissions/utils.py
   298	submissions/views.py
     0	tags/__init__.py
     4	tags/apps.py
+   66	tags/templates/list_submissions_with_favorite_tags.html
    12	tags/templates/list_tags.html
-   76	tags/templates/view_tag.html
+  119	tags/templates/view_tag.html
     0	tags/templatetags/__init__.py
    48	tags/templatetags/tag_extras.py
-  116	tags/tests.py
-   27	tags/urls.py
-   78	tags/views.py
+  276	tags/tests.py
+   30	tags/urls.py
+  140	tags/views.py
     0	usermgmt/__init__.py
     0	usermgmt/admin.py
     4	usermgmt/apps.py
    37	usermgmt/forms.py
    10	usermgmt/group_models.py
   119	usermgmt/group_views.py
-  169	usermgmt/models.py
+  172	usermgmt/models.py
    24	usermgmt/templates/confirm_delete_group.html
    20	usermgmt/templates/list_groups.html
   107	usermgmt/templates/profile-tabs-snippet.html
@@ -186,4 +188,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-12517	TOTAL
+12886	TOTAL

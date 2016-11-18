@@ -1,2 +1,2 @@
-GIT_REVNO = '559368953e5c06fad31d3a465966e0504a0bf260'
+GIT_REVNO = 'b'38b71df39dde6efc0ab5ef20e364975ddee83469''
 VERSION = 'pre-release'

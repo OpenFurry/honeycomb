@@ -137,6 +137,9 @@ def block_tag(request, tag_slug=None):
     tag = get_object_or_404(Tag, slug=tag_slug)
     if tag in request.user.profile.blocked_tags.all():
         messages.warning(request, "You have already blocked that tag")
+    elif tag in request.user.profile.favorite_tags.all():
+        messages.warning(request, "This tag is in your favorites; unfavorite "
+                         "it first before blocking")
     else:
         request.user.profile.blocked_tags.add(tag)
         messages.success(request, "Tag blocked. You will no longer see "
