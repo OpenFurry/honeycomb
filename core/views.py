@@ -4,8 +4,6 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
-from haystack.generic_views import SearchView
-from haystack.forms import SearchForm
 
 from activitystream.models import Activity
 from activitystream.views import _get_sitewide_data
@@ -82,21 +80,3 @@ def helppage_list(request):
         'title': 'Help',
         'prefix': reverse('core:helppage_list'),
     })
-
-
-class BasicSearchView(SearchView):
-    """View for searching submissions on the site."""
-    # TODO implement in a more understandable way
-    # @makyo 2016-11-06 #37
-    template_name = 'search/search.html'
-    form_class = SearchForm
-
-    def get(self, request, *args, **kwargs):
-        """Gets the search results and creates an activity if needed."""
-        if (request.GET.get('page') is None
-                and request.GET.get('q') is not None):
-            Activity.create(
-                'search',
-                'basic_search',
-                request.user if request.user.is_authenticated else None)
-        return super(BasicSearchView, self).get(request, *args, **kwargs)
