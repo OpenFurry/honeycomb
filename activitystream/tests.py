@@ -39,27 +39,21 @@ class TestModels(ActivityBaseTestCase):
 
 class TestGetStreamView(ActivityBaseTestCase):
     def generate_activity_items(self):
-        self.client.get(reverse('core:basic_search'), {'q': 'asdf'})
         self.client.login(username='foo',
                           password='a good password')
-        self.client.get(reverse('core:basic_search'), {'q': 'asdf'})
         self.client.logout()
         self.client.login(username='bar',
                           password='another good password')
-        self.client.get(reverse('core:basic_search'), {'q': 'asdf'})
 
     def test_full_stream(self):
         self.generate_activity_items()
         response = self.client.get(reverse('activitystream:get_stream'))
         data = json.loads(response.content.decode('utf-8'))
-        self.assertEqual(len(data), 8)
+        self.assertEqual(len(data), 5)
         self.assertEqual([item['type'] for item in data], [
-            'search:basic_search',
             'user:login',
             'user:logout',
-            'search:basic_search',
             'user:login',
-            'search:basic_search',
             'user:reg',
             'user:reg',
         ])
@@ -71,12 +65,10 @@ class TestGetStreamView(ActivityBaseTestCase):
                 'models': 'auth:user',
             }))
         data = json.loads(response.content.decode('utf-8'))
-        self.assertEqual(len(data), 7)
+        self.assertEqual(len(data), 5)
         self.assertEqual([item['type'] for item in data], [
-            'search:basic_search',
             'user:login',
             'user:logout',
-            'search:basic_search',
             'user:login',
             'user:reg',
             'user:reg',
@@ -90,10 +82,9 @@ class TestGetStreamView(ActivityBaseTestCase):
                 'object_id': self.foo.id,
             }))
         data = json.loads(response.content.decode('utf-8'))
-        self.assertEqual(len(data), 4)
+        self.assertEqual(len(data), 3)
         self.assertEqual([item['type'] for item in data], [
             'user:logout',
-            'search:basic_search',
             'user:login',
             'user:reg',
         ])
@@ -101,14 +92,13 @@ class TestGetStreamView(ActivityBaseTestCase):
     def test_limit_to_activity_type(self):
         self.generate_activity_items()
         response = self.client.get(reverse('activitystream:get_stream'), {
-            'type': 'search:basic_search',
+            'type': 'user:reg',
         })
         data = json.loads(response.content.decode('utf-8'))
-        self.assertEqual(len(data), 3)
+        self.assertEqual(len(data), 2)
         self.assertEqual([item['type'] for item in data], [
-            'search:basic_search',
-            'search:basic_search',
-            'search:basic_search',
+            'user:reg',
+            'user:reg',
         ])
 
 

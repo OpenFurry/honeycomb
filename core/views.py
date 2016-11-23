@@ -4,8 +4,6 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
-from haystack.generic_views import SearchView
-from haystack.forms import SearchForm
 
 from activitystream.models import Activity
 from activitystream.views import _get_sitewide_data

@@ -82,9 +82,6 @@ class Activity(models.Model):
         ('publisher:delete', 'publisher: deleted'),
         ('publisher:view', 'publisher: viewed'),
         ('publisher:claimed', 'publisher: claimed'),
-
-        # Search
-        ('search:basic_search', 'search: basic search run'),
     )
 
     activity_time = models.DateTimeField(auto_now_add=True)
