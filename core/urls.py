@@ -1,7 +1,9 @@
-from django.conf.urls import url
+from django.conf.urls import (
+    include,
+    url,
+)
 
 from .views import (
-    BasicSearchView,
     flatpage_list,
     front,
     helppage_list,
@@ -12,5 +14,5 @@ urlpatterns = [
     url('^$', front, name='front'),
     url('^about/$', flatpage_list, name='flatpage_list'),
     url('^about/help/$', helppage_list, name='helppage_list'),
-    url('^search/$', BasicSearchView.as_view(), name='basic_search'),
+    url('^search/', include('haystack.urls')),
 ]

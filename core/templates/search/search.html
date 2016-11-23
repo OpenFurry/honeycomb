@@ -18,9 +18,10 @@
 
             {% if query %}
                 <h3>Results</h3>
+                <p>Showing results {{ page.start_index }} through {{ page.end_index }} of {{ page.paginator.count }}.</p>
 
                 {% for result in page.object_list %}
-                    {% include "submission-list-snippet.html" with submission=result.object %}
+                    {% include "submission-list-snippet.html" with submission=result.object author=result.object.owner %}
                 {% empty %}
                     <p>No results found.</p>
                 {% endfor %}

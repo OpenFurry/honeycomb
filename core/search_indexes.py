@@ -1,5 +1,6 @@
-import datetime
+from django.utils import timezone
 from haystack import indexes
+
 from submissions.models import Submission
 
 
@@ -12,7 +13,7 @@ class SubmissionIndex(indexes.SearchIndex, indexes.Indexable):
     def get_model(self):
         return Submission
 
-    def index_queryset(self):
+    def index_queryset(self, using=None):
         """Used when the entire index for model is updated."""
         return self.get_model().objects.filter(
-            ctime__lte=datetime.datetime.now())
+            ctime__lte=timezone.now())
