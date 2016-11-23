@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if request.user.is_authenticated %}
+{% if user.is_authenticated %}
     <div class="alert alert-warning">
         Whoops!  You're already registered and logged in!  Perhaps you want to <a href="{% url 'logout' %}">log out</a>?
     </div>

@@ -41,3 +41,5 @@ Additionally, the following resources contributed to make the Honeycomb project 
 
 [Coveralls.io](https://travis-ci.org/)
 :   Travis CI ensures that all tests pass whenever a change is made to the source code of Honeycomb.  The current build status of the master branch of Honeycomb is [![Build status](https://travis-ci.org/OpenFurry/honeycomb.svg?branch=master)](https://travis-ci.org/OpenFurry/honeycomb)
+
+The name references the common area within the rabbits' warren in the book *Watership Down* and is intended to evoke a sense of a comfortable place of community and creativity.  Thanks to Searska for the suggestion!
