@@ -13,6 +13,7 @@ Markdown is a simple way to format your text for the web so that it's readable b
     * [Block quotes](#block-quotes)
     * [Horizontal rule](#horizontal-rule)
 * [Extensions](#extensions)
+    * [Verse](#verse)
     * [Tables](#tables)
     * [Footnotes](#footnotes)
     * [Abbreviations](#abbreviations)
@@ -341,6 +342,8 @@ Or indent the text you want preformated by four spaces (dots representing spaces
 ........our vineyards that are in bloom.
 ```
 
+*NB:* Despite using verse for the above examples, if you want to not have your verse look like code, there is a [verse](#verse) mode that you can use!
+
 ---
 
 ### Block quotes
@@ -375,6 +378,25 @@ You can include a horizontal rule like the one just below this paragraph by ente
 ## Extensions
 
 We've just gone over what goes into stock markdown, but the format is definitely extensible, and we've added quite a few add-ons to add more features.
+
+### Verse
+
+Above, I gave a poetic example through the use of pre-formatted text.  For actual poetry and verse, though, there is a more specific format that can be used that won't leave your text looking like code.  As spacing is left intact, you also don't need to do the two-spaces-after-each-line that you would have to do for line breaks after normal text.  Just use three single quotes to start a poetry fence:
+
+'''
+*14* My dove in the clefts of the rock,
+    in the hiding places on the mountainside,
+show me your face,
+    let me hear your voice;
+for your voice is sweet,
+    and your face is lovely.
+*15* Catch for us the foxes,
+    the little foxes
+that ruin the vineyards,
+    our vineyards that are in bloom.
+'''
+
+All formatting is obeyed within a fence, as well, so you can italicize/quote/whatever within the fence as shown above with the numbered verses.
 
 ### Tables
 
