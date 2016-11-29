@@ -7,9 +7,9 @@ Count	Location
     1	activitystream/__init__.py
     0	activitystream/admin.py
     6	activitystream/apps.py
-   94	activitystream/models.py
+   93	activitystream/models.py
    77	activitystream/signals.py
-  135	activitystream/tests.py
+  125	activitystream/tests.py
    10	activitystream/urls.py
   143	activitystream/views.py
     0	administration/__init__.py
@@ -65,16 +65,16 @@ Count	Location
    18	core/templates/flatpages/list.html
   102	core/templates/front.html
    14	core/templates/permission_denied.html
-   65	core/templates/search/search.html
+   66	core/templates/search/search.html
     0	core/templatetags/__init__.py
    28	core/templatetags/git_revno.py
    18	core/templatetags/git_revno_tests.py
    29	core/templatetags/gravatar.py
    10	core/tests.py
-   14	core/urls.py
-   78	core/views.py
+   16	core/urls.py
+   63	core/views.py
     4	flatpage-defaults/about-aup.md
-   29	flatpage-defaults/about-credits.md
+   30	flatpage-defaults/about-credits.md
     0	flatpage-defaults/about-help-administration.md
     0	flatpage-defaults/about-help-api.md
     0	flatpage-defaults/about-help-folders.md
@@ -93,7 +93,7 @@ Count	Location
   157	honeycomb/settings.py
    20	honeycomb/urls.py
    10	honeycomb/wsgi.py
-  104	honeycomb_markdown.py
+  124	honeycomb_markdown.py
     0	promotion/__init__.py
     0	promotion/admin.py
     4	promotion/apps.py
@@ -127,7 +127,7 @@ Count	Location
   238	submissions/folder_views.py
    14	submissions/form_extras.py
    33	submissions/forms.py
-  220	submissions/models.py
+  224	submissions/models.py
    49	submissions/templates/comment-body-snippet.html
    24	submissions/templates/confirm_delete_folder.html
    29	submissions/templates/confirm_delete_submission.html
@@ -188,4 +188,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-12890	TOTAL
+12892	TOTAL
