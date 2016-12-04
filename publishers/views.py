@@ -14,6 +14,7 @@ from django.shortcuts import (
     render,
 )
 from django.views.decorators.http import require_POST
+from submitify.models import Call
 
 from .forms import (
     NewsItemForm,
@@ -21,15 +22,15 @@ from .forms import (
 )
 from .models import (
     NewsItem,
-    PublisherPage,
+    Publisher,
 )
 
 
 def list_publishers(request, page=1):
-    if request.user.has_perm('publishers.add_publisherpage'):
-        qs = PublisherPage.objects.all()
+    if request.user.has_perm('publishers.add_publisher'):
+        qs = Publisher.objects.all()
     else:
-        qs = PublisherPage.objects.filter(owner__isnull=False)
+        qs = Publisher.objects.filter(owner__isnull=False)
     paginator = Paginator(qs, request.user.profile.results_per_page if
                           request.user.is_authenticated else 25)
     try:
@@ -43,7 +44,7 @@ def list_publishers(request, page=1):
 
 
 @login_required
-@permission_required('publishers.add_publisherpage')
+@permission_required('publishers.add_publisher')
 def create_publisher(request):
     form = PublisherForm()
     if request.method == 'POST':
@@ -59,14 +60,21 @@ def create_publisher(request):
 
 
 def view_publisher(request, publisher_slug=None):
-    pass
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    if (publisher.owner is None and not
+            request.user.has_perm('publishers.add_publisher')):
+        return render(request, 'permission_denied.html', {}, status=403)
+    return render(request, 'view_publisher.html', {
+        'title': publisher.name,
+        'publisher': publisher,
+    })
 
 
 @login_required
 def edit_publisher(request, publisher_slug=None):
-    publisher = get_object_or_404(PublisherPage, slug=publisher_slug)
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
     if request.user != publisher.owner:
-        return render(request, 'permission_denied.html', status=403)
+        return render(request, 'permission_denied.html', {}, status=403)
     form = PublisherForm(instance=publisher)
     if request.method == 'POST':
         form = PublisherForm(request.POST, instance=publisher)
@@ -82,9 +90,18 @@ def edit_publisher(request, publisher_slug=None):
 
 
 @login_required
-@permission_required('publishers.delete_publisherpage')
+@permission_required('publishers.delete_publisher')
 def delete_publisher(request, publisher_slug=None):
-    pass
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    if request.method == 'POST':
+        publisher.delete()
+        messages.error(request, 'Publisher deleted')
+        return redirect(reverse('publishers:list_publishers'))
+    return render(request, 'confirm_delete_publisher.html', {
+        'title': 'Delete publisher',
+        'subtitle': publisher.name,
+        'publisher': publisher,
+    })
 
 
 @login_required
@@ -93,7 +110,7 @@ def add_member(request, publisher_slug=None):
     user = get_object_or_404(User, username=request.POST.get('username'))
     publisher = get_object_or_404(Publisher, slug=publisher_slug)
     if request.user != publisher.owner:
-        return render(request, 'permission_denied.html', status=403)
+        return render(request, 'permission_denied.html', {}, status=403)
     if user not in publisher.members.all():
         publisher.members.add(user)
         messages.success(request, 'User added to members')
@@ -108,7 +125,7 @@ def remove_member(request, publisher_slug=None):
     user = get_object_or_404(User, username=request.POST.get('username'))
     publisher = get_object_or_404(Publisher, slug=publisher_slug)
     if request.user != publisher.owner:
-        return render(request, 'permission_denied.html', status=403)
+        return render(request, 'permission_denied.html', {}, status=403)
     if user in publisher.members.all():
         publisher.members.remove(user)
         messages.success(request, 'User removed from members')
@@ -119,40 +136,181 @@ def remove_member(request, publisher_slug=None):
 
 @login_required
 @require_POST
+def add_editor(request, publisher_slug=None):
+    user = get_object_or_404(User, username=request.POST.get('username'))
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    if request.user != publisher.owner:
+        return render(request, 'permission_denied.html', {}, status=403)
+    if user not in publisher.editors.all():
+        publisher.editors.add(user)
+        messages.success(request, 'User added to editors')
+    else:
+        messages.info(request, 'User already in editors')
+    return redirect(publisher.get_absolute_url())
+
+
+@login_required
+@require_POST
+def remove_editor(request, publisher_slug=None):
+    user = get_object_or_404(User, username=request.POST.get('username'))
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    if request.user != publisher.owner:
+        return render(request, 'permission_denied.html', {}, status=403)
+    if user in publisher.editors.all():
+        publisher.editors.remove(user)
+        messages.success(request, 'User removed from editors')
+    else:
+        messages.info(request, 'User not in editors')
+    return redirect(publisher.get_absolute_url())
+
+
+@login_required
+@require_POST
 def add_call(request, publisher_slug=None):
-    pass
+    call = get_object_or_404(Call, id=request.POST.get('call_id'))
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    if request.user != publisher.owner:
+        return render(request, 'permission_denied.html', {}, status=403)
+    if call.owner not in publisher.editors.all():
+        return render(request, 'permission_denied.html', {}, status=403)
+    if call in publisher.calls.all():
+        messages.info(request, '{} already owns this call'.format(
+            publisher.name))
+    else:
+        publisher.calls.add(call)
+    return redirect(publisher.get_absolute_url())
 
 
 @login_required
 @require_POST
 def remove_call(request, publisher_slug=None):
-    pass
+    call = get_object_or_404(Call, id=request.POST.get('call_id'))
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    if request.user != publisher.owner:
+        return render(request, 'permission_denied.html', {}, status=403)
+    if call.owner not in publisher.editors.all():
+        return render(request, 'permission_denied.html', {}, status=403)
+    if call not in publisher.calls.all():
+        messages.info(request, "{} doesn't own this call".format(
+            publisher.name))
+    else:
+        publisher.calls.remove(call)
+    return redirect(publisher.get_absolute_url())
 
 
 @login_required
-@permission_required('publishers.add_publisherpage')
+@permission_required('publishers.add_publisher')
 def change_ownership(request, publisher_slug=None):
-    pass
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    username = ''
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        try:
+            user = User.objects.get(username=username)
+            publisher.owner = user
+            publisher.save()
+            messages.success(request, 'Publisher owner set')
+            return redirect(publisher.get_absolute_url())
+        except User.DoesNotExist:
+            pass
+    return render(request, 'change_publisher_ownership.html', {
+        'title': 'Change publisher ownership',
+        'subtitle': publisher.name,
+        'publisher': publisher,
+        'username': username,
+    })
 
 
-def list_news_items(request, publisher_slug=None):
-    pass
+def list_news_items(request, publisher_slug=None, page=1):
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    paginator = Paginator(publisher.newsitem_set.all(),
+                          request.user.profile.results_per_page if
+                          request.user.is_authenticated else 25)
+    try:
+        news_items = paginator.page(page)
+    except EmptyPage:
+        news_items = paginator.page(paginator.num_pages)
+    return render(request, 'list_news_items.html', {
+        'title': publisher.name,
+        'subtitle': 'News',
+        'publisher': publisher,
+        'news_items': news_items,
+    })
 
 
 @login_required
 def create_news_item(request, publisher_slug=None):
-    pass
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    if request.user not in publisher.editors.all():
+        return render(request, 'permission_denied.html', {}, status=403)
+    form = NewsItemForm()
+    if request.method == 'POST':
+        form = NewsItemForm(request.POST)
+        if form.is_valid():
+            news_item = form.save(commit=False)
+            news_item.publisher = publisher
+            news_item.owner = request.user
+            news_item.save()
+            form.save_m2m()
+            return redirect(news_item.get_absolute_url())
+    return render(request, 'edit_news_item.html', {
+        'title': 'Create news item',
+        'publisher': publisher,
+        'form': form,
+    })
 
 
 def view_news_item(request, publisher_slug=None, item_id=None):
-    pass
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    news_item = get_object_or_404(NewsItem, id=item_id, publisher=publisher)
+    return render(request, 'view_news_item.html', {
+        'title': news_item.subject,
+        'subtitle': publisher.name,
+        'publisher': publisher,
+        'news_item': news_item,
+    })
 
 
 @login_required
 def edit_news_item(request, publisher_slug=None, item_id=None):
-    pass
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    if request.user not in publisher.editors.all():
+        return render(request, 'permission_denied.html', {}, status=403)
+    item = get_object_or_404(NewsItem, id=item_id, publisher=publisher)
+    if request.user not in [item.owner, publisher.owner]:
+        return render(request, 'permission_denied.html', {}, status=403)
+    form = NewsItemForm()
+    if request.method == 'POST':
+        form = NewsItemForm(request.POST)
+        if form.is_valid():
+            news_item = form.save(commit=False)
+            news_item.publisher = publisher
+            news_item.owner = request.user
+            news_item.save()
+            form.save_m2m()
+            return redirect(news_item.get_absolute_url())
+    return render(request, 'edit_news_item.html', {
+        'title': 'Edit news item',
+        'subtitle': item.subject,
+        'publisher': publisher,
+        'form': form,
+    })
 
 
 @login_required
 def delete_news_item(request, publisher_slug=None, item_id=None):
-    pass
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    if request.user not in publisher.editors.all():
+        return render(request, 'permission_denied.html', {}, status=403)
+    item = get_object_or_404(NewsItem, id=item_id, publisher=publisher)
+    if request.user not in [item.owner, publisher.owner]:
+        return render(request, 'permission_denied.html', {}, status=403)
+    if request.method == 'POST':
+        item.delete()
+        return redirect(publisher.get_absolute_url())
+    return render(request, 'confirm_delete_newsitem.html', {
+        'title': 'Delete news item',
+        'subtitle': item.subject,
+        'publisher': publisher,
+        'news_item': item,
+    })

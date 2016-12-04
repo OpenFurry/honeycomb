@@ -2,13 +2,13 @@ from django import forms
 
 from .models import (
     NewsItem,
-    PublisherPage,
+    Publisher,
 )
 
 
 class PublisherForm(forms.ModelForm):
     class Meta:
-        model = PublisherPage
+        model = Publisher
         fields = [
             'name',
             'url',
@@ -23,5 +23,6 @@ class NewsItemForm(forms.ModelForm):
         model = NewsItem
         fields = [
             'image',
+            'subject',
             'body_raw',
         ]

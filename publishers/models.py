@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+import markdown
+from PIL import Image
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
@@ -6,9 +8,11 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils import timezone
+from django.utils.html import strip_tags
 from submitify.models import Call
 
 from administration.models import Flag
+from honeycomb_markdown import HoneycombMarkdown
 
 
 def _upload_path(instance, filename, upload_type):
@@ -32,7 +36,7 @@ def newsitem_path(instance, filename):
     return _upload_path(instance.publisher, filename, 'newsitem')
 
 
-class PublisherPage(models.Model):
+class Publisher(models.Model):
     """A page on the site representing a publisher, collecting submissions by
     site members who are employed by or contracted under that publisher.
     """
@@ -53,8 +57,11 @@ class PublisherPage(models.Model):
     owner = models.ForeignKey(User, blank=True, null=True,
                               related_name='owned_publisher_page')
 
+    # Users who have an editorial role with the publisher
+    editors = models.ManyToManyField(User, related_name='publisher_editor_of')
+
     # Users who have been published by the publisher
-    members = models.ManyToManyField(User)
+    members = models.ManyToManyField(User, related_name='publisher_member_of')
 
     # Any calls for submissions run by the publisher
     calls = models.ManyToManyField(Call)
@@ -76,7 +83,7 @@ class PublisherPage(models.Model):
                 'pymdownx.mark',
             ])
 
-        super(PublisherPage, self).save(*args, **kwargs)
+        super(Publisher, self).save(*args, **kwargs)
 
         # Resize images
         if self.logo:
@@ -96,10 +103,12 @@ class PublisherPage(models.Model):
 
 class NewsItem(models.Model):
     """An item of news from the publisher on their page."""
-    publisher = models.ForeignKey(PublisherPage, on_delete=models.CASCADE)
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User)
     ctime = models.DateTimeField(auto_now_add=True)
     mtime = models.DateTimeField(auto_now=True)
     image = models.ImageField(blank=True, upload_to=newsitem_path)
+    subject = models.CharField(max_length=200)
     body_raw = models.TextField(verbose_name='body')
     body_rendered = models.TextField()
 
@@ -123,3 +132,9 @@ class NewsItem(models.Model):
             image = Image.open(self.image)
             image.thumbnail((2048, 2048), Image.ANTIALIAS)
             image.save(self.image.path)
+
+    def get_absolute_url(self):
+        return reverse('publishers:view_news_item', kwargs={
+            'publisher_slug': self.publisher.slug,
+            'item_id': self.id,
+        })

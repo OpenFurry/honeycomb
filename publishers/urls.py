@@ -1,14 +1,16 @@
 from django.conf.urls import (
     include,
-    urls,
+    url,
 )
 
 from . import views
 
 
-app_name='publishers'
+app_name = 'publishers'
 news_patterns = [
     url(r'^$', views.list_news_items, name='list_news_items'),
+    url(r'^page/(?P<page>\d+)/$', views.list_news_items,
+        name='list_news_items'),
     url(r'^create/$', views.create_news_item, name='create_news_item'),
     url('^(?P<item_id>\d+)/$', views.view_news_item, name='view_news_item'),
     url('^(?P<item_id>\d+)/edit/$', views.edit_news_item,
@@ -23,6 +25,8 @@ publisher_patterns = [
     url(r'^delete/$', views.delete_publisher, name='delete_publisher'),
     url(r'^members/add/$', views.add_member, name='add_member'),
     url(r'^members/remove/$', views.remove_member, name='remove_member'),
+    url(r'^editors/add/$', views.add_editor, name='add_editor'),
+    url(r'^editors/remove/$', views.remove_editor, name='remove_editor'),
     url(r'^calls/add/$', views.add_call, name='add_call'),
     url(r'^calls/remove/$', views.remove_call, name='remove_call'),
     url(r'^ownership/change/$', views.change_ownership,
