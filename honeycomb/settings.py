@@ -160,6 +160,7 @@ INSTALLED_APPS += [
     'administration',
     'tags',
     'taggit',
+    'submitify',
     'haystack',
     'datetimewidget',
     'django_extensions',
@@ -254,3 +255,4 @@ FLAGGABLE_CONTENT_TYPES = [
     'taggit:tag',
     'usermgmt:profile',
 ]
+UTM_SOURCE='Honeycomb'

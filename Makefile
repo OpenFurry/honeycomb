@@ -17,7 +17,6 @@ shell: ## Run the django shell using some additional tools.
 .PHONY: migrate
 migrate: makemigrations ## Run migrate on the DB, updating schema per migration files.
 	venv/bin/python manage.py migrate
-	$(MAKE) generatefixtures
 
 .PHONY: makemigrations
 makemigrations: venv/bin/django-admin ## Generate migration files based on models.
