@@ -4,6 +4,7 @@ import re
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
+from markdown.preprocessors import Preprocessor
 from markdown.extensions import Extension
 from markdown.inlinepatterns import Pattern
 from markdown.postprocessors import Postprocessor
@@ -16,6 +17,22 @@ ABBRFIX_RE = re.compile(r'<abbr title="([^"]+)">([^</abbr>]+)</abbr>')
 USERNAME_PATTERN_NAME = r'~([\w-]+)'
 USERNAME_PATTERN_ICON = r'@!([\w-]+)'
 USERNAME_PATTERN_ICONNAME = r'@([\w-]+)'
+POETRY_PATTERN = r"'''([^''']+)'''"
+
+
+class Poetry(Preprocessor):
+    RE = re.compile(
+        r'''(?P<quotes>'{3})(?P<body>.*?)(?P=quotes)''',
+        re.DOTALL)
+
+    def repl(self, m):
+        return '<div style="white-space:pre-wrap">{}</div>'.format(
+            m.group('body'))
+
+    def run(self, lines):
+        text = '\n'.join(lines)
+        text = re.sub(self.RE, self.repl, text)
+        return text.split('\n')
 
 
 class HoneycombUserName(Pattern):
@@ -109,6 +126,7 @@ class ABBRFix(Postprocessor):
 
 class HoneycombMarkdown(Extension):
     def extendMarkdown(self, md, md_globals):
+        md.preprocessors['poetry'] = Poetry(md)
         md.inlinePatterns.add(
             'honeycomb_user_icon',
             HoneycombUserIcon(USERNAME_PATTERN_ICON),
@@ -119,6 +137,14 @@ class HoneycombMarkdown(Extension):
             '<image_link')
         md.inlinePatterns['honeycomb_user_name'] = HoneycombUserName(
             USERNAME_PATTERN_NAME)
+        md.postprocessors['tablefix'] = TableFix(md)
+        md.postprocessors['dlfix'] = DLFix(md)
+        md.postprocessors['abbrfix'] = ABBRFix(md)
+
+
+class HoneycombMarkdownLite(Extension):
+    def extendMarkdown(self, md, md_globals):
+        md.preprocessors['poetry'] = Poetry(md)
         md.postprocessors['tablefix'] = TableFix(md)
         md.postprocessors['dlfix'] = DLFix(md)
         md.postprocessors['abbrfix'] = ABBRFix(md)

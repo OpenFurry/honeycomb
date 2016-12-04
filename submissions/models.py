@@ -15,7 +15,10 @@ from django.utils.html import strip_tags
 from taggit.managers import TaggableManager
 
 from administration.models import Flag
-from honeycomb_markdown import HoneycombMarkdown
+from honeycomb_markdown import (
+    HoneycombMarkdown,
+    HoneycombMarkdownLite,
+)
 from usermgmt.group_models import FriendGroup
 
 
@@ -148,6 +151,7 @@ class Submission(models.Model):
             self.description_rendered = markdown.markdown(
                 strip_tags(self.description_raw),
                 extensions=[
+                    HoneycombMarkdown(),
                     'pymdownx.extra',
                     'markdown.extensions.codehilite',
                     'pymdownx.headeranchor',
@@ -155,7 +159,6 @@ class Submission(models.Model):
                     'pymdownx.smartsymbols',
                     'pymdownx.tilde',
                     'pymdownx.mark',
-                    HoneycombMarkdown(),
                 ])
 
             # Update content from file
@@ -172,6 +175,7 @@ class Submission(models.Model):
             self.content_rendered = markdown.markdown(
                 strip_tags(self.content_raw),
                 extensions=[
+                    HoneycombMarkdownLite(),
                     'pymdownx.extra',
                     'markdown.extensions.codehilite',
                     'pymdownx.headeranchor',
