@@ -8,6 +8,8 @@ from django.core.paginator import (
     EmptyPage,
     Paginator,
 )
+from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.shortcuts import (
     get_object_or_404,
     redirect,
@@ -48,7 +50,7 @@ def list_publishers(request, page=1):
 def create_publisher(request):
     form = PublisherForm()
     if request.method == 'POST':
-        form = PublisherForm(request.POST)
+        form = PublisherForm(request.POST, request.FILES)
         if form.is_valid():
             publisher = form.save()
             messages.success(request, 'Publisher created')
@@ -67,6 +69,7 @@ def view_publisher(request, publisher_slug=None):
     return render(request, 'view_publisher.html', {
         'title': publisher.name,
         'publisher': publisher,
+        'tab': 'home',
     })
 
 
@@ -77,7 +80,7 @@ def edit_publisher(request, publisher_slug=None):
         return render(request, 'permission_denied.html', {}, status=403)
     form = PublisherForm(instance=publisher)
     if request.method == 'POST':
-        form = PublisherForm(request.POST, instance=publisher)
+        form = PublisherForm(request.POST, request.FILES, instance=publisher)
         if form.is_valid():
             publisher = form.save()
             messages.success(request, 'Publisher updated')
@@ -164,6 +167,29 @@ def remove_editor(request, publisher_slug=None):
     return redirect(publisher.get_absolute_url())
 
 
+def list_calls(request, publisher_slug):
+    publisher = get_object_or_404(Publisher, slug=publisher_slug)
+    acceptable_statuses = [Call.OPEN]
+    if 'opening-soon' in request.GET:
+        acceptable_statuses.append(Call.NOT_OPEN_YET)
+    if 'closed-reviewing' in request.GET:
+        acceptable_statuses.append(Call.CLOSED_REVIEWING)
+    if 'closed-completed' in request.GET:
+        acceptable_statuses.append(Call.CLOSED_COMPLETED)
+    calls = publisher.calls.filter(status__in=acceptable_statuses)
+    available_calls = None
+    if request.user == publisher.owner:
+        available_calls = Call.objects.filter(
+            Q(owner__in=publisher.editors.all()) &
+            ~Q(id__in=[call.id for call in calls]))
+    return render(request, 'list_publisher_calls.html', {
+        'publisher': publisher,
+        'calls': calls,
+        'available_calls': available_calls,
+        'tab': 'calls',
+    })
+
+
 @login_required
 @require_POST
 def add_call(request, publisher_slug=None):
@@ -209,6 +235,7 @@ def change_ownership(request, publisher_slug=None):
             user = User.objects.get(username=username)
             publisher.owner = user
             publisher.save()
+            publisher.editors.add(user)
             messages.success(request, 'Publisher owner set')
             return redirect(publisher.get_absolute_url())
         except User.DoesNotExist:
@@ -245,7 +272,7 @@ def create_news_item(request, publisher_slug=None):
         return render(request, 'permission_denied.html', {}, status=403)
     form = NewsItemForm()
     if request.method == 'POST':
-        form = NewsItemForm(request.POST)
+        form = NewsItemForm(request.POST, request.FILES)
         if form.is_valid():
             news_item = form.save(commit=False)
             news_item.publisher = publisher
@@ -279,9 +306,9 @@ def edit_news_item(request, publisher_slug=None, item_id=None):
     item = get_object_or_404(NewsItem, id=item_id, publisher=publisher)
     if request.user not in [item.owner, publisher.owner]:
         return render(request, 'permission_denied.html', {}, status=403)
-    form = NewsItemForm()
+    form = NewsItemForm(instance=item)
     if request.method == 'POST':
-        form = NewsItemForm(request.POST)
+        form = NewsItemForm(request.POST, request.FILES, instance=item)
         if form.is_valid():
             news_item = form.save(commit=False)
             news_item.publisher = publisher

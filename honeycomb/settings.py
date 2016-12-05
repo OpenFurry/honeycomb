@@ -151,6 +151,7 @@ MEDIA_ROOT = os.path.join(STATIC_ROOT, 'uploads')
 # Installed applications for Honeycomb
 INSTALLED_APPS += [
     'core',
+    'api',
     'usermgmt',
     'submissions',
     'social',

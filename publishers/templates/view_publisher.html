@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load gravatar %}
+{% load campaignify %}
+
+{% block content %}
+{% include 'publisher-tabs-snippet.html' %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        {% if publisher.banner %}
+            <img class="banner" src="{{ MEDIA_ROOT }}{{ publisher.banner.url }}" />
+        {% endif %}
+        <div class="panel panel-default submission-details">
+            <div class="panel-body">
+                <img src="{{ MEDIA_ROOT }}{{ publisher.logo.url }}" class="submission-icon" />
+                <dl class="dl-indent">
+                    <dt>Website</dt>
+                    <dd><a href="{{ publisher.url|campaignify:'direct link,publisher page' }}">{{ publisher.url }}</a></dd>
+                    <dt>Owner</dt>
+                    <dd>
+                        {% if publisher.owner %}
+                            <a href="{% url 'usermgmt:view_profile' publisher.owner.username %}">
+                                {{ publisher.owner.email|gravatar:'40' }}
+                                {{ publisher.owner.profile.get_display_name }}
+                            </a>
+                        {% else %}
+                            <em>Not claimed</em>
+                        {% endif %}
+                        {% if perms.publishers.add_publisher %}
+                            <div class="show-form">
+                                <em>Change</em> <span class="caret"></span><input type="checkbox" />
+                                <form class="ownership-form panel panel-default" method="post" action="{% url 'publishers:change_ownership' publisher_slug=publisher.slug %}">
+                                    {% csrf_token %}
+                                    <div class="panel-body">
+                                        <label for="id_new_owner">Change owner to:</label>
+                                        <div class="user_suggest">
+                                            Username: <input type="text" name="username" id="id_new_owner" />
+                                            <ul class="suggestions empty"></ul>
+                                        </div>
+                                        <button type="submit" class="btn btn-default btn-xs">Change ownership</button>
+                                    </div>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </dd>
+                    <dt>Editors</dt>
+                    <dd>
+                        <ul>
+                            {% for editor in publisher.editors.all %}
+                                <li>
+                                    <a href="{% url 'usermgmt:view_profile' editor.username %}">
+                                        {{ editor.email|gravatar:'40' }}
+                                        {{ editor.profile.get_display_name }}
+                                    </a>
+                                </li>
+                            {% empty %}
+                                <li><em>No additional editors</em></li>
+                            {% endfor %}
+                        </ul>
+                    </dd>
+                    <dt>Writers</dt>
+                    <dd>
+                        <ul>
+                            {% for member in publisher.members.all %}
+                                <li>
+                                    <a href="{% url 'usermgmt:view_profile' member.username %}">
+                                        {{ member.email|gravatar:'40' }}
+                                        {{ member.profile.get_display_name }}
+                                    </a>
+                                </li>
+                            {% empty %}
+                                <li><em>No additional editors</em></li>
+                            {% endfor %}
+                        </ul>
+                    </dd>
+                </dl>
+                <a role="button" class="btn btn-default" href="{% url 'publishers:edit_publisher' publisher_slug=publisher.slug %}">Edit publisher</a>
+            </div>
+        </div>
+        {{ publisher.body_rendered|safe }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h2>News</h2>
+        {% for item in publisher.newsitem_set.all|slice:":5" %}
+            <div class="news-item panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{ item.subject }}</h3>
+                </div>
+                <div class="panel-body">
+                    {% if item.image %}
+                        <img class="banner" src="{{ MEDIA_ROOT }}{{ item.image.url }}" />
+                    {% endif %}
+                    {{ item.body_rendered|safe }}
+                </div>
+                <div class="panel-footer">
+                    <a href="{{ item.get_absolute_url }}">View news item</a>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center"><em>No news to display</em></p>
+        {% endfor %}
+        {% if publisher.newsitem_set.count > 5 %}
+            <a href="{% url 'publishers:list_news_items' publisher_slug=publisher.slug %}">More news</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

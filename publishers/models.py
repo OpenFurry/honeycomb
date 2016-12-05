@@ -17,7 +17,7 @@ from honeycomb_markdown import HoneycombMarkdown
 
 def _upload_path(instance, filename, upload_type):
     return 'uploads/publisher-{}/{}'.format(
-        instance.slug.id,
+        instance.slug,
         '{}-{}.{}'.format(
             timezone.now().strftime('%Y-%m-%d-%H%M%S'),
             upload_type,
@@ -97,7 +97,7 @@ class Publisher(models.Model):
 
     def get_absolute_url(self):
         return reverse('publishers:view_publisher', kwargs={
-            'slug': self.slug,
+            'publisher_slug': self.slug,
         })
 
 

@@ -1,4 +1,4 @@
-APPLICATIONS := activitystream administration core promotion publishers social submissions tags usermgmt
+APPLICATIONS := activitystream administration api core promotion publishers social submissions tags usermgmt
 APPLICATIONS_COMMA := $(shell echo $(APPLICATIONS) | tr ' ' ',')
 TESTTAGS_ARGS := $(shell echo $(TAGS) | xargs python -c 'import sys;print("--tag "+" --tag ".join(" ".join(sys.argv[1:]).split(",")))')
 

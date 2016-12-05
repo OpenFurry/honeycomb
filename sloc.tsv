@@ -1,7 +1,7 @@
 Count	Location
    44	CONTRIBUTING.md
    13	DEPLOYING.md
-  119	Makefile
+  117	Makefile
     3	README.md
     9	RELEASE.md
     1	activitystream/__init__.py
@@ -43,6 +43,13 @@ Count	Location
   187	administration/tests.py
    66	administration/urls.py
    52	administration/views.py
+    0	api/__init__.py
+    0	api/admin.py
+    3	api/apps.py
+   11	api/urls.py
+    0	api/v1/tests.py
+    8	api/v1/urls.py
+   13	api/v1/views.py
     0	core/__init__.py
     0	core/admin.py
     4	core/apps.py
@@ -60,13 +67,14 @@ Count	Location
    14	core/search_indexes.py
     6	core/templates/404.html
    34	core/templates/activity-snippet.html
-  227	core/templates/base.html
+  231	core/templates/base.html
    11	core/templates/flatpages/default.html
    18	core/templates/flatpages/list.html
   102	core/templates/front.html
    14	core/templates/permission_denied.html
    66	core/templates/search/search.html
     0	core/templatetags/__init__.py
+   19	core/templatetags/campaignify.py
    28	core/templatetags/git_revno.py
    18	core/templatetags/git_revno_tests.py
    29	core/templatetags/gravatar.py
@@ -79,7 +87,7 @@ Count	Location
     0	flatpage-defaults/about-help-api.md
     0	flatpage-defaults/about-help-folders.md
     0	flatpage-defaults/about-help-honeycomb.md
-  357	flatpage-defaults/about-help-markdown.md
+  373	flatpage-defaults/about-help-markdown.md
     0	flatpage-defaults/about-help-promoting.md
     0	flatpage-defaults/about-help-publishers.md
    30	flatpage-defaults/about-help-submissions.md
@@ -90,8 +98,8 @@ Count	Location
     0	honeycomb/__init__.py
    17	honeycomb/middleware.py
     2	honeycomb/revno.py
-  157	honeycomb/settings.py
-   20	honeycomb/urls.py
+  160	honeycomb/settings.py
+   23	honeycomb/urls.py
    10	honeycomb/wsgi.py
   124	honeycomb_markdown.py
     0	promotion/__init__.py
@@ -103,9 +111,22 @@ Count	Location
     0	publishers/__init__.py
     0	publishers/admin.py
     4	publishers/apps.py
-   16	publishers/models.py
+   23	publishers/forms.py
+  103	publishers/models.py
+    7	publishers/templates/change_publisher_ownership.html
+   18	publishers/templates/confirm_delete_newsitem.html
+   18	publishers/templates/confirm_delete_publisher.html
+   12	publishers/templates/edit_news_item.html
+   12	publishers/templates/edit_publisher.html
+    7	publishers/templates/list_news_items.html
+   81	publishers/templates/list_publisher_calls.html
+    7	publishers/templates/list_publishers.html
+   15	publishers/templates/publisher-tabs-snippet.html
+    7	publishers/templates/view_news_item.html
+  107	publishers/templates/view_publisher.html
     0	publishers/tests.py
-    0	publishers/views.py
+   41	publishers/urls.py
+  306	publishers/views.py
     7	run-coveralls.sh
    19	sloc.py
     0	social/__init__.py
@@ -188,4 +209,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-12892	TOTAL
+13718	TOTAL

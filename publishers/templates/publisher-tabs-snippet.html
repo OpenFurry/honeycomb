@@ -1,0 +1,15 @@
+<div class="row publisher-tabs">
+    <ul class="nav nav-tabs">
+        <li role="presentation"{% if tab == 'home' %} class="active"{% endif %}>
+            <a href="{{ publisher.get_absolute_url }}">Home</a>
+        </li>
+        <li role="presentation"{% if tab == 'news' %} class="active"{% endif %}>
+            <a href="{% url 'publishers:list_news_items' publisher_slug=publisher.slug %}">News</a>
+        </li>
+        {% if tab == 'calls' or user == publisher.owner or publisher.calls.count > 0 %}
+            <li role="presentation"{% if tab == 'calls' %} class="active"{% endif %}>
+                <a href="#">Calls for submissions</a>
+            </li>
+        {% endif %}
+    </ul>
+</div>

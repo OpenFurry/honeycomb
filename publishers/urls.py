@@ -12,10 +12,10 @@ news_patterns = [
     url(r'^page/(?P<page>\d+)/$', views.list_news_items,
         name='list_news_items'),
     url(r'^create/$', views.create_news_item, name='create_news_item'),
-    url('^(?P<item_id>\d+)/$', views.view_news_item, name='view_news_item'),
-    url('^(?P<item_id>\d+)/edit/$', views.edit_news_item,
+    url(r'^(?P<item_id>\d+)/$', views.view_news_item, name='view_news_item'),
+    url(r'^(?P<item_id>\d+)/edit/$', views.edit_news_item,
         name='edit_news_item'),
-    url('^(?P<item_id>\d+)/delete/$', views.delete_news_item,
+    url(r'^(?P<item_id>\d+)/delete/$', views.delete_news_item,
         name='delete_news_item'),
 ]
 publisher_patterns = [
@@ -27,6 +27,7 @@ publisher_patterns = [
     url(r'^members/remove/$', views.remove_member, name='remove_member'),
     url(r'^editors/add/$', views.add_editor, name='add_editor'),
     url(r'^editors/remove/$', views.remove_editor, name='remove_editor'),
+    url(r'^calls/$', views.list_calls, name='list_calls'),
     url(r'^calls/add/$', views.add_call, name='add_call'),
     url(r'^calls/remove/$', views.remove_call, name='remove_call'),
     url(r'^ownership/change/$', views.change_ownership,
@@ -38,6 +39,6 @@ urlpatterns = [
         name='list_publishers'),
     url(r'^publishers/create/$', views.create_publisher,
         name='create_publisher'),
-    url(r'^publisher/(?<publisher_slug>[-_\w]+)/',
+    url(r'^publisher/(?P<publisher_slug>[-_\w]+)/',
         include(publisher_patterns)),
 ]
