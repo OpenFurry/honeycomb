@@ -68,6 +68,9 @@ class Publisher(models.Model):
 
     flags = GenericRelation(Flag)
 
+    class Meta:
+        ordering = ['name']
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         self.body_rendered = markdown.markdown(
@@ -111,6 +114,9 @@ class NewsItem(models.Model):
     subject = models.CharField(max_length=200)
     body_raw = models.TextField(verbose_name='body')
     body_rendered = models.TextField()
+
+    class Meta:
+        ordering = ['-ctime']
 
     def save(self, *args, **kwargs):
         self.body_rendered = markdown.markdown(

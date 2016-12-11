@@ -1,8 +1,70 @@
 {% extends 'base.html' %}
+{% load excerpts %}
 
 {% block content %}
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
+        {% if user.is_authenticated %}
+            <p class="text-right">
+                {% if perms.publishers.add_publisher %}
+                    <a class="btn btn-primary" role="button" href="{% url 'publishers:create_publisher' %}">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Create publisher
+                    </a>
+                {% else %}
+                    Don't see your publisher here? <a href="{% url 'administration:create_application' %}">Apply to create a publisher page</a>
+                {% endif %}
+            </p>
+        {% endif %}
+        {% for publisher in publishers %}
+            <div class="publisher-listing clearfix">
+                <a href="{{ publisher.get_absolute_url }}">
+                    <img class="logo" src="{{ MEDIA_ROOT }}{{ publisher.logo.url }}" />
+                    <h2>{{ publisher.name }}</h2>
+                </a>
+                <div class="body">
+                    {{ publisher.body_rendered|get_first_paragraphs|safe }}
+                </div>
+                <div class="foot">
+                    <a href="{{ publisher.get_absolute_url }}">Visit {{ publisher.name }}'s publisher page</a>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 </div>
+{% if publishers.has_next or publishers.has_previous %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <nav aria-label="Publisher pages">
+                <ul class="pagination">
+                    {% if publishers.has_previous %}
+                        <li>
+                            <a href="{% url 'publishers:list_publishers' page=publishers.previous_page_number %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled"><span aria-hidden="true">&laquo;</span></li>
+                    {% endif %}
+                    {% for page in publishers.paginator.page_range %}
+                        {% if publishers.number == page %}
+                            <li class="active"><a href="{% url 'publishers:list_publishers' page=page %}">{{ page }} <span class="sr-only">(current)</span></a></li>
+                        {% else %}
+                            <li><a href="{% url 'publishers:list_publishers' page=page %}">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if publishers.has_next %}
+                        <li>
+                            <a href="{% url 'publishers:list_publishers' page=publishers.next_page_number %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled"><span aria-hidden="true">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endif %}
 {% endblock %}

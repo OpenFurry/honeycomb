@@ -96,6 +96,30 @@ body {
     padding-left: 1em;
 }
 
+.publisher-listing:first-of-type {
+    border-top: 2px solid #ccc;
+}
+
+.publisher-listing {
+    padding: 1em 0;
+    border-bottom: 2px solid #ccc;
+}
+
+.publisher-listing h2 {
+    margin-top: 0px;
+}
+
+.publisher-listing .logo {
+    max-width: 200px;
+    vertical-align: top;
+    float: left;
+    margin: 0 1em 1em 0;
+}
+
+.publisher-listing .foot {
+    text-align: right;
+}
+
 .show-form {
     position: relative;
 }

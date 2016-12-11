@@ -1,8 +1,68 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% include 'publisher-tabs-snippet.html' %}
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
+        {% if user == publisher.owner %}
+            <p class="text-right">
+                <a href="{% url 'publishers:create_news_item' publisher_slug=publisher.slug %}" class="btn btn-primary" role="button">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    Create a new news item
+                </a>
+            </p>
+        {% endif %}
+        {% for item in news_items %}
+            <div class="news-item panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{ item.subject }}</h3>
+                </div>
+                <div class="panel-body">
+                    {% if item.image %}
+                        <img class="banner" src="{{ MEDIA_ROOT }}{{ item.image.url }}" />
+                    {% endif %}
+                    {{ item.body_rendered|safe }}
+                </div>
+                <div class="panel-footer">
+                    <a href="{{ item.get_absolute_url }}">View news item</a>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 </div>
+{% if news_items.has_next or news_items.has_previous %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <nav aria-label="Publisher pages">
+                <ul class="pagination">
+                    {% if news_items.has_previous %}
+                        <li>
+                            <a href="{% url 'publishers:list_news_items' publisher_slug=publisher.slug page=news_items.previous_page_number %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled"><span aria-hidden="true">&laquo;</span></li>
+                    {% endif %}
+                    {% for page in news_items.paginator.page_range %}
+                        {% if news_items.number == page %}
+                            <li class="active"><a href="{% url 'publishers:list_news_items' publisher_slug=publisher.slug page=page %}">{{ page }} <span class="sr-only">(current)</span></a></li>
+                        {% else %}
+                            <li><a href="{% url 'publishers:list_news_items' publisher_slug=publisher.slug page=page %}">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if news_items.has_next %}
+                        <li>
+                            <a href="{% url 'publishers:list_news_items' publisher_slug=publisher.slug page=news_items.next_page_number %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled"><span aria-hidden="true">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endif %}
 {% endblock %}

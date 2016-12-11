@@ -1,8 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% include 'publisher-tabs-snippet.html' %}
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
+        {% if user == publisher.owner %}
+            <p class="text-right">
+                <a href="{% url 'publishers:edit_news_item' publisher_slug=publisher.slug item_id=news_item.id %}" class="btn btn-primary" role="button">
+                    <span class="glyphicon glyphicon-edit"></span>
+                    Edit news item
+                </a>
+                <a href="{% url 'publishers:delete_news_item' publisher_slug=publisher.slug item_id=news_item.id}" class="btn btn-danger" role="button">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    Delete news item
+                </a>
+            </p>
+        {% endif %}
+        <h2>{{ news_item.subject }}</h2>
+        {% if news_item.image %}
+            <img class="banner" src="{{ MEDIA_ROOT }}{{ news_item.image.url }}" />
+        {% endif %}
+        {{ news_item.body_rendered|safe }}
     </div>
 </div>
 {% endblock %}

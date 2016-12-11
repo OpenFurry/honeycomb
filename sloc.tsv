@@ -112,21 +112,21 @@ Count	Location
     0	publishers/admin.py
     4	publishers/apps.py
    23	publishers/forms.py
-  103	publishers/models.py
+  107	publishers/models.py
     7	publishers/templates/change_publisher_ownership.html
    18	publishers/templates/confirm_delete_newsitem.html
    18	publishers/templates/confirm_delete_publisher.html
    12	publishers/templates/edit_news_item.html
    12	publishers/templates/edit_publisher.html
-    7	publishers/templates/list_news_items.html
+   67	publishers/templates/list_news_items.html
    81	publishers/templates/list_publisher_calls.html
-    7	publishers/templates/list_publishers.html
+   69	publishers/templates/list_publishers.html
    15	publishers/templates/publisher-tabs-snippet.html
-    7	publishers/templates/view_news_item.html
+   25	publishers/templates/view_news_item.html
   107	publishers/templates/view_publisher.html
     0	publishers/tests.py
    41	publishers/urls.py
-  306	publishers/views.py
+  310	publishers/views.py
     7	run-coveralls.sh
    19	sloc.py
     0	social/__init__.py
@@ -209,4 +209,4 @@ Count	Location
    24	usermgmt/urls.py
     9	usermgmt/utils.py
    87	usermgmt/views.py
-13718	TOTAL
+13866	TOTAL

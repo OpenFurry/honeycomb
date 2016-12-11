@@ -262,6 +262,7 @@ def list_news_items(request, publisher_slug=None, page=1):
         'subtitle': 'News',
         'publisher': publisher,
         'news_items': news_items,
+        'tab': 'news',
     })
 
 
@@ -284,6 +285,7 @@ def create_news_item(request, publisher_slug=None):
         'title': 'Create news item',
         'publisher': publisher,
         'form': form,
+        'tab': 'news',
     })
 
 
@@ -291,10 +293,10 @@ def view_news_item(request, publisher_slug=None, item_id=None):
     publisher = get_object_or_404(Publisher, slug=publisher_slug)
     news_item = get_object_or_404(NewsItem, id=item_id, publisher=publisher)
     return render(request, 'view_news_item.html', {
-        'title': news_item.subject,
-        'subtitle': publisher.name,
+        'title': publisher.name,
         'publisher': publisher,
         'news_item': news_item,
+        'tab': 'news',
     })
 
 
@@ -321,6 +323,7 @@ def edit_news_item(request, publisher_slug=None, item_id=None):
         'subtitle': item.subject,
         'publisher': publisher,
         'form': form,
+        'tab': 'news',
     })
 
 
@@ -340,4 +343,5 @@ def delete_news_item(request, publisher_slug=None, item_id=None):
         'subtitle': item.subject,
         'publisher': publisher,
         'news_item': item,
+        'tab': 'news',
     })
