@@ -18,8 +18,11 @@ urlpatterns = [
     url('^', include('usermgmt.urls')),
     url('^', include('social.urls')),
     url('^', include('core.urls')),
+    url('^', include('publishers.urls')),
     url('^', include('submissions.urls')),
     url('^', include('tags.urls')),
     url('^activity/', include('activitystream.urls')),
+    url('^calls/', include('submitify.urls')),
+    url('^api/', include('api.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

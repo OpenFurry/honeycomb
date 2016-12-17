@@ -21,7 +21,7 @@ from promotion.models import (
     AdLifecycle,
     Promotion,
 )
-from publishers.models import PublisherPage
+from publishers.models import Publisher
 from social.models import (
     Comment,
     EnjoyItem,
@@ -138,7 +138,7 @@ def _get_sitewide_data():
             'tags': Tag.objects.count(),
             'taggeditems': TaggedItem.objects.count(),
         },
-        'publishers': PublisherPage.objects.count(),
+        'publishers': Publisher.objects.count(),
         'promotions': {
             'all_active': active_promotions.count(),
             'promotions':

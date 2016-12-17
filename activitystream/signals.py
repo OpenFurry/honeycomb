@@ -47,7 +47,7 @@ def log_base_create_or_update(sender, **kwargs):
             'Folder': 'folder',
             'FriendGroup': 'group',
             'Profile': 'profile',
-            'PublisherPage': 'publisher',
+            'Publisher': 'publisher',
             'Submission': 'submission',
             'Tag': 'tag',
         }[sender.__name__]
@@ -76,7 +76,7 @@ def log_base_delete(sender, **kwargs):
             'Folder': 'folder',
             'FriendGroup': 'group',
             'Submission': 'submission',
-            'PublisherPage': 'publisher',
+            'Publisher': 'publisher',
         }[sender.__name__]
     except:
         return

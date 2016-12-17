@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="alert alert-danger">
+            You are about to delete this news item.  Are you sure you want to do this?
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    Delete news item
+                </button>
+                <a href="{{ news_item.get_absolute_url }}">No, take me back</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

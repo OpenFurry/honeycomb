@@ -71,9 +71,15 @@ body {
     margin-top: -1em;
 }
 
+.banner {
+    width: 100%;
+    margin-bottom: 1.5em;
+}
+
 .submission-icon {
     display: block;
     margin: 0 auto;
+    max-width: 100px;
 }
 
 .submission-cover {
@@ -85,7 +91,57 @@ body {
     padding-top: 1em;
 }
 
-.profile-tabs, .admin-tabs {
+.submission-details ul {
+    list-style-type: none;
+    padding-left: 1em;
+}
+
+.publisher-listing:first-of-type {
+    border-top: 2px solid #ccc;
+}
+
+.publisher-listing {
+    padding: 1em 0;
+    border-bottom: 2px solid #ccc;
+}
+
+.publisher-listing h2 {
+    margin-top: 0px;
+}
+
+.publisher-listing .logo {
+    max-width: 200px;
+    vertical-align: top;
+    float: left;
+    margin: 0 1em 1em 0;
+}
+
+.publisher-listing .foot {
+    text-align: right;
+}
+
+.show-form {
+    position: relative;
+}
+
+.show-form form {
+    display: none;
+}
+
+.show-form input[type=checkbox] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.show-form input:checked ~ form {
+    display: block;
+}
+
+.profile-tabs, .admin-tabs, .publisher-tabs {
     padding-bottom: 1em;
 }
 
@@ -107,6 +163,43 @@ body {
 
 .dl-indent dd {
     margin-left: 1em;
+}
+
+.dl-indent dd ul {
+    margin-left: -1em;
+}
+
+.user_suggest {
+    position: relative;
+    margin-bottom: 0.25em;
+}
+
+.user_suggest input {
+    display: inline;
+    width: 100px;
+}
+
+.user_suggest .suggestions.empty {
+    display: none;
+}
+
+.user_suggest .suggestions {
+    position: absolute;
+    overflow: visible;
+    list-style-type: none;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    margin: 0px;
+    padding: 0px;
+}
+
+.user_suggest .suggestions .suggestion {
+    padding: 0.25em 0.5em 0.25em 0.5em;
+    cursor: pointer;
+}
+
+.user_suggest .suggestions .suggestion:hover {
+    background-color: #eee;
 }
 
 .comment-reply {

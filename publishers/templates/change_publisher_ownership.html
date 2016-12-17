@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <p>Change the owner of this publisher? The old owner will become an editor and can then be removed if desired.</p>
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_new_owner">Change owner to:</label>
+            <div class="user_suggest">
+                Username: <input type="text" name="username" id="id_new_owner" />
+                <ul class="suggestions empty"></ul>
+            </div>
+            <button type="submit" class="btn btn-primary">Change publisher ownership</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

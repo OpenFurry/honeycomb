@@ -1,3 +1,7 @@
+## Profiles
+
+## Gravatar
+
 ## Watching
 
 ## Blocking

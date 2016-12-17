@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+{% include 'publisher-tabs-snippet.html' %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        {% if user == publisher.owner and available_calls %}
+            <form method="post" action="{% url 'publishers:add_call' publisher_slug=publisher.slug %}">
+                {% csrf_token %}
+                <label for="id_call_id">Add call for submissions to {{ publisher.name }}</label>
+                <select name="call_id" id="id_call_id" class="form-control">
+                    <option value="">----------</option>
+                    {% for call in available_calls %}
+                        <option value="{{ call.id }}">
+                            {{ call.title }} run by {{ call.owner.profile.get_display_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-default">Add call</button>
+            </form>
+        {% endif %}
+        <form method="get" class="form-inline text-justified">
+            <div class="checkbox-inline">
+                <label>
+                    <input type="checkbox" onchange="this.form.submit()" name="opening-soon"{% if 'opening-soon' in request.GET %} checked{% endif %} />
+                    Show calls opening soon
+                </label>
+            </div>
+            <div class="checkbox-inline">
+                <label>
+                    <input type="checkbox" onchange="this.form.submit()" name="closed-reviewing"{% if 'closed-reviewing' in request.GET %} checked{% endif %} />
+                    Show closed calls in review
+                </label>
+            </div>
+            <div class="checkbox-inline">
+                <label>
+                    <input type="checkbox" onchange="this.form.submit()" name="closed-completed"{% if 'closed-completed' in request.GET %} checked{% endif %} />
+                    Show closed and completed calls
+                </label>
+            </div>
+            <noscript>
+                <button type="submit" class="btn btn-default btn-xs">Update</button>
+            </noscript>
+        </form>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Call</th>
+                    <th>Status</th>
+                    <th>Closes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for call in calls %}
+                    <tr>
+                        <td>
+                            <a href="{{ call.get_absolute_url }}">{{ call.title }}</a>
+                            <p class="small">
+                                Paid: {{ call.paid|yesno }} &bullet;
+                                Genre: {{ call.genre }} &bullet;
+                                Owner: {{ call.owner.username }} &bullet;
+                                Length: {{ call.length }}
+                                {% if user == publisher.owner %}
+                                    <form method="post" action="{% url 'publishers:remove_call' publisher_slug=publisher.slug %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="call_id" value="{{ call.id }}" />
+                                        <button type="submit" class="btn btn-danger btn-xs">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                            Remove call from publisher
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </p>
+                        </td>
+                        <td>{{ call.get_status_display }}</td>
+                        <td>
+                            <abbr data-toggle="tooltip" data-placement="bottom" title="{{ call.end_date|date:'D, j M' }}">
+                                {{ call.end_date|naturalday }}
+                            </abbr>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3"><em>No calls to list</em></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -22,6 +22,10 @@
 
         <script src="{% static 'app/jquery.min.js' %}"></script>
         <script src="{% static 'app/jquery-ui/jquery-ui.min.js' %}"></script>
+        <script type="text/javascript">
+        window.apiVersion = 1;
+        window.apiURL = "{% url 'api:url' %}";
+        </script>
     </head>
     <body>
         <nav class="navbar navbar-default navbar-static-top">

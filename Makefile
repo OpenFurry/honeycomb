@@ -1,4 +1,4 @@
-APPLICATIONS := activitystream administration core promotion publishers social submissions tags usermgmt
+APPLICATIONS := activitystream administration api core promotion publishers social submissions tags usermgmt
 APPLICATIONS_COMMA := $(shell echo $(APPLICATIONS) | tr ' ' ',')
 TESTTAGS_ARGS := $(shell echo $(TAGS) | xargs python -c 'import sys;print("--tag "+" --tag ".join(" ".join(sys.argv[1:]).split(",")))')
 
@@ -8,7 +8,7 @@ help: ## This help.
 
 .PHONY: run
 run: ## Run the development environment from tox.
-	tox -e devenv
+	tox -e 3.5-run
 
 .PHONY: shell
 shell: ## Run the django shell using some additional tools.
@@ -17,7 +17,6 @@ shell: ## Run the django shell using some additional tools.
 .PHONY: migrate
 migrate: makemigrations ## Run migrate on the DB, updating schema per migration files.
 	venv/bin/python manage.py migrate
-	$(MAKE) generatefixtures
 
 .PHONY: makemigrations
 makemigrations: venv/bin/django-admin ## Generate migration files based on models.
@@ -73,15 +72,15 @@ update-revno: venv/bin/django-admin ## Update the git revno for non-DEBUG templa
 
 .PHONY: test
 test: ## Rapid test (parallel test running, no coverage)
-	tox -e rapidtest
+	tox -e 3.5-rapidtest
 
 .PHONY: testall
 testall: ## Run tests in all available environments.
-	tox
+	tox -e test
 
 .PHONY: testone
 testone: ## Run tests in py3.5 only.
-	tox -e 3.5
+	tox -e 3.5-test
 
 .PHONY: testtags
 testtags: ## Run only tests tagged with a certain tag or tags (comma separated) passed through the TAGS environment variable.

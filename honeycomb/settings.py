@@ -151,6 +151,7 @@ MEDIA_ROOT = os.path.join(STATIC_ROOT, 'uploads')
 # Installed applications for Honeycomb
 INSTALLED_APPS += [
     'core',
+    'api',
     'usermgmt',
     'submissions',
     'social',
@@ -160,6 +161,7 @@ INSTALLED_APPS += [
     'administration',
     'tags',
     'taggit',
+    'submitify',
     'haystack',
     'datetimewidget',
     'django_extensions',
@@ -248,9 +250,10 @@ MAX_UPLOAD_SIZE = 1024 * 1024 * 10
 # administrative review.
 FLAGGABLE_CONTENT_TYPES = [
     'promotion:adlifecycle',
-    'publishers:publisherpage',
+    'publishers:publisher',
     'social:comment',
     'submissions:submission',
     'taggit:tag',
     'usermgmt:profile',
 ]
+UTM_SOURCE = 'Honeycomb'
