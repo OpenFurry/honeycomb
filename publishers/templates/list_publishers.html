@@ -29,6 +29,8 @@
                     <a href="{{ publisher.get_absolute_url }}">Visit {{ publisher.name }}'s publisher page</a>
                 </div>
             </div>
+        {% empty %}
+            <em>No publishers to list!</em>
         {% endfor %}
     </div>
 </div>

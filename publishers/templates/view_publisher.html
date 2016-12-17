@@ -46,30 +46,80 @@
                     <dd>
                         <ul>
                             {% for editor in publisher.editors.all %}
-                                <li>
-                                    <a href="{% url 'usermgmt:view_profile' editor.username %}">
+                                <li class="clearfix">
+                                    <a href="{% url 'usermgmt:view_profile' editor.username %}" class="pull-left">
                                         {{ editor.email|gravatar:'40' }}
                                         {{ editor.profile.get_display_name }}
                                     </a>
+                                    {% if user == publisher.owner %}
+                                        <form method="post" action="{% url 'publishers:remove_editor' publisher_slug=publisher.slug %}" class="pull-right">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="username" value="{{ editor.username }}" />
+                                            <button class="btn btn-danger btn-xs" type="submit">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
+                                        </form>
+                                    {% endif %}
                                 </li>
                             {% empty %}
                                 <li><em>No additional editors</em></li>
                             {% endfor %}
+                            {% if user == publisher.owner %}
+                                <div class="show-form">
+                                    <em>Add</em> <span class="caret"></span><input type="checkbox" />
+                                    <form class="ownership-form panel panel-default" method="post" action="{% url 'publishers:add_editor' publisher_slug=publisher.slug %}">
+                                        {% csrf_token %}
+                                        <div class="panel-body">
+                                            <label for="id_new_editor">Add editor:</label>
+                                            <div class="user_suggest">
+                                                Username: <input type="text" name="username" id="id_new_editor" />
+                                                <ul class="suggestions empty"></ul>
+                                            </div>
+                                            <button type="submit" class="btn btn-default btn-xs">Add editor</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endif %}
                         </ul>
                     </dd>
                     <dt>Writers</dt>
                     <dd>
                         <ul>
                             {% for member in publisher.members.all %}
-                                <li>
-                                    <a href="{% url 'usermgmt:view_profile' member.username %}">
+                                <li class="clearfix">
+                                    <a href="{% url 'usermgmt:view_profile' member.username %}" class="pull-left">
                                         {{ member.email|gravatar:'40' }}
                                         {{ member.profile.get_display_name }}
                                     </a>
+                                    {% if user == publisher.owner %}
+                                        <form method="post" action="{% url 'publishers:remove_member' publisher_slug=publisher.slug %}" class="pull-right">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="username" value="{{ member.username }}" />
+                                            <button class="btn btn-danger btn-xs" type="submit">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
+                                        </form>
+                                    {% endif %}
                                 </li>
                             {% empty %}
-                                <li><em>No additional editors</em></li>
+                                <li><em>No additional members</em></li>
                             {% endfor %}
+                            {% if user == publisher.owner %}
+                                <div class="show-form">
+                                    <em>Add</em> <span class="caret"></span><input type="checkbox" />
+                                    <form class="ownership-form panel panel-default" method="post" action="{% url 'publishers:add_member' publisher_slug=publisher.slug %}">
+                                        {% csrf_token %}
+                                        <div class="panel-body">
+                                            <label for="id_new_member">Add member:</label>
+                                            <div class="user_suggest">
+                                                Username: <input type="text" name="username" id="id_new_member" />
+                                                <ul class="suggestions empty"></ul>
+                                            </div>
+                                            <button type="submit" class="btn btn-default btn-xs">Add member</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endif %}
                         </ul>
                     </dd>
                 </dl>

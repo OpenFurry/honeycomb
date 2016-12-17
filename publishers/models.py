@@ -41,27 +41,35 @@ class Publisher(models.Model):
     site members who are employed by or contracted under that publisher.
     """
     # The name and slug of the page
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, help_text='''
+    The name of the publisher. This will be used to create the URL.''')
     slug = models.SlugField(max_length=100, unique=True)
 
     # The publisher's URL
-    url = models.URLField(max_length=1024)
+    url = models.URLField(max_length=1024, help_text='''
+    The url for the publisher's homepage.''')
 
     # The page content
-    logo = models.ImageField(upload_to=logo_path)
-    banner = models.ImageField(blank=True, upload_to=banner_path)
-    body_raw = models.TextField(verbose_name='body')
+    logo = models.ImageField(upload_to=logo_path, help_text='''
+    A logo image for the publisher. Aim for something close to square. This
+    will be displayed in the publisher listing as well as on the publisher
+    page.''')
+    banner = models.ImageField(blank=True, upload_to=banner_path, help_text='''
+    A banner image to display at the top of the publisher page.''')
+    body_raw = models.TextField(verbose_name='body', help_text='''
+    A description of the publisher; this will be the main page of the publisher
+    on this site.''')
     body_rendered = models.TextField()
 
     # The page owner
     owner = models.ForeignKey(User, blank=True, null=True,
-                              related_name='owned_publisher_page')
+                              related_name='owned_publishers')
 
     # Users who have an editorial role with the publisher
-    editors = models.ManyToManyField(User, related_name='publisher_editor_of')
+    editors = models.ManyToManyField(User, related_name='publishers_editor_of')
 
     # Users who have been published by the publisher
-    members = models.ManyToManyField(User, related_name='publisher_member_of')
+    members = models.ManyToManyField(User, related_name='publishers_member_of')
 
     # Any calls for submissions run by the publisher
     calls = models.ManyToManyField(Call)
@@ -91,7 +99,7 @@ class Publisher(models.Model):
         # Resize images
         if self.logo:
             logo = Image.open(self.logo)
-            logo.thumbnail((2048, 2048), Image.ANTIALIAS)
+            logo.thumbnail((500, 500), Image.ANTIALIAS)
             logo.save(self.logo.path)
         if self.banner:
             banner = Image.open(self.banner)

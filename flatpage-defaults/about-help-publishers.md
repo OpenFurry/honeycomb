@@ -2,4 +2,6 @@
 
 ## Claiming
 
-## Events
+## Editors and members
+
+## Calls for submissions

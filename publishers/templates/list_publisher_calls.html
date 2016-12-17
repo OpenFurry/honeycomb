@@ -13,7 +13,7 @@
                     <option value="">----------</option>
                     {% for call in available_calls %}
                         <option value="{{ call.id }}">
-                            {{ call.title }} - {{ call.owner.get_display_name }}
+                            {{ call.title }} run by {{ call.owner.profile.get_display_name }}
                         </option>
                     {% endfor %}
                 </select>
@@ -61,6 +61,16 @@
                                 Genre: {{ call.genre }} &bullet;
                                 Owner: {{ call.owner.username }} &bullet;
                                 Length: {{ call.length }}
+                                {% if user == publisher.owner %}
+                                    <form method="post" action="{% url 'publishers:remove_call' publisher_slug=publisher.slug %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="call_id" value="{{ call.id }}" />
+                                        <button type="submit" class="btn btn-danger btn-xs">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                            Remove call from publisher
+                                        </button>
+                                    </form>
+                                {% endif %}
                             </p>
                         </td>
                         <td>{{ call.get_status_display }}</td>
