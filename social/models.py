@@ -51,6 +51,7 @@ class Comment(models.Model):
             extensions=[
                 'pymdownx.extra',
                 'markdown.extensions.codehilite',
+                'markdown.extensions.smarty',
                 'pymdownx.headeranchor',
                 'pymdownx.magiclink',
                 'pymdownx.smartsymbols',
