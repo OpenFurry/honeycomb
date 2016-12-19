@@ -73,6 +73,7 @@ class Application(models.Model):
             extensions=[
                 'pymdownx.extra',
                 'markdown.extensions.codehilite',
+                'markdown.extensions.smarty',
                 'pymdownx.headeranchor',
                 'pymdownx.magiclink',
                 'pymdownx.smartsymbols',
@@ -153,6 +154,7 @@ class Flag(models.Model):
             extensions=[
                 'pymdownx.extra',
                 'markdown.extensions.codehilite',
+                'markdown.extensions.smarty',
                 'pymdownx.headeranchor',
                 'pymdownx.magiclink',
                 'pymdownx.smartsymbols',
@@ -218,6 +220,7 @@ class Ban(models.Model):
             extensions=[
                 'pymdownx.extra',
                 'markdown.extensions.codehilite',
+                'markdown.extensions.smarty',
                 'pymdownx.headeranchor',
                 'pymdownx.magiclink',
                 'pymdownx.smartsymbols',
