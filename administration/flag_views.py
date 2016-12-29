@@ -118,8 +118,13 @@ def create_flag(request):
         object_id=obj.id,
     ))
     if request.method == 'POST':
-        request.POST['content_type'] = ctype.id
-        form = FlagForm(request.POST)
+        form = FlagForm({
+            'subject': request.POST.get('subject'),
+            'flag_type': request.POST.get('flag_type'),
+            'body_raw': request.POST.get('body_raw'),
+            'content_type': ctype.id,
+            'object_id': obj.id,
+        })
         if form.is_valid():
             flag = form.save(commit=False)
             flag.flagged_by = request.user

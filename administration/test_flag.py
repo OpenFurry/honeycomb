@@ -297,6 +297,19 @@ class TestCreateFlagView(BaseFlagTestCase):
             }, follow=True)
         self.assertContains(response, "User McUserface's flag")
 
+    def test_remove_immutable_assignment_99(self):
+        self.client.login(username='user',
+                          password='user pass')
+        response = self.client.post(
+            reverse('administration:create_flag'), {
+                'content_type': 'usermgmt:profile',
+                'object_id': self.bar.id,
+                'flag_type': Flag.CONTENT,
+                'subject': 'it is bad',
+                'body_raw': 'i did not like it, *no sir*',
+            }, follow=True)
+        self.assertContains(response, "User McUserface's flag")
+
 
 class ExistingFlagBaseTestCase(BaseFlagTestCase):
     @classmethod
