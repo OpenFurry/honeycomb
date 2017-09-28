@@ -3,14 +3,12 @@ pipeline {
   stages {
     stage('Install') {
       steps {
-        sh 'make deps'
+        sh 'make clean deps'
       }
     }
     stage('Test') {
       steps {
-        sh '''source venv/bin/activate
-make test-travis
-deactivate'''
+        sh 'make test-travis'
       }
     }
   }
