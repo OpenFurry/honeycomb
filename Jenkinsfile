@@ -1,18 +1,14 @@
 pipeline {
   agent any
   stages {
-    stage('Check') {
+    stage('Install') {
       steps {
-        parallel(
-          "Check": {
-            sh 'make test'
-            
-          },
-          "Install": {
-            sh 'make deps'
-            
-          }
-        )
+        sh 'make deps'
+      }
+    }
+    stage('Test') {
+      steps {
+        sh 'make test'
       }
     }
   }
