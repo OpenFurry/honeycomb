@@ -8,7 +8,9 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh 'make test-travis'
+        sh '''source venv/bin/activate
+make test-travis
+deactivate'''
       }
     }
   }
