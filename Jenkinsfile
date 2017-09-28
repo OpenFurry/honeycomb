@@ -3,7 +3,8 @@ pipeline {
   stages {
     stage('Install') {
       steps {
-        sh 'pip install -r requirements.txt'
+        sh '''make venv
+pip install -r requirements.txt'''
       }
     }
     stage('Check') {
