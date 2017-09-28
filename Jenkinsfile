@@ -3,7 +3,16 @@ pipeline {
   stages {
     stage('Check') {
       steps {
-        sh 'make test'
+        parallel(
+          "Check": {
+            sh 'make test'
+            
+          },
+          "Install": {
+            sh 'make deps'
+            
+          }
+        )
       }
     }
   }
